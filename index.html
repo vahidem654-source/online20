@@ -1,0 +1,2579 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>آزمون‌ساز حرفه‌ای</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0d3b66">
+<style>
+  :root{
+    --navy:#0d3b66; --navy-dark:#082a4d; --navy-light:#1e6fa8;
+    --bg:#f3f7fb; --card:#ffffff; --border:#dbe4ec; --text:#1c2b36; --muted:#5c7284;
+    --danger:#c0392b; --success:#1f8a56; --warn:#b7791f;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:Vazirmatn,Tahoma,'Segoe UI',sans-serif;
+    background:var(--bg); color:var(--text); direction:rtl;
+    -webkit-tap-highlight-color:transparent;
+  }
+  input,textarea,select,button{font-family:inherit; font-size:15px;}
+  input,textarea,select{
+    width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:8px;
+    background:#fff; color:var(--text); min-height:44px;
+  }
+  textarea{min-height:80px; resize:vertical;}
+  button{
+    cursor:pointer; border:none; border-radius:8px; padding:10px 16px; min-height:44px;
+    background:var(--navy); color:#fff; font-weight:600; transition:.15s;
+  }
+  button:hover{background:var(--navy-light);}
+  button.secondary{background:#fff; color:var(--navy); border:1px solid var(--navy);}
+  button.secondary:hover{background:#eaf2f8;}
+  button.danger{background:var(--danger);}
+  button.danger:hover{background:#e0473a;}
+  button.ghost{background:transparent; color:var(--navy); box-shadow:none; padding:6px 8px; min-height:36px;}
+  button:disabled{opacity:.5; cursor:not-allowed;}
+  label{display:block; font-size:13px; color:var(--muted); margin-bottom:4px; font-weight:600;}
+  .card{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(13,59,102,.06);}
+  .row{display:flex; gap:10px; flex-wrap:wrap;}
+  .row > *{flex:1; min-width:160px;}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  @media(max-width:640px){.grid2{grid-template-columns:1fr;}}
+  h1,h2,h3{color:var(--navy-dark); margin:0 0 10px;}
+  h2{font-size:19px; border-bottom:2px solid var(--navy); padding-bottom:8px;}
+  .topbar{
+    background:var(--navy); position:sticky; top:0; z-index:50; display:flex; overflow-x:auto;
+    box-shadow:0 2px 6px rgba(0,0,0,.15);
+  }
+  .topbar button.tab{
+    background:transparent; color:#cfe0ee; border-radius:0; white-space:nowrap; font-weight:600;
+    padding:14px 16px; border-bottom:3px solid transparent;
+  }
+  .topbar button.tab.active{color:#fff; border-bottom:3px solid #ffffff; background:var(--navy-dark);}
+  .brand{color:#fff; font-weight:800; padding:14px 18px; white-space:nowrap;}
+  main{max-width:1000px; margin:0 auto; padding:16px; padding-bottom:80px;}
+  .view{display:none;}
+  .view.active{display:block;}
+  table.qtable{width:100%; border-collapse:collapse; margin-top:10px;}
+  table.qtable th, table.qtable td{border:1px solid var(--border); padding:8px; text-align:right; vertical-align:top;}
+  table.qtable th{background:#eaf2f8; color:var(--navy-dark); font-size:13px;}
+  table.qtable td.col-num{width:40px; text-align:center; font-weight:700;}
+  table.qtable td.col-score{width:90px;}
+  table.qtable td.col-ans{width:150px; font-size:13px;}
+  table.qtable td.col-actions{width:110px;}
+  .field-box{border:1px solid var(--border); border-radius:8px; padding:10px; background:#fbfdff; display:flex; flex-direction:column; gap:6px;}
+  .field-box .grow{flex:1; min-width:0;}
+  .field-box .fb-actions{display:flex; gap:4px; justify-content:flex-end;}
+  .badge{display:inline-block; background:#eaf2f8; color:var(--navy); border-radius:6px; padding:2px 8px; font-size:12px; font-weight:700;}
+  .hr-sep{border:none; border-top:1px dashed var(--border); margin:16px 0;}
+  .toast{position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--navy-dark); color:#fff; padding:10px 18px; border-radius:20px; font-size:14px; z-index:999; box-shadow:0 4px 12px rgba(0,0,0,.2); opacity:0; transition:.25s;}
+  .toast.show{opacity:1;}
+  .pill-group{display:flex; gap:6px; flex-wrap:wrap;}
+  .pill{padding:8px 14px; border-radius:20px; border:1px solid var(--navy); background:#fff; color:var(--navy); cursor:pointer; font-size:13px; font-weight:600; min-height:auto;}
+  .pill.on{background:var(--navy); color:#fff;}
+  .tf-btns{display:flex; gap:10px;}
+  .tf-btns button{flex:1;}
+  .tf-btns button.selected{background:var(--success);}
+  .modal-bg{position:fixed; inset:0; background:rgba(8,20,32,.55); display:none; align-items:center; justify-content:center; z-index:200; padding:16px;}
+  .modal-bg.show{display:flex;}
+  .modal-box{background:#fff; border-radius:12px; max-width:700px; width:100%; max-height:85vh; overflow:auto; padding:20px;}
+  .small{font-size:12px; color:var(--muted);}
+  .actions-bar{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;}
+  .timer{font-weight:800; font-size:20px; color:var(--danger); background:#fff; border:2px solid var(--danger); border-radius:10px; padding:8px 14px; display:inline-block;}
+  .print-table{border-collapse:collapse; width:100%;}
+  .print-table td, .print-table th{border:1px solid #333; padding:6px;}
+  .qnum-circle{display:inline-block; width:26px; height:26px; border-radius:50%; background:var(--navy); color:#fff; text-align:center; line-height:26px; font-size:13px; margin-left:6px;}
+  .empty-hint{color:var(--muted); text-align:center; padding:30px 10px; border:2px dashed var(--border); border-radius:10px;}
+
+  .scrollNav{ position:fixed; bottom:20px; left:16px; z-index:90; display:flex; flex-direction:column; gap:8px; }
+  .scrollNav button{ width:46px; height:46px; min-height:auto; border-radius:50%; padding:0; font-size:19px; line-height:1;
+    display:flex; align-items:center; justify-content:center; box-shadow:0 2px 10px rgba(0,0,0,.28); }
+</style>
+</head>
+<body>
+<script id="examDataEmbed" type="application/octet-stream"></script>
+
+<div id="app">
+  <nav class="topbar" id="topbar">
+    <span class="brand">📘 آزمون‌ساز</span>
+    <button class="tab active" data-view="questions">سوالات</button>
+    <button class="tab" data-view="export">خروجی</button>
+    <button class="tab" data-view="online">آزمون آنلاین</button>
+    <button class="tab" data-view="grading">تصحیح</button>
+    <button class="tab" data-view="results">نتایج</button>
+    <button class="tab" data-view="bank">بانک سوالات</button>
+    <button class="tab" data-view="stats">آمار</button>
+    <button class="tab" data-view="utils">ابزار / راهنما</button>
+  </nav>
+
+  <main id="views">
+
+    <!-- ===================== QUESTIONS VIEW ===================== -->
+    <section class="view active" id="view-questions">
+      <div class="card">
+        <h2 id="builderTitle">طراحی سوال جدید</h2>
+        <div class="row">
+          <div>
+            <label>نوع سوال</label>
+            <select id="qType" autocomplete="off">
+              <option value="tf">صحیح / غلط</option>
+              <option value="blank">جای خالی</option>
+              <option value="paren">گزینه مناسب در پرانتز</option>
+              <option value="mc4">چهارگزینه‌ای</option>
+              <option value="match">وصل کنید</option>
+              <option value="essay">تشریحی</option>
+            </select>
+          </div>
+          <div>
+            <label>بارم</label>
+            <select id="qScore" autocomplete="off"></select>
+          </div>
+        </div>
+        <div id="qBuilderBody"></div>
+        <div class="actions-bar">
+          <button id="btnSaveQuestion">💾 ذخیره سوال</button>
+          <button id="btnResetBuilder" class="secondary">پاک کردن فرم</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>فهرست سوالات (<span id="qCount">0</span>)</h2>
+        <div class="actions-bar"><button id="btnNewExam" class="ghost danger" style="color:#c0392b;">🆕 آزمون جدید</button></div>
+        <div id="questionsTableWrap"></div>
+      </div>
+    </section>
+
+    <!-- ===================== EXPORT VIEW ===================== -->
+    <section class="view" id="view-export">
+      <div class="card">
+        <h2>خروجی PDF / Word</h2>
+        <p class="small">هر دو خروجی دقیقاً یک جدول‌بندی یکسان دارند، مطابق استایلی که بالا انتخاب کردید.</p>
+        <div class="actions-bar">
+          <button id="btnPreview" class="secondary">👁 پیش‌نمایش</button>
+          <button id="btnPdfNoAns">📄 PDF بدون پاسخ</button>
+          <button id="btnPdfAns">📄 PDF با پاسخ</button>
+          <button id="btnDocNoAns">📝 Word بدون پاسخ</button>
+          <button id="btnDocAns">📝 Word با پاسخ</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== ONLINE SETTINGS / PUBLISH VIEW ===================== -->
+    <section class="view" id="view-online">
+      <div class="card">
+        <h2>مشخصات آزمون آنلاین</h2>
+        <div class="grid2">
+          <div>
+            <label>نام آزمون (برای نمایش کنار لینک)</label>
+            <input type="text" id="examName" autocomplete="off" placeholder="مثلاً: امتحان ریاضی نوبت دوم">
+          </div>
+          <div>
+            <label>مدت زمان پاسخ‌گویی هر دانش‌آموز (دقیقه)</label>
+            <input type="number" id="examDuration" min="1" step="1" autocomplete="off" placeholder="مثلاً: 10">
+          </div>
+        </div>
+        <p class="small">هر دانش‌آموز از لحظه‌ای که وارد می‌شود، دقیقاً همین مدت زمان (نه بیشتر) فرصت دارد؛ حتی اگر بازهٔ کلی آزمون طولانی‌تر باشد.</p>
+        <label style="margin-top:10px;">قوانین/هشدارهای آزمون (بالای صفحهٔ دانش‌آموز نمایش داده می‌شود)</label>
+        <textarea id="examRules" rows="3" autocomplete="off" placeholder="مثال: خروج از این صفحه یا استفاده از موبایل حین آزمون مجاز نیست. تقلب باعث حذف نمره می‌شود."></textarea>
+      </div>
+
+      <div class="card">
+        <h2>تنظیمات نمایش آزمون آنلاین</h2>
+        <label>حالت نمایش (چند انتخابی)</label>
+        <div class="pill-group" id="displayModePills">
+          <span class="pill" data-mode="ordered">منظم</span>
+          <span class="pill" data-mode="random">تصادفی</span>
+          <span class="pill" data-mode="all">یکجا</span>
+          <span class="pill" data-mode="one">تک‌تک</span>
+          <span class="pill" data-mode="shuffleOptions">گزینه‌های چهارگزینه‌ای تصادفی</span>
+        </div>
+        <div class="grid2" style="margin-top:14px;">
+          <div>
+            <label>تاریخ شروع بازهٔ آزمون (شمسی)</label>
+            <div id="examStartDateBox"></div>
+            <label style="margin-top:8px;">ساعت شروع بازه</label>
+            <input type="time" id="examStartTime" autocomplete="off">
+          </div>
+          <div>
+            <label>تاریخ پایان بازهٔ آزمون (شمسی)</label>
+            <div id="examEndDateBox"></div>
+            <label style="margin-top:8px;">ساعت پایان بازه</label>
+            <input type="time" id="examEndTime" autocomplete="off">
+          </div>
+        </div>
+        <div class="row" style="margin-top:10px;">
+          <div>
+            <label>تصحیح</label>
+            <div class="pill-group">
+              <span class="pill" id="pillAuto">خودکار</span>
+              <span class="pill" id="pillManual">دستی</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>انتشار آزمون</h2>
+        <button id="btnPublish">🚀 انتشار / بروزرسانی آزمون آنلاین</button>
+        <div id="publishResult" style="margin-top:12px;"></div>
+      </div>
+
+      <div class="card">
+        <h2>ذخیرهٔ آزمون‌ها (پروژه‌ها)</h2>
+        <p class="small">کل آزمون (سوالات، تنظیمات) را با یک اسم ذخیره کنید تا بعداً بتوانید بارگذاری‌اش کنید.</p>
+        <div class="actions-bar">
+          <button id="btnSaveProject" class="secondary">💾 ذخیرهٔ کل آزمون با یک اسم</button>
+        </div>
+        <div class="row" style="margin-top:10px;">
+          <div>
+            <label>آزمون‌های ذخیره‌شده</label>
+            <select id="projectSelect" autocomplete="off"><option value="">— هیچ‌کدام —</option></select>
+          </div>
+          <div style="display:flex; align-items:flex-end; gap:6px;">
+            <button id="btnLoadProject" class="secondary">بارگذاری</button>
+            <button id="btnDeleteProject" class="ghost danger" style="color:#c0392b;">حذف</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== GRADING VIEW ===================== -->
+    <section class="view" id="view-grading">
+      <div class="card">
+        <h2>وارد کردن نتیجهٔ دانش‌آموز با کد</h2>
+        <p class="small">هر دانش‌آموز بعد از ثبت پاسخ‌ها یک «کد نتیجه» می‌گیرد و باید برای شما بفرستد (چون این برنامه سرور ندارد و نتایج فقط روی گوشی خودشان ذخیره می‌شود). می‌توانید حتی کل گفتگوی گروه (با اسم افراد، پیام‌های دیگر، هر چیز دیگری که وسطش باشد) را همین‌طور کپی و پیست کنید — فقط کدهایی که با «EXR:» شروع می‌شوند پیدا و اضافه می‌شوند.</p>
+        <div class="row">
+          <textarea id="resultCodeInput" rows="5" autocomplete="off" placeholder="می‌توانید کد چند نفر را با هم، حتی از وسط گفتگوی گروه، اینجا پیست کنید"></textarea>
+        </div>
+        <div class="actions-bar"><button id="btnImportResultCode">➕ افزودن این نتیجه/نتایج</button></div>
+      </div>
+
+      <div class="card">
+        <h2>تصحیح پاسخ‌برگه‌ها</h2>
+        <label>انتخاب آزمون</label>
+        <select id="gradingExamSelect" autocomplete="off"></select>
+        <div id="gradingBody" style="margin-top:14px;"></div>
+      </div>
+    </section>
+
+    <!-- ===================== RESULTS VIEW ===================== -->
+    <section class="view" id="view-results">
+      <div class="card">
+        <h2>نتایج دانش‌آموزان</h2>
+        <div class="row">
+          <div>
+            <label>انتخاب آزمون</label>
+            <select id="resultsExamSelect" autocomplete="off"></select>
+          </div>
+          <div style="display:flex; align-items:flex-end; gap:6px;">
+            <button id="btnDeleteResultsExam" class="ghost danger" style="color:#c0392b;">🗑 حذف این آزمون از لیست</button>
+          </div>
+        </div>
+        <div id="resultsBody" style="margin-top:14px;"></div>
+      </div>
+    </section>
+
+    <!-- ===================== BANK VIEW ===================== -->
+    <section class="view" id="view-bank">
+      <div class="card">
+        <h2>بانک سوالات</h2>
+        <div class="row">
+          <div>
+            <label>جستجو در متن سوال</label>
+            <input type="text" id="bankSearchText" autocomplete="off">
+          </div>
+          <div>
+            <label>درس</label>
+            <select id="bankSearchSubject" autocomplete="off"><option value="">همهٔ درس‌ها</option></select>
+          </div>
+          <div>
+            <label>نوع سوال</label>
+            <select id="bankSearchType" autocomplete="off">
+              <option value="">همه</option>
+              <option value="tf">صحیح/غلط</option>
+              <option value="blank">جای خالی</option>
+              <option value="paren">پرانتزی</option>
+              <option value="mc4">چهارگزینه‌ای</option>
+              <option value="match">وصل کنید</option>
+              <option value="essay">تشریحی</option>
+            </select>
+          </div>
+        </div>
+        <div id="bankList" style="margin-top:12px;"></div>
+      </div>
+    </section>
+
+    <!-- ===================== STATS VIEW ===================== -->
+    <section class="view" id="view-stats">
+      <div class="card">
+        <h2>آمار و گزارش‌گیری</h2>
+        <div class="row" style="align-items:flex-end;">
+          <div style="flex:2;">
+            <label>انتخاب آزمون</label>
+            <select id="statsExamSelect" autocomplete="off"></select>
+          </div>
+          <button id="btnDeleteStatsExam" class="ghost danger" style="color:#c0392b;">🗑 حذف این آزمون از لیست</button>
+        </div>
+        <div id="statsBody" style="margin-top:14px;"></div>
+      </div>
+    </section>
+
+    <!-- ===================== UTILS VIEW ===================== -->
+    <section class="view" id="view-utils">
+      <div class="card">
+        <h2>کپی/پیست انبوه سوالات</h2>
+        <p class="small">هر سوال را در یک خط یا با یک خط خالی از هم جدا کنید. خط‌هایی که «___» (جای خالی) داشته باشند به‌صورت خودکار سوال «جای خالی» می‌شوند، خط‌هایی با گزینه‌های داخل پرانتز مثل «(الف/ب/ج)» به‌صورت خودکار سوال «پرانتزی» می‌شوند، و بقیه به‌صورت سوال «تشریحی» اضافه می‌شوند. برای سوالات جای‌خالی و پرانتزی، پاسخ صحیح را باید بعداً در تب «سوالات» خودتان مشخص کنید.</p>
+        <textarea id="bulkPasteArea" rows="6" autocomplete="off" placeholder="سوال اول...&#10;سوال دوم..."></textarea>
+        <div class="actions-bar">
+          <button id="btnBulkConvert">تبدیل به سوالات</button>
+          <label class="secondary" style="display:inline-flex; align-items:center; padding:10px 16px; border:1px solid var(--navy); border-radius:8px; color:var(--navy); cursor:pointer;">
+            📄 آپلود فایل Word (docx.)
+            <input type="file" id="fileWordUpload" accept=".docx" style="display:none;" autocomplete="off">
+          </label>
+        </div>
+        <p class="small">با آپلود یک فایل Word (فقط پسوند docx.)، متن هر پاراگراف آن (هر سوال معمولاً یک پاراگراف) در جعبهٔ بالا ریخته می‌شود تا پیش از تبدیل، آن را مرور و در صورت نیاز اصلاح کنید. جدول‌ها و تصاویر داخل فایل Word پشتیبانی نمی‌شوند و فایل فقط در همین مرورگر شما پردازش می‌شود (به هیچ سروری فرستاده نمی‌شود).</p>
+      </div>
+
+      <div class="card" id="installCard" style="display:none;">
+        <h2>نصب برنامه روی گوشی / کامپیوتر</h2>
+        <p class="small">با این دکمه برنامه را مثل یک اپ مستقل نصب کنید (بدون نوار مرورگر).</p>
+        <div class="actions-bar"><button id="btnInstallApp">📲 نصب برنامه</button></div>
+      </div>
+
+      <div id="backupReminder"></div>
+      <div class="card">
+        <h2>پشتیبان‌گیری و بازیابی</h2>
+        <div class="actions-bar">
+          <button id="btnBackupJson" class="secondary">⬇️ دریافت پشتیبان JSON</button>
+          <label class="secondary" style="display:inline-flex; align-items:center; padding:10px 16px; border:1px solid var(--navy); border-radius:8px; color:var(--navy); cursor:pointer;">
+            ⬆️ بازیابی از JSON
+            <input type="file" id="fileRestore" accept="application/json" style="display:none;" autocomplete="off">
+          </label>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>فضای ذخیره‌سازی مرورگر</h2>
+        <p class="small">همهٔ اطلاعات این برنامه (پیش‌نویس آزمون، بانک سوالات، پروژه‌ها، آزمون‌های منتشرشده و نتایج‌شان) داخل حافظهٔ همین مرورگر ذخیره می‌شود که ظرفیت محدودی دارد (معمولاً چند مگابایت). اگر این نوار پر شود، ذخیره‌سازی ممکن است ناموفق شود؛ در آن صورت یک پشتیبان JSON بگیرید و چند مورد قدیمی را پاک کنید.</p>
+        <div style="background:var(--bg); border:1px solid var(--border); border-radius:8px; height:16px; overflow:hidden; margin-top:8px;">
+          <div id="storageUsageBar" style="height:100%; width:0%; background:var(--success); transition:width .3s;"></div>
+        </div>
+        <p class="small" id="storageUsageText" style="margin-top:6px;"></p>
+      </div>
+
+      <div class="card">
+        <h2>تنظیمات پیش‌فرض</h2>
+        <div class="row">
+          <div>
+            <label>بارم پیش‌فرض سوال جدید</label>
+            <select id="defaultScoreSetting" autocomplete="off"></select>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>راهنمای برنامه</h2>
+        <ol class="small" style="line-height:2;">
+          <li>ابتدا در تب «سوالات» هر سوال را طراحی و «ذخیره سوال» را بزنید.</li>
+          <li>در تب «خروجی» فایل PDF یا Word بگیرید.</li>
+          <li>برای برگزاری آنلاین، در تب «آزمون آنلاین» تنظیمات را انجام و آزمون را منتشر کنید؛ لینک تولیدشده را برای دانش‌آموزان ارسال کنید (لینک را به‌جای تایپ دستی، از دکمهٔ «کپی لینک» یا اشتراک‌گذاری مستقیم ارسال کنید تا خراب نشود).</li>
+          <li>بعد از پایان آزمون، هر دانش‌آموز یک «کد نتیجه» می‌بیند که باید برایتان ارسال کند (چون این برنامه سرور ندارد).</li>
+          <li>در تب «تصحیح»، کد هرکدام را در بخش «وارد کردن نتیجه با کد» پیست کنید تا نمره‌شان ثبت شود؛ بعد در تب‌های «نتایج» و «آمار» بررسی کنید.</li>
+        </ol>
+      </div>
+    </section>
+
+
+  </main>
+  <div class="scrollNav" id="scrollNav">
+    <button type="button" id="btnScrollTop" title="برو به بالای صفحه (طراحی سوال)" aria-label="برو به بالای صفحه">⬆</button>
+    <button type="button" id="btnScrollBottom" title="برو به پایین صفحه (آخر فهرست)" aria-label="برو به پایین صفحه">⬇</button>
+  </div>
+</div>
+
+<!-- ===================== STUDENT EXAM VIEW ===================== -->
+<div id="studentApp" style="display:none;">
+  <nav class="topbar"><span class="brand">📘 آزمون آنلاین</span></nav>
+  <main id="studentMain"></main>
+</div>
+
+<div class="modal-bg" id="modalBg"><div class="modal-box" id="modalBox"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+/* ============ PERSIAN (FARSI) DIGITS EVERYWHERE ============
+   Converts any 0-9 digit appearing in the app's own rendered text to the
+   Persian-Arabic equivalent (۰۱۲۳۴۵۶۷۸۹) — question numbers, scores, counts,
+   percentages, dates, the storage bar, everything on screen. This only
+   rewrites actual on-screen text (DOM text nodes); it never touches form
+   field values, element ids/attributes, or CSS, so nothing about how the
+   app calculates, saves, or exports anything changes — people can still
+   type ordinary digits into any box exactly as before.
+   A couple of ids are deliberately skipped because they hold codes that
+   must round-trip byte-for-byte (a student's result code, meant to be
+   copied and pasted back in later, or the embedded exam-data payload). */
+const FA_DIGITS = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+const FA_SKIP_IDS = new Set(['resultCodeText','examDataEmbed']);
+function toFaText(s){ return s.replace(/[0-9]/g, d => FA_DIGITS[d]); }
+function faShouldSkip(el){
+  return el.nodeType===1 && (el.tagName==='SCRIPT' || el.tagName==='STYLE' || FA_SKIP_IDS.has(el.id));
+}
+function faWalk(node){
+  if(node.nodeType===3){
+    if(/[0-9]/.test(node.nodeValue)) node.nodeValue = toFaText(node.nodeValue);
+    return;
+  }
+  if(node.nodeType!==1 || faShouldSkip(node)) return;
+  for(let child=node.firstChild; child; child=child.nextSibling) faWalk(child);
+}
+// Converts digits to Persian inside a standalone HTML string (used for the
+// PDF/Word export and the print preview) that never gets inserted into the
+// live page — parses it in an offline document, walks it with the exact same
+// safe text-node-only logic, then serializes it back out.
+function toFaHtmlString(htmlStr){
+  try{
+    const doc = new DOMParser().parseFromString(htmlStr, 'text/html');
+    faWalk(doc.documentElement);
+    return '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
+  }catch(e){ return htmlStr; }
+}
+(function(){
+  function start(){
+    const roots = ['app','studentApp','modalBg','toast']
+      .map(id=>document.getElementById(id)).filter(Boolean);
+    roots.forEach(faWalk);
+    const observer = new MutationObserver(muts=>{
+      for(const m of muts){
+        if(m.type==='childList'){
+          m.addedNodes.forEach(n=>{ if(!(n.nodeType===1 && faShouldSkip(n))) faWalk(n); });
+        } else if(m.type==='characterData'){
+          const p = m.target.parentNode;
+          if(p && faShouldSkip(p)) continue;
+          if(/[0-9]/.test(m.target.nodeValue)) m.target.nodeValue = toFaText(m.target.nodeValue);
+        }
+      }
+    });
+    roots.forEach(root=> observer.observe(root, {childList:true, subtree:true, characterData:true}));
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();
+
+
+/* ============ FLOATING SCROLL-TO-TOP / SCROLL-TO-BOTTOM BUTTONS ============
+   Handy once the question list gets long (e.g. 40+ questions) — jump straight
+   to the builder at the top of the page, or straight to the end of the list,
+   instead of scrolling through everything by hand. */
+(function(){
+  const btnTop = document.getElementById('btnScrollTop');
+  const btnBottom = document.getElementById('btnScrollBottom');
+  if(btnTop) btnTop.addEventListener('click', ()=>{ window.scrollTo({top:0, behavior:'smooth'}); });
+  if(btnBottom) btnBottom.addEventListener('click', ()=>{ window.scrollTo({top:document.body.scrollHeight, behavior:'smooth'}); });
+})();
+
+
+/* ============ APP STORAGE (IndexedDB-backed, localStorage-shaped) ============
+   Every save that used to go straight into localStorage (draft, question bank,
+   published exams, results, saved projects...) now goes through this instead.
+   From every call site's point of view it behaves exactly like localStorage —
+   getItem/setItem/removeItem/key/length, all synchronous — but underneath it's
+   backed by IndexedDB, whose storage quota is dramatically larger than
+   localStorage's (commonly hundreds of MB up to a few GB, vs. ~5-10MB).
+   A small in-memory cache is what makes the synchronous-looking API possible:
+   it's loaded once from IndexedDB before the app boots (AppStorage.ready()),
+   every read after that is served straight from the cache, and every write
+   updates the cache immediately and persists to IndexedDB in the background.
+   If IndexedDB isn't available at all (very old or locked-down browsers),
+   this transparently falls back to real localStorage so the app keeps
+   working, just with the original smaller quota. */
+const AppStorage = (function(){
+  const DB_NAME = 'examBuilderDB', STORE = 'kv';
+  let db = null, cache = new Map(), fallback = false, quota = 200*1024*1024;
+  let readyPromise = null, errNotified = false;
+
+  function openDb(){
+    return new Promise((resolve,reject)=>{
+      if(!('indexedDB' in window)){ reject(new Error('no indexedDB')); return; }
+      const req = indexedDB.open(DB_NAME, 1);
+      req.onupgradeneeded = ()=>{ req.result.createObjectStore(STORE); };
+      req.onsuccess = ()=> resolve(req.result);
+      req.onerror = ()=> reject(req.error);
+    });
+  }
+  function loadAll(){
+    return new Promise((resolve)=>{
+      try{
+        const tx = db.transaction(STORE,'readonly');
+        const req = tx.objectStore(STORE).openCursor();
+        req.onsuccess = (e)=>{
+          const cur = e.target.result;
+          if(cur){ cache.set(cur.key, cur.value); cur.continue(); } else resolve();
+        };
+        req.onerror = ()=> resolve();
+      }catch(e){ resolve(); }
+    });
+  }
+  function persistAllNow(){
+    return new Promise((resolve)=>{
+      if(!db){ resolve(); return; }
+      try{
+        const tx = db.transaction(STORE,'readwrite');
+        const store = tx.objectStore(STORE);
+        cache.forEach((v,k)=> store.put(v,k));
+        tx.oncomplete = ()=>resolve(); tx.onerror = ()=>resolve();
+      }catch(e){ resolve(); }
+    });
+  }
+  function migrateFromOldLocalStorage(){
+    // One-time move of anything saved by an older, localStorage-only version
+    // of this exact app, so this update never loses an existing draft/bank/
+    // results. A marker key keeps this from re-scanning on every load.
+    try{
+      if(cache.get('__migratedFromLocalStorage__')==='1') return Promise.resolve();
+      let found = false;
+      for(let i=0;i<localStorage.length;i++){
+        const k = localStorage.key(i);
+        if(k==null || cache.has(k)) continue;
+        const v = localStorage.getItem(k);
+        if(v!=null){ cache.set(k, v); found = true; }
+      }
+      cache.set('__migratedFromLocalStorage__','1');
+      return found ? persistAllNow() : Promise.resolve();
+    }catch(e){ return Promise.resolve(); }
+  }
+  function notifyError(){
+    if(errNotified) return; errNotified = true;
+    try{ if(typeof toast==='function') toast('⚠️ ذخیره‌سازی ناموفق بود؛ ممکن است فضای ذخیره‌سازی دستگاه پر باشد.'); }catch(e){}
+    setTimeout(()=>{ errNotified=false; }, 5000);
+  }
+  function persist(key, value){
+    if(!db) return; // not ready yet (very early write) — cache already has it, disk catch-up isn't critical here
+    try{
+      const tx = db.transaction(STORE,'readwrite');
+      if(value===null) tx.objectStore(STORE).delete(key); else tx.objectStore(STORE).put(value, key);
+      tx.onerror = ()=> notifyError();
+    }catch(e){ notifyError(); }
+  }
+  async function init(){
+    try{
+      db = await openDb();
+      await loadAll();
+      await migrateFromOldLocalStorage();
+      if(navigator.storage && navigator.storage.estimate){
+        try{ const est = await navigator.storage.estimate(); if(est && est.quota) quota = est.quota; }catch(e){}
+      }
+    }catch(e){
+      fallback = true; // IndexedDB unavailable — transparently use real localStorage instead
+    }
+  }
+  return {
+    ready(){ if(!readyPromise) readyPromise = init(); return readyPromise; },
+    getItem(key){
+      if(fallback){ try{ return localStorage.getItem(key); }catch(e){ return null; } }
+      return cache.has(key) ? cache.get(key) : null;
+    },
+    setItem(key, value){
+      const v = String(value);
+      if(fallback){ try{ localStorage.setItem(key, v); }catch(e){ notifyError(); } return; }
+      cache.set(key, v); persist(key, v);
+    },
+    removeItem(key){
+      if(fallback){ try{ localStorage.removeItem(key); }catch(e){} return; }
+      cache.delete(key); persist(key, null);
+    },
+    key(i){ if(fallback) return localStorage.key(i); return Array.from(cache.keys())[i]; },
+    get length(){ return fallback ? localStorage.length : cache.size; },
+    get quotaBytes(){ return quota; },
+    get isFallback(){ return fallback; }
+  };
+})();
+
+
+// A pristine snapshot of this very page's HTML, taken before anything on
+// the page changes. Used later to build standalone "exam file" downloads
+// that embed a full exam (with full-quality images) directly in a plain
+// .html file — no link, no server, no length limit, works fully offline.
+const PRISTINE_HTML = document.documentElement.outerHTML;
+
+/* ============ UTIL ============ */
+function uid(){ return 'q'+Date.now()+Math.random().toString(36).slice(2,7); }
+function el(html){ const t=document.createElement('template'); t.innerHTML=html.trim(); return t.content.firstElementChild; }
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toast._h); toast._h=setTimeout(()=>t.classList.remove('show'),2200); }
+function esc(s){ return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function scoreOptions(selected){
+  let out=''; for(let v=0.25; v<=10.0001; v+=0.25){ const n=Math.round(v*100)/100; out+=`<option value="${n}" ${selected==n?'selected':''}>${n}</option>`; }
+  return out;
+}
+function download(filename, content, mime){
+  const blob = new Blob([content], {type:mime});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=filename;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+// Rough estimate of how full the browser's localStorage is. Real quotas vary by
+// browser (commonly ~5-10MB per origin), so this uses a conservative 5MB baseline
+// just to give the teacher an early warning before saves start silently failing.
+// Covers everything stored under this origin: the current draft, the question
+// bank, saved projects/templates, and every published exam + its results.
+function renderStorageUsage(){
+  const bar = document.getElementById('storageUsageBar');
+  const text = document.getElementById('storageUsageText');
+  if(!bar || !text) return;
+  let bytes = 0;
+  try{
+    for(let i=0;i<AppStorage.length;i++){
+      const k = AppStorage.key(i);
+      bytes += ((k||'').length + (AppStorage.getItem(k)||'').length) * 2;
+    }
+  }catch(e){}
+  const estQuota = AppStorage.quotaBytes;
+  const pct = Math.min(100, Math.round(bytes/estQuota*100));
+  const mb = (bytes/1024/1024).toFixed(2);
+  const quotaMb = Math.round(estQuota/1024/1024);
+  bar.style.width = pct+'%';
+  bar.style.background = pct>85 ? 'var(--danger)' : (pct>60 ? 'var(--warn)' : 'var(--success)');
+  text.textContent = `حدود ${mb} مگابایت استفاده‌شده (تقریباً ${pct}٪ از حدود ${quotaMb} مگابایت ظرفیت تخمینی این دستگاه)`;
+}
+// Builds a standalone .html file that is this exact app with one exam's
+// data (full-quality images included) baked directly into it. Since the
+// data lives inside the file itself rather than a URL, there is no link
+// length to worry about at all — the teacher can send the file itself
+// (messaging apps, USB, a shared folder, email attachment, etc.) and a
+// student opens it directly (double-click) to take that exam, fully offline.
+async function buildStandaloneExamFile(examObj){
+  const code = await encodeData(examObj);
+  // Built from parts on purpose: writing this string as one literal would
+  // make it appear twice in PRISTINE_HTML (once as the real empty tag in
+  // the body, once as this very source line, since PRISTINE_HTML captures
+  // the whole document including this script's own text).
+  const marker = '<scr'+'ipt id="examDataEmbed" type="application/octet-stream"></scr'+'ipt>';
+  if(PRISTINE_HTML.indexOf(marker) === -1) throw new Error('embed marker not found in template');
+  const html = PRISTINE_HTML.replace(marker, '<script id="examDataEmbed" type="application/octet-stream">'+code+'<'+'/script>');
+  return '<!DOCTYPE html>\n' + html;
+}
+function debounce(fn,ms){ let h; return (...a)=>{clearTimeout(h); h=setTimeout(()=>fn(...a),ms);}; }
+
+/* ============ SELF-CONTAINED DATA CODEC (for links & result codes) ============
+   Since this app has no server/database, exam links and result codes carry the
+   actual data (compressed) so they work across any device — not just the one
+   that created them. */
+function arrayBufferToBase64Url(buf){
+  let binary=''; const bytes=new Uint8Array(buf);
+  for(let i=0;i<bytes.length;i++) binary+=String.fromCharCode(bytes[i]);
+  return btoa(binary).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+function base64UrlToArrayBuffer(b64url){
+  let b64 = b64url.replace(/-/g,'+').replace(/_/g,'/');
+  while(b64.length%4) b64+='=';
+  const binary = atob(b64);
+  const bytes = new Uint8Array(binary.length);
+  for(let i=0;i<binary.length;i++) bytes[i]=binary.charCodeAt(i);
+  return bytes.buffer;
+}
+async function encodeData(obj){
+  const json = JSON.stringify(obj);
+  const bytes = new TextEncoder().encode(json);
+  if('CompressionStream' in window){
+    try{
+      const cs = new CompressionStream('gzip');
+      const writer = cs.writable.getWriter();
+      writer.write(bytes); writer.close();
+      const buf = await new Response(cs.readable).arrayBuffer();
+      return 'g' + arrayBufferToBase64Url(buf);
+    }catch(e){}
+  }
+  return 'r' + arrayBufferToBase64Url(bytes.buffer);
+}
+// Shrinks an image data-URL (resize + re-encode as JPEG) so attached images
+// can travel inside the self-contained exam link instead of being dropped.
+// The original full-quality image is kept in the local project (and in the
+// PDF/Word export) — only the copy embedded in the link is downsized.
+function compressImageDataUrl(dataUrl, maxDim, quality){
+  return new Promise((resolve)=>{
+    try{
+      const img = new Image();
+      img.onload = ()=>{
+        let w = img.width, h = img.height;
+        if(w<=0 || h<=0){ resolve(null); return; }
+        if(w > h){ if(w > maxDim){ h = Math.round(h * maxDim / w); w = maxDim; } }
+        else { if(h > maxDim){ w = Math.round(w * maxDim / h); h = maxDim; } }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#fff'; ctx.fillRect(0,0,w,h); // flatten transparency (PNG) before JPEG encode
+        ctx.drawImage(img, 0, 0, w, h);
+        try{ resolve(canvas.toDataURL('image/jpeg', quality)); }
+        catch(e){ resolve(null); }
+      };
+      img.onerror = ()=> resolve(null);
+      img.src = dataUrl;
+    }catch(e){ resolve(null); }
+  });
+}
+async function decodeData(str){
+  const tag = str[0]; const b64 = str.slice(1);
+  const buf = base64UrlToArrayBuffer(b64);
+  if(tag==='g'){
+    const ds = new DecompressionStream('gzip');
+    const writer = ds.writable.getWriter();
+    const readPromise = new Response(ds.readable).arrayBuffer();
+    // write()/close() return promises too, and on invalid/corrupted input
+    // they can reject independently of readPromise; if left unhandled that
+    // shows up as noisy uncaught-rejection errors even though the failure
+    // is already properly surfaced (and handled by callers) via readPromise.
+    writer.write(new Uint8Array(buf)).catch(()=>{});
+    writer.close().catch(()=>{});
+    const outBuf = await readPromise;
+    return JSON.parse(new TextDecoder().decode(outBuf));
+  }
+  return JSON.parse(new TextDecoder().decode(buf));
+}
+
+/* ============ JALALI (PERSIAN) CALENDAR ============
+   Standard jalaali conversion algorithm (jalaali-js), used to power
+   Persian-calendar date pickers throughout the app. */
+function jDiv(a,b){ return ~~(a/b); }
+function jMod(a,b){ return a - ~~(a/b)*b; }
+var J_BREAKS=[-61,9,38,199,426,686,756,818,1111,1181,1210,1635,2060,2097,2192,2262,2324,2394,2456,3178];
+function jalCal(jy){
+  var bl=J_BREAKS.length, gy=jy+621, leapJ=-14, jp=J_BREAKS[0], jm,jump,leap,leapG,march,n,i;
+  for(i=1;i<bl;i+=1){ jm=J_BREAKS[i]; jump=jm-jp; if(jy<jm) break; leapJ=leapJ+jDiv(jump,33)*8+jDiv(jMod(jump,33),4); jp=jm; }
+  n=jy-jp;
+  leapJ=leapJ+jDiv(n,33)*8+jDiv(jMod(n,33)+3,4);
+  if(jMod(jump,33)===4 && jump-n===4) leapJ+=1;
+  leapG=jDiv(gy,4)-jDiv((jDiv(gy,100)+1)*3,4)-150;
+  march=20+leapJ-leapG;
+  if(jump-n<6) n=n-jump+jDiv(jump,33)*33;
+  leap=jMod(jMod(n+1,33)-1,4); if(leap===-1) leap=4;
+  return {leap:leap, gy:gy, march:march};
+}
+function g2d(gy,gm,gd){
+  var d=jDiv((gy+jDiv(gm-8,6)+100100)*1461,4)+jDiv(153*jMod(gm+9,12)+2,5)+gd-34840408;
+  d=d-jDiv(jDiv(gy+100100+jDiv(gm-8,6),100)*3,4)+752;
+  return d;
+}
+function j2d(jy,jm,jd){ var r=jalCal(jy); return g2d(r.gy,3,r.march)+(jm-1)*31-jDiv(jm,7)*(jm-7)+jd-1; }
+function d2g(jdn){
+  var j,i,gd,gm,gy;
+  j=4*jdn+139361631;
+  j=j+jDiv(jDiv(4*jdn+183187720,146097)*3,4)*4-3908;
+  i=jDiv(jMod(j,1461),4)*5+308;
+  gd=jDiv(jMod(i,153),5)+1;
+  gm=jMod(jDiv(i,153),12)+1;
+  gy=jDiv(j,1461)-100100+jDiv(8-gm,6);
+  return {gy:gy, gm:gm, gd:gd};
+}
+function d2j(jdn){
+  var gy=d2g(jdn).gy, jy=gy-621, r=jalCal(jy), jdn1f=g2d(gy,3,r.march), jd,jm,k;
+  k=jdn-jdn1f;
+  if(k>=0){ if(k<=185){ jm=1+jDiv(k,31); jd=jMod(k,31)+1; return {jy:jy,jm:jm,jd:jd}; } else { k-=186; } }
+  else { jy-=1; k+=179; if(r.leap===1) k+=1; }
+  jm=7+jDiv(k,30); jd=jMod(k,30)+1;
+  return {jy:jy,jm:jm,jd:jd};
+}
+function toJalaali(gy,gm,gd){ return d2j(g2d(gy,gm,gd)); }
+function toGregorianYMD(jy,jm,jd){ return d2g(j2d(jy,jm,jd)); }
+
+const PERSIAN_MONTHS=['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+function jalaaliToday(){ const g=new Date(); return toJalaali(g.getFullYear(), g.getMonth()+1, g.getDate()); }
+function parseJalaliStr(s){
+  if(!s) return null;
+  const m = String(s).match(/(\d{4})\D+(\d{1,2})\D+(\d{1,2})/);
+  if(!m) return null;
+  return {jy:+m[1], jm:+m[2], jd:+m[3]};
+}
+function jalaliDateSelectsHtml(idBase, jy,jm,jd){
+  const cur = jalaaliToday().jy;
+  let yOpts=''; for(let y=cur-3;y<=cur+3;y++) yOpts+=`<option value="${y}" ${jy==y?'selected':''}>${y}</option>`;
+  let mOpts=PERSIAN_MONTHS.map((mn,i)=>`<option value="${i+1}" ${jm==(i+1)?'selected':''}>${mn}</option>`).join('');
+  let dOpts=''; for(let d=1;d<=31;d++) dOpts+=`<option value="${d}" ${jd==d?'selected':''}>${d}</option>`;
+  return `<div class="row" style="gap:6px;">
+    <select id="${idBase}_y" autocomplete="off" style="min-width:80px;">${yOpts}</select>
+    <select id="${idBase}_m" autocomplete="off" style="min-width:100px;">${mOpts}</select>
+    <select id="${idBase}_d" autocomplete="off" style="min-width:70px;">${dOpts}</select>
+  </div>`;
+}
+function readJalaliSelects(idBase){
+  const y=+document.getElementById(idBase+'_y').value;
+  const m=+document.getElementById(idBase+'_m').value;
+  const d=+document.getElementById(idBase+'_d').value;
+  return {jy:y,jm:m,jd:d};
+}
+function jalaliDateLabel(j){ return j ? `${j.jd} ${PERSIAN_MONTHS[j.jm-1]} ${j.jy}` : ''; }
+
+/* ============ STATE ============ */
+const DEFAULT_HEADER_FIELDS = [];
+
+let state = {
+  headerFields: JSON.parse(JSON.stringify(DEFAULT_HEADER_FIELDS)),
+  questions: [],
+  settings: { displayModes:['ordered'], autoGrade:true, examStart:'', examEnd:'', examName:'', durationMinutes:10, examRules:'' },
+  examId: null,
+  defaultScore: 1,
+  tableStyle: { columns:3, borderColor:'#000000', borderWidth:1, headerShade:'#ffffff', fontSize:14, rowHeight:70 }
+};
+
+function saveDraft(){
+  try{ AppStorage.setItem('examBuilderDraft', JSON.stringify(state)); }
+  catch(e){ toast('⚠️ ذخیرهٔ خودکار ناموفق بود؛ حافظهٔ مرورگر پر شده (احتمالاً به‌خاطر تصاویر زیاد). یک نسخهٔ پشتیبان بگیرید و چند مورد قدیمی را پاک کنید.'); }
+  renderStorageUsage();
+}
+const saveDraftDebounced = debounce(saveDraft, 400);
+
+function loadDraft(){
+  try{
+    const raw = AppStorage.getItem('examBuilderDraft');
+    if(raw){ const d = JSON.parse(raw); if(d && d.headerFields && d.questions){ state = Object.assign(state,d); } }
+  }catch(e){}
+}
+
+/* ============ TABS ============ */
+document.getElementById('topbar').addEventListener('click', e=>{
+  const btn = e.target.closest('.tab'); if(!btn) return;
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const v = btn.dataset.view;
+  document.querySelectorAll('.view').forEach(s=>s.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  if(v==='grading') renderGradingSelect();
+  if(v==='results') renderResultsSelect();
+  if(v==='stats') renderStatsSelect();
+  if(v==='bank') renderBankList();
+  if(v==='utils') renderBackupReminder();
+});
+
+/* ============ MODAL ============ */
+function openModal(html){ document.getElementById('modalBox').innerHTML = html; document.getElementById('modalBg').classList.add('show'); }
+function closeModal(){ document.getElementById('modalBg').classList.remove('show'); }
+document.getElementById('modalBg').addEventListener('click', e=>{ if(e.target.id==='modalBg') closeModal(); });
+
+/* ============ NO-FORM / KEYBOARD FIX ============
+   No <form> tags are used anywhere in this app, and Enter never triggers
+   navigation or a page reload — it's blocked on all text inputs so mobile
+   keyboards stay open and typing is never interrupted. */
+document.addEventListener('keydown', function(e){
+  if(e.key==='Enter' && (e.target.tagName==='INPUT')){
+    e.preventDefault();
+  }
+}, true);
+
+/* ============ QUESTION BUILDER ============ */
+const qTypeSel = document.getElementById('qType');
+const qScoreSel = document.getElementById('qScore');
+qScoreSel.innerHTML = scoreOptions(1);
+
+function builderTemplate(type){
+  switch(type){
+    case 'tf': return `
+      <label>متن سوال</label>
+      <textarea id="b_text" autocomplete="off" placeholder="متن سوال صحیح/غلط را بنویسید..."></textarea>
+      <label style="margin-top:8px;">پاسخ صحیح</label>
+      <div class="tf-btns">
+        <button type="button" class="secondary" id="b_tf_true" data-val="true">✓ صحیح</button>
+        <button type="button" class="secondary" id="b_tf_false" data-val="false">✗ غلط</button>
+      </div>`;
+    case 'blank': return `
+      <label>متن سوال (جای خالی را با ___ مشخص کنید)</label>
+      <textarea id="b_text" autocomplete="off" placeholder="مثال: پایتخت ایران ___ است."></textarea>
+      <label style="margin-top:8px;">پاسخ صحیح (در صورت چند جای خالی، با | جدا کنید)</label>
+      <input type="text" id="b_answer" autocomplete="off">`;
+    case 'paren': return `
+      <label>متن سوال با گزینه‌ها داخل پرانتز (گزینه‌ها را با / جدا کنید)</label>
+      <textarea id="b_text" autocomplete="off" placeholder="مثال: آب در دمای صفر درجه (جامد / مایع / گاز) می‌شود."></textarea>
+      <label style="margin-top:8px;">گزینه صحیح</label>
+      <input type="text" id="b_answer" autocomplete="off" placeholder="مثلاً: جامد">`;
+    case 'mc4': return `
+      <label>متن سوال</label>
+      <textarea id="b_text" autocomplete="off"></textarea>
+      <div class="grid2" style="margin-top:8px;">
+        <div><label>گزینه ۱</label><input type="text" id="b_opt1" autocomplete="off"></div>
+        <div><label>گزینه ۲</label><input type="text" id="b_opt2" autocomplete="off"></div>
+        <div><label>گزینه ۳</label><input type="text" id="b_opt3" autocomplete="off"></div>
+        <div><label>گزینه ۴</label><input type="text" id="b_opt4" autocomplete="off"></div>
+      </div>
+      <label style="margin-top:8px;">گزینه صحیح</label>
+      <select id="b_correct_idx" autocomplete="off">
+        <option value="0">گزینه ۱</option><option value="1">گزینه ۲</option>
+        <option value="2">گزینه ۳</option><option value="3">گزینه ۴</option>
+      </select>
+      <div class="row" style="margin-top:8px;">
+        <div>
+          <label>تصویر ضمیمه معلم (اختیاری)</label>
+          <input type="file" id="b_teacher_img" accept="image/*" autocomplete="off">
+        </div>
+        <div style="display:flex; align-items:flex-end;">
+          <label style="display:flex; gap:6px; align-items:center; font-weight:600; color:var(--text);">
+            <input type="checkbox" id="b_allow_student_img" style="width:auto; min-height:auto;"> اجازهٔ آپلود تصویر توسط دانش‌آموز
+          </label>
+        </div>
+      </div>`;
+    case 'match': return `
+      <label>عنوان سوال وصل کنید (اختیاری)</label>
+      <input type="text" id="b_text" autocomplete="off" placeholder="موارد ستون الف را به ستون ب وصل کنید">
+      <p class="small">ستون ب را می‌توانید به هر ترتیبی (به‌هم‌ریخته) وارد کنید؛ پاسخ صحیح را جداگانه در پایین مشخص می‌کنید.</p>
+      <div class="grid2" style="margin-top:8px;">
+        <div>
+          <label>ستون الف</label>
+          <div id="matchLeftRows"></div>
+          <button type="button" class="secondary" id="btnAddLeftRow" style="margin-top:6px;">➕ افزودن به ستون الف</button>
+        </div>
+        <div>
+          <label>ستون ب</label>
+          <div id="matchRightRows"></div>
+          <button type="button" class="secondary" id="btnAddRightRow" style="margin-top:6px;">➕ افزودن به ستون ب</button>
+        </div>
+      </div>
+      <label style="margin-top:14px;">تعیین پاسخ صحیح (برای هر مورد ستون الف، گزینهٔ درست از ستون ب را انتخاب کنید)</label>
+      <div id="matchAnswerRows"></div>`;
+    case 'essay': return `
+      <label>متن سوال</label>
+      <textarea id="b_text" autocomplete="off"></textarea>
+      <label style="margin-top:8px;">کلمات کلیدی پاسخ (با کاما جدا کنید)</label>
+      <input type="text" id="b_keywords" autocomplete="off">
+      <div class="row" style="margin-top:8px;">
+        <div>
+          <label>تصویر ضمیمه معلم (اختیاری)</label>
+          <input type="file" id="b_teacher_img" accept="image/*" autocomplete="off">
+        </div>
+        <div style="display:flex; align-items:flex-end;">
+          <label style="display:flex; gap:6px; align-items:center; font-weight:600; color:var(--text);">
+            <input type="checkbox" id="b_allow_student_img" style="width:auto; min-height:auto;"> اجازهٔ آپلود تصویر توسط دانش‌آموز
+          </label>
+        </div>
+      </div>`;
+    default: return '';
+  }
+}
+
+let matchLeft = [];  // array of strings
+let matchRight = []; // array of strings
+let matchAnswers = []; // parallel to matchLeft: index into matchRight, or -1 if unset
+let tfValue = null;
+let teacherImgData = null;
+let editingQuestionId = null;
+
+function renderBuilder(){
+  const type = qTypeSel.value;
+  document.getElementById('qBuilderBody').innerHTML = builderTemplate(type);
+  tfValue = null; teacherImgData = null;
+  if(type==='tf'){
+    document.getElementById('b_tf_true').addEventListener('click', ()=>setTf(true));
+    document.getElementById('b_tf_false').addEventListener('click', ()=>setTf(false));
+  }
+  if(type==='match'){
+    matchLeft = ['',''];
+    matchRight = ['',''];
+    matchAnswers = [-1,-1];
+    renderMatchBuilder();
+    document.getElementById('btnAddLeftRow').addEventListener('click', ()=>{ matchLeft.push(''); matchAnswers.push(-1); renderMatchBuilder(); });
+    document.getElementById('btnAddRightRow').addEventListener('click', ()=>{ matchRight.push(''); renderMatchBuilder(); });
+  }
+  if(type==='essay' || type==='mc4'){
+    document.getElementById('b_teacher_img').addEventListener('change', e=>{
+      const f = e.target.files[0]; if(!f) return;
+      const r = new FileReader();
+      r.onload = async ()=>{
+        // Resize down from raw phone-camera resolution (which can be several MB)
+        // before it sits in localStorage. Still plenty sharp for on-screen/PDF use;
+        // the link-sharing step applies its own extra compression on top of this.
+        const shrunk = await compressImageDataUrl(r.result, 1800, 0.85);
+        teacherImgData = shrunk || r.result;
+        toast('تصویر پیوست شد ✓');
+      };
+      r.readAsDataURL(f);
+    });
+  }
+}
+function setTf(v){
+  tfValue = v;
+  document.getElementById('b_tf_true').classList.toggle('selected', v===true);
+  document.getElementById('b_tf_false').classList.toggle('selected', v===false);
+}
+function loadQuestionIntoBuilder(q){
+  editingQuestionId = q.id;
+  qTypeSel.value = q.type;
+  qScoreSel.value = q.score;
+  renderBuilder();
+  const setVal = (id,val)=>{ const el=document.getElementById(id); if(el) el.value = val; };
+  if(q.type==='tf'){
+    setVal('b_text', q.text);
+    setTf(q.correctAnswer);
+  } else if(q.type==='blank' || q.type==='paren'){
+    setVal('b_text', q.text);
+    setVal('b_answer', q.answer);
+  } else if(q.type==='mc4'){
+    setVal('b_text', q.text);
+    q.options.forEach((o,i)=>setVal('b_opt'+(i+1), o));
+    setVal('b_correct_idx', q.correctIndex);
+    teacherImgData = q.teacherImage || null;
+    const chk = document.getElementById('b_allow_student_img'); if(chk) chk.checked = !!q.allowStudentImage;
+  } else if(q.type==='match'){
+    setVal('b_text', q.text);
+    matchLeft = q.leftItems.slice();
+    matchRight = q.rightItems.slice();
+    matchAnswers = q.leftItems.map((l,i)=>matchRight.indexOf(q.correctMap[i]));
+    renderMatchBuilder();
+  } else if(q.type==='essay'){
+    setVal('b_text', q.text);
+    setVal('b_keywords', q.keywords);
+    teacherImgData = q.teacherImage || null;
+    const chk = document.getElementById('b_allow_student_img'); if(chk) chk.checked = !!q.allowStudentImage;
+  }
+  document.getElementById('builderTitle').textContent = '✏️ ویرایش سوال';
+  document.getElementById('btnSaveQuestion').textContent = '💾 ذخیرهٔ تغییرات';
+  document.getElementById('btnResetBuilder').textContent = '✕ لغو ویرایش';
+  document.getElementById('view-questions').scrollIntoView({behavior:'smooth', block:'start'});
+}
+function cancelEdit(){
+  editingQuestionId = null;
+  document.getElementById('builderTitle').textContent = 'طراحی سوال جدید';
+  document.getElementById('btnSaveQuestion').textContent = '💾 ذخیره سوال';
+  document.getElementById('btnResetBuilder').textContent = 'پاک کردن فرم';
+}
+function renderMatchBuilder(){
+  const leftBox = document.getElementById('matchLeftRows');
+  leftBox.innerHTML = matchLeft.map((v,i)=>`
+    <div class="row" style="align-items:center; margin-bottom:6px;">
+      <input type="text" autocomplete="off" class="m-left" data-i="${i}" value="${esc(v)}" placeholder="مورد ${i+1}">
+      ${matchLeft.length>2?`<button type="button" class="ghost danger" data-del-left="${i}" style="color:#c0392b;">✕</button>`:''}
+    </div>`).join('');
+  const rightBox = document.getElementById('matchRightRows');
+  rightBox.innerHTML = matchRight.map((v,i)=>`
+    <div class="row" style="align-items:center; margin-bottom:6px;">
+      <input type="text" autocomplete="off" class="m-right" data-i="${i}" value="${esc(v)}" placeholder="مورد ${i+1}">
+      ${matchRight.length>2?`<button type="button" class="ghost danger" data-del-right="${i}" style="color:#c0392b;">✕</button>`:''}
+    </div>`).join('');
+
+  leftBox.querySelectorAll('.m-left').forEach(inp=>inp.addEventListener('input', e=>{
+    matchLeft[+e.target.dataset.i] = e.target.value; renderMatchAnswers();
+  }));
+  rightBox.querySelectorAll('.m-right').forEach(inp=>inp.addEventListener('input', e=>{
+    matchRight[+e.target.dataset.i] = e.target.value; renderMatchAnswers();
+  }));
+  leftBox.querySelectorAll('[data-del-left]').forEach(b=>b.addEventListener('click', e=>{
+    const i = +e.target.dataset.delLeft; matchLeft.splice(i,1); matchAnswers.splice(i,1); renderMatchBuilder();
+  }));
+  rightBox.querySelectorAll('[data-del-right]').forEach(b=>b.addEventListener('click', e=>{
+    const i = +e.target.dataset.delRight; matchRight.splice(i,1);
+    matchAnswers = matchAnswers.map(a=> a===i ? -1 : (a>i ? a-1 : a));
+    renderMatchBuilder();
+  }));
+  renderMatchAnswers();
+}
+function renderMatchAnswers(){
+  const box = document.getElementById('matchAnswerRows');
+  box.innerHTML = matchLeft.map((v,i)=>`
+    <div class="row" style="align-items:center; margin-bottom:6px;">
+      <span style="flex:1;">${i+1}) ${esc(v)||'(بدون متن)'}</span>
+      <select class="m-answer" data-i="${i}" autocomplete="off" style="flex:1;">
+        <option value="-1">— انتخاب پاسخ صحیح —</option>
+        ${matchRight.map((r,ri)=>`<option value="${ri}" ${matchAnswers[i]==ri?'selected':''}>${esc(r)||'(مورد '+(ri+1)+')'}</option>`).join('')}
+      </select>
+    </div>`).join('');
+  box.querySelectorAll('.m-answer').forEach(sel=>sel.addEventListener('change', e=>{
+    matchAnswers[+e.target.dataset.i] = +e.target.value;
+  }));
+}
+qTypeSel.addEventListener('change', renderBuilder);
+renderBuilder();
+
+document.getElementById('btnSaveQuestion').addEventListener('click', ()=>{
+  const type = qTypeSel.value;
+  const score = +qScoreSel.value;
+  const text = (document.getElementById('b_text')||{}).value || '';
+  const isEditing = !!editingQuestionId;
+  const existingIdx = isEditing ? state.questions.findIndex(x=>x.id===editingQuestionId) : -1;
+  let q = {id: isEditing ? editingQuestionId : uid(), type, text, score, order: isEditing ? state.questions[existingIdx].order : state.questions.length};
+
+  if(type==='tf'){
+    if(tfValue===null){ toast('پاسخ صحیح/غلط را انتخاب کنید'); return; }
+    if(!text.trim()){ toast('متن سوال را وارد کنید'); return; }
+    q.correctAnswer = tfValue;
+  } else if(type==='blank'){
+    q.answer = document.getElementById('b_answer').value;
+    if(!text.trim() || !q.answer.trim()){ toast('متن سوال و پاسخ را کامل کنید'); return; }
+  } else if(type==='paren'){
+    q.answer = document.getElementById('b_answer').value;
+    if(!text.trim() || !q.answer.trim()){ toast('متن سوال و پاسخ را کامل کنید'); return; }
+  } else if(type==='mc4'){
+    q.options = [1,2,3,4].map(n=>document.getElementById('b_opt'+n).value);
+    q.correctIndex = +document.getElementById('b_correct_idx').value;
+    if(!text.trim() || q.options.some(o=>!o.trim())){ toast('همه گزینه‌ها و متن سوال را کامل کنید'); return; }
+    q.teacherImage = teacherImgData;
+    q.allowStudentImage = document.getElementById('b_allow_student_img').checked;
+  } else if(type==='match'){
+    if(matchLeft.some(v=>!v.trim()) || matchRight.some(v=>!v.trim())){ toast('همهٔ موارد ستون الف و ستون ب را کامل کنید'); return; }
+    if(matchAnswers.some(a=>a===-1)){ toast('پاسخ صحیح همهٔ موارد ستون الف را انتخاب کنید'); return; }
+    q.leftItems = matchLeft.slice();
+    q.rightItems = matchRight.slice();
+    q.correctMap = matchAnswers.map(idx=>matchRight[idx]);
+  } else if(type==='essay'){
+    if(!text.trim()){ toast('متن سوال را وارد کنید'); return; }
+    q.keywords = document.getElementById('b_keywords').value;
+    q.teacherImage = teacherImgData;
+    q.allowStudentImage = document.getElementById('b_allow_student_img').checked;
+  }
+
+  if(isEditing && existingIdx>-1){
+    state.questions[existingIdx] = q;
+  } else {
+    state.questions.push(q);
+  }
+  renderQuestionsTable();
+  cancelEdit();
+  document.getElementById('btnResetBuilder').click();
+  saveDraft();
+  toast(isEditing ? 'تغییرات ذخیره شد ✓' : 'سوال ذخیره شد ✓');
+  if(isEditing){
+    // Jump back to this question's row in the list (instead of staying up at
+    // the builder) so the teacher can immediately hit "edit" on the next row
+    // down, without re-scrolling through the whole list each time.
+    const savedRow = document.querySelector(`tr[data-id="${q.id}"]`);
+    if(savedRow) savedRow.scrollIntoView({behavior:'smooth', block:'center'});
+  }
+});
+document.getElementById('btnResetBuilder').addEventListener('click', ()=>{ cancelEdit(); renderBuilder(); });
+document.getElementById('btnNewExam').addEventListener('click', ()=>{
+  if(!state.questions.length){ toast('لیست سوالات همین الان هم خالیه'); return; }
+  if(!confirm('برای شروع آزمون جدید، فهرست فعلی سوالات (فقط از این آزمون، نه از بانک سوالات) پاک می\u200cشود. اگر می\u200cخواهید این آزمون را نگه دارید، اول از دکمهٔ «ذخیرهٔ کل آزمون با یک اسم» آن را ذخیره کنید. ادامه می\u200cدهید؟')) return;
+  state.questions = [];
+  cancelEdit(); renderBuilder();
+  renderQuestionsTable(); saveDraft();
+  toast('آزمون جدید آماده شد ✓');
+});
+
+function shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+function questionSummaryText(q){
+  if(q.type==='match') return (q.text||'وصل کنید') + ' — ' + q.leftItems.length + ' مورد';
+  return q.text;
+}
+function correctAnswerText(q){
+  switch(q.type){
+    case 'tf': return q.correctAnswer ? 'صحیح' : 'غلط';
+    case 'blank': case 'paren': return q.answer;
+    case 'mc4': return 'گزینه '+(q.correctIndex+1)+': '+q.options[q.correctIndex];
+    case 'match': return q.leftItems.map((l,i)=>`${l} ← ${q.correctMap[i]}`).join('، ');
+    case 'essay': return 'کلیدواژه: '+(q.keywords||'-');
+    default: return '';
+  }
+}
+function typeLabel(t){
+  return {tf:'صحیح/غلط', blank:'جای خالی', paren:'پرانتزی', mc4:'چهارگزینه‌ای', match:'وصل کنید', essay:'تشریحی'}[t]||t;
+}
+
+function renderQuestionsTable(){
+  document.getElementById('qCount').textContent = state.questions.length;
+  const wrap = document.getElementById('questionsTableWrap');
+  if(!state.questions.length){ wrap.innerHTML = '<div class="empty-hint">هنوز سوالی ثبت نشده است.</div>'; return; }
+  wrap.innerHTML = `<table class="qtable"><thead><tr>
+    <th class="col-num">ردیف</th><th>متن سوال</th><th class="col-score">بارم</th><th class="col-ans">پاسخ صحیح</th><th class="col-actions">عملیات</th>
+  </tr></thead><tbody>${state.questions.map((q,i)=>`
+    <tr data-id="${q.id}">
+      <td class="col-num">${i+1}</td>
+      <td><span class="badge">${typeLabel(q.type)}</span><br>${esc(questionSummaryText(q))}</td>
+      <td class="col-score"><select class="qs-score" autocomplete="off">${scoreOptions(q.score)}</select></td>
+      <td class="col-ans">${esc(correctAnswerText(q))}</td>
+      <td class="col-actions">
+        <button class="ghost" data-act="up">↑</button>
+        <button class="ghost" data-act="down">↓</button>
+        <button class="ghost" data-act="edit" title="ویرایش">✏️</button>
+        <button class="ghost" data-act="dup" title="تکرار/کپی سوال">📋</button>
+        <button class="ghost" data-act="bank" title="افزودن به بانک">🏦</button>
+        <button class="ghost danger" data-act="del" style="color:#c0392b;">✕</button>
+      </td>
+    </tr>`).join('')}</tbody></table>`;
+  wrap.querySelectorAll('.qs-score').forEach(sel=>{
+    sel.addEventListener('change', e=>{
+      const tr = e.target.closest('tr'); const q = state.questions.find(x=>x.id===tr.dataset.id);
+      q.score = +e.target.value; saveDraft();
+    });
+  });
+  wrap.querySelectorAll('button[data-act]').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      const tr = e.target.closest('tr'); const idx = state.questions.findIndex(x=>x.id===tr.dataset.id);
+      const act = btn.dataset.act;
+      if(act==='del'){
+        if(!confirm('این سوال برای همیشه حذف شود؟')) return;
+        if(editingQuestionId===state.questions[idx].id) cancelEdit();
+        state.questions.splice(idx,1);
+      }
+      if(act==='up' && idx>0){ [state.questions[idx-1],state.questions[idx]]=[state.questions[idx],state.questions[idx-1]]; }
+      if(act==='down' && idx<state.questions.length-1){ [state.questions[idx+1],state.questions[idx]]=[state.questions[idx],state.questions[idx+1]]; }
+      if(act==='dup'){
+        const copy = JSON.parse(JSON.stringify(state.questions[idx]));
+        copy.id = uid();
+        state.questions.splice(idx+1, 0, copy);
+        renderQuestionsTable(); saveDraft();
+        toast('سوال کپی شد ✓');
+        return;
+      }
+      if(act==='bank'){ addToBank(state.questions[idx]); return; }
+      if(act==='edit'){ loadQuestionIntoBuilder(state.questions[idx]); return; }
+      renderQuestionsTable(); saveDraft();
+    });
+  });
+}
+
+/* ============ HEADER VALUES → OBJECT ============ */
+function headerValuesObj(){
+  const o = {}; state.headerFields.forEach(f=>o[f.label]=f.value); return o;
+}
+
+/* ============ EXPORT (PDF / WORD) — shared HTML builder ============ */
+function buildExamHTML(withAnswers){
+  const ts = state.tableStyle;
+  const bw = ts.borderWidth+'px'; const bc = ts.borderColor; const shade = ts.headerShade; const fs = ts.fontSize+'px';
+  const cellStyle = `border:${bw} solid ${bc}; padding:6px; text-align:right; vertical-align:top; font-size:${fs};`;
+  const shadeCellStyle = cellStyle + `background:${shade}; font-weight:bold; text-align:center;`;
+
+  const headerRows = state.headerFields.map(f=>
+    `<tr><td style="${shadeCellStyle} width:35%;">${esc(f.label)}</td><td style="${cellStyle}">${esc(f.value)||'&nbsp;'}</td></tr>`
+  ).join('');
+
+  const qBlocks = state.questions.map((q,i)=>{
+    let answerInline = ''; // used when columns===3 (answer merged into question cell)
+    let answerSeparate = ''; // used when columns===4 (separate column)
+    let body = '';
+    if(q.type==='tf'){
+      body = `<p>${esc(q.text)}</p><p>◻ صحیح &nbsp;&nbsp;&nbsp; ◻ غلط</p>`;
+      const a = q.correctAnswer?'صحیح':'غلط'; answerInline = a; answerSeparate = a;
+    } else if(q.type==='blank' || q.type==='paren'){
+      body = `<p>${esc(q.text)}</p>`;
+      answerInline = esc(q.answer); answerSeparate = esc(q.answer);
+    } else if(q.type==='mc4'){
+      body = `<p>${esc(q.text)}</p>` + (q.teacherImage?`<img src="${q.teacherImage}" style="max-width:220px;display:block;margin:6px 0;">`:'') +
+             `<p>` + q.options.map((o,oi)=>`${oi+1}) ${esc(o)}`).join('&nbsp;&nbsp;&nbsp;') + `</p>`;
+      answerInline = `گزینه ${q.correctIndex+1}`; answerSeparate = answerInline;
+    } else if(q.type==='match'){
+      body = `<p>${esc(q.text||'موارد ستون الف را به ستون ب وصل کنید.')}</p>
+        <table style="border-collapse:collapse; width:100%;"><tr><th style="${cellStyle}">ستون الف</th><th style="${cellStyle}">ستون ب</th></tr>${q.leftItems.map((l,li)=>
+          `<tr><td style="${cellStyle}">${li+1}) ${esc(l)}</td><td style="${cellStyle}">${withAnswers?esc(q.correctMap[li]):esc(q.rightItems[li]||'')}</td></tr>`).join('')}</table>`;
+      answerInline = ''; answerSeparate = '';
+    } else if(q.type==='essay'){
+      body = `<p>${esc(q.text)}</p>` + (q.teacherImage?`<img src="${q.teacherImage}" style="max-width:220px;display:block;margin:6px 0;">`:'');
+      answerInline = 'کلیدواژه: '+esc(q.keywords||'-'); answerSeparate = answerInline;
+    }
+
+    const qCellStyle = `${cellStyle} height:${ts.rowHeight}px;`;
+    if(ts.columns===4){
+      return `<table style="border-collapse:collapse; width:100%; margin-top:14px;">
+        <tr>
+          <td style="${shadeCellStyle} width:36px;">${i+1}</td>
+          <td style="${qCellStyle}">${body}</td>
+          <td style="${shadeCellStyle} width:60px;">${q.score}</td>
+          <td style="${cellStyle} width:150px;">${withAnswers?answerSeparate:'&nbsp;'}</td>
+        </tr>
+        </table>${i<state.questions.length-1?`<hr style="border:none;border-top:1px dashed ${bc};margin:14px 0;">`:''}`;
+    }
+    // 3-column: answer merged into question cell
+    const answerBlock = withAnswers && answerInline ? `<p style="margin-top:6px;"><b>پاسخ: ${answerInline}</b></p>` : '';
+    return `<table style="border-collapse:collapse; width:100%; margin-top:14px;">
+      <tr>
+        <td style="${shadeCellStyle} width:36px;">${i+1}</td>
+        <td style="${qCellStyle}">${body}${answerBlock}</td>
+        <td style="${shadeCellStyle} width:60px;">${q.score}</td>
+      </tr>
+      </table>${i<state.questions.length-1?`<hr style="border:none;border-top:1px dashed ${bc};margin:14px 0;">`:''}`;
+  }).join('');
+
+  return `<!DOCTYPE html><html lang="fa" dir="rtl"><head><meta charset="UTF-8">
+    <style>
+      body{font-family:Tahoma,Arial,sans-serif; color:#111; padding:20px;}
+      table{border-collapse:collapse;}
+      h2{text-align:center; color:#0d3b66;}
+    </style></head><body>
+    <h2>برگه آزمون ${withAnswers?'(کلید پاسخ)':''}</h2>
+    <table style="border-collapse:collapse; width:100%;">${headerRows}</table>
+    ${qBlocks}
+    </body></html>`;
+}
+
+document.getElementById('btnPreview').addEventListener('click', ()=>{
+  openModal(`<h3>پیش‌نمایش آزمون</h3><div style="border:1px solid #ddd;border-radius:8px;overflow:hidden;"><iframe style="width:100%;height:60vh;border:none;" srcdoc="${esc(toFaHtmlString(buildExamHTML(false)))}"></iframe></div><div class="actions-bar"><button class="secondary" onclick="document.getElementById('modalBg').classList.remove('show')">بستن</button></div>`);
+});
+function exportPdf(withAnswers){
+  const html = toFaHtmlString(buildExamHTML(withAnswers));
+  const w = window.open('', '_blank');
+  if(!w){ toast('اجازه بازکردن پنجره داده نشد'); return; }
+  w.document.open(); w.document.write(html); w.document.close();
+  setTimeout(()=>{ w.focus(); w.print(); }, 400);
+}
+function exportWord(withAnswers){
+  const html = toFaHtmlString(buildExamHTML(withAnswers));
+  download(`exam_${withAnswers?'with-answers':'blank'}.doc`, html, 'application/msword');
+}
+document.getElementById('btnPdfNoAns').addEventListener('click', ()=>exportPdf(false));
+document.getElementById('btnPdfAns').addEventListener('click', ()=>exportPdf(true));
+document.getElementById('btnDocNoAns').addEventListener('click', ()=>exportWord(false));
+document.getElementById('btnDocAns').addEventListener('click', ()=>exportWord(true));
+
+/* ============ ONLINE SETTINGS ============ */
+document.getElementById('displayModePills').addEventListener('click', e=>{
+  const p = e.target.closest('.pill'); if(!p) return;
+  const mode = p.dataset.mode;
+  const set = new Set(state.settings.displayModes);
+  if(set.has(mode)) set.delete(mode); else set.add(mode);
+  state.settings.displayModes = [...set];
+  syncOnlineUi(); saveDraft();
+});
+document.getElementById('pillAuto').addEventListener('click', ()=>{ state.settings.autoGrade=true; syncOnlineUi(); saveDraft(); });
+document.getElementById('pillManual').addEventListener('click', ()=>{ state.settings.autoGrade=false; syncOnlineUi(); saveDraft(); });
+
+function renderExamScheduleUi(){
+  const sj = state.settings.examStartJalali || jalaaliToday();
+  const ej = state.settings.examEndJalali || jalaaliToday();
+  document.getElementById('examStartDateBox').innerHTML = jalaliDateSelectsHtml('exStart', sj.jy, sj.jm, sj.jd);
+  document.getElementById('examEndDateBox').innerHTML = jalaliDateSelectsHtml('exEnd', ej.jy, ej.jm, ej.jd);
+  document.getElementById('examStartTime').value = state.settings.examStartTimeStr || '08:00';
+  document.getElementById('examEndTime').value = state.settings.examEndTimeStr || '09:00';
+  ['exStart_y','exStart_m','exStart_d','exEnd_y','exEnd_m','exEnd_d'].forEach(id=>{
+    const elx = document.getElementById(id); if(elx) elx.addEventListener('change', updateExamSchedule);
+  });
+  updateExamSchedule();
+}
+function updateExamSchedule(){
+  const sj = readJalaliSelects('exStart');
+  const ej = readJalaliSelects('exEnd');
+  const st = document.getElementById('examStartTime').value || '00:00';
+  const et = document.getElementById('examEndTime').value || '23:59';
+  state.settings.examStartJalali = sj; state.settings.examEndJalali = ej;
+  state.settings.examStartTimeStr = st; state.settings.examEndTimeStr = et;
+  const sg = toGregorianYMD(sj.jy, sj.jm, sj.jd);
+  const eg = toGregorianYMD(ej.jy, ej.jm, ej.jd);
+  const [sh,smi] = st.split(':').map(Number);
+  const [eh,emi] = et.split(':').map(Number);
+  state.settings.examStart = new Date(sg.gy, sg.gm-1, sg.gd, sh||0, smi||0).toISOString();
+  state.settings.examEnd = new Date(eg.gy, eg.gm-1, eg.gd, eh||0, emi||0).toISOString();
+  saveDraft();
+}
+document.getElementById('examStartTime').addEventListener('input', updateExamSchedule);
+document.getElementById('examEndTime').addEventListener('input', updateExamSchedule);
+
+function syncOnlineUi(){
+  document.querySelectorAll('#displayModePills .pill').forEach(p=>p.classList.toggle('on', state.settings.displayModes.includes(p.dataset.mode)));
+  document.getElementById('pillAuto').classList.toggle('on', state.settings.autoGrade);
+  document.getElementById('pillManual').classList.toggle('on', !state.settings.autoGrade);
+  document.getElementById('examName').value = state.settings.examName || '';
+  document.getElementById('examDuration').value = state.settings.durationMinutes || 10;
+  document.getElementById('examRules').value = state.settings.examRules || '';
+  renderExamScheduleUi();
+}
+document.getElementById('examName').addEventListener('input', e=>{ state.settings.examName = e.target.value; saveDraftDebounced(); });
+document.getElementById('examDuration').addEventListener('input', e=>{ state.settings.durationMinutes = Math.max(1, +e.target.value||10); saveDraftDebounced(); });
+document.getElementById('examRules').addEventListener('input', e=>{ state.settings.examRules = e.target.value; saveDraftDebounced(); });
+
+document.getElementById('btnPublish').addEventListener('click', async ()=>{
+  if(!state.questions.length){ toast('حداقل یک سوال اضافه کنید'); return; }
+  if(!state.examId) state.examId = String(Date.now());
+  const publicExam = {
+    id: state.examId,
+    headerFields: state.headerFields,
+    questions: state.questions,
+    settings: state.settings,
+    publishedAt: Date.now()
+  };
+  try{
+    AppStorage.setItem('exam_'+state.examId, JSON.stringify(publicExam));
+  }catch(e){
+    toast('⚠️ انتشار آزمون ناموفق بود؛ حافظهٔ مرورگر پر است. یک پشتیبان بگیرید و چند آزمون/سوال قدیمی را پاک کنید.');
+    renderStorageUsage();
+    return;
+  }
+  renderStorageUsage();
+  toast('در حال آماده‌سازی لینک...');
+
+  // The link has to carry the whole exam itself (no server to fetch it
+  // from), so we trim out everything the student-facing view never
+  // actually reads: internal bookkeeping ids, the unused "order" field,
+  // and teacher-only jalali display strings. Attached images (the biggest
+  // offender for link length) are downsized/re-compressed as much as
+  // needed — they are never dropped just for being large; the only case
+  // they're skipped is if the image file itself can't be decoded.
+  let strippedImages = 0;
+  let compressedImages = 0;
+  // Try progressively smaller / lower-quality versions of each image so it
+  // always makes it into the link. We only give up on an image if it fails
+  // to decode/encode at all (corrupt file) — never just because it's big;
+  // worst case it ends up as a small but visible thumbnail.
+  // Try progressively smaller / lower-quality versions of each image so it
+  // always makes it into the link — starting from a fairly high-quality
+  // version so single/few-image exams stay clearly legible, and only
+  // stepping down to something rougher when there are many/large images
+  // and the link would otherwise be enormous. Never dropped just for size.
+  const compressSteps = [[640,0.72],[480,0.6],[380,0.5],[260,0.4],[160,0.3],[110,0.22]];
+  let roughImages = 0;
+  const questionsForLink = await Promise.all(state.questions.map(async q=>{
+    const copy = Object.assign({}, q);
+    delete copy.id;
+    delete copy.order;
+    if(copy.teacherImage){
+      let best = null, usedStep = -1;
+      for(let i=0;i<compressSteps.length;i++){
+        const [dim, quality] = compressSteps[i];
+        const small = await compressImageDataUrl(copy.teacherImage, dim, quality);
+        if(small){ best = small; usedStep = i; if(small.length <= 90000) break; }
+      }
+      if(best){ copy.teacherImage = best; compressedImages++; if(usedStep >= 4) roughImages++; }
+      else { copy.teacherImage = null; strippedImages++; }
+    }
+    return copy;
+  }));
+
+  const linkExam = {
+    id: publicExam.id,
+    headerFields: state.headerFields.map(f=>({label:f.label, value:f.value})),
+    questions: questionsForLink,
+    settings: {
+      displayModes: state.settings.displayModes,
+      autoGrade: state.settings.autoGrade,
+      examStart: state.settings.examStart,
+      examEnd: state.settings.examEnd,
+      examName: state.settings.examName,
+      durationMinutes: state.settings.durationMinutes,
+      examRules: state.settings.examRules
+    }
+  };
+
+  const dataCode = await encodeData(linkExam);
+  const link = location.href.split('?')[0] + '?exam=' + state.examId + '&d=' + dataCode;
+
+  let lenWarning = '';
+  if(compressedImages>0){
+    lenWarning += `<p class="small" style="color:#2c7a4b;">ℹ️ ${compressedImages} تصویر ضمیمه‌شده برای کوتاه ماندن لینک فشرده شد، ولی همچنان نمایش داده می‌شود (در خروجی PDF/Word با کیفیت اصلی هست).</p>`;
+  }
+  if(roughImages>0){
+    lenWarning += `<p class="small" style="color:#b7791f;">⚠️ ${roughImages} تصویر به‌خاطر حجم زیاد (یا تعداد زیاد تصاویر در این آزمون) با کیفیت خیلی پایین‌تری در نسخهٔ آنلاین قرار گرفت که ممکن است کمی کم‌واضح باشد. برای کیفیت بهتر، تصاویر اصلی را کوچک‌تر/کم‌حجم‌تر کنید یا تعداد سوالات تصویردار را کم کنید.</p>`;
+  }
+  if(strippedImages>0){
+    lenWarning += `<p class="small" style="color:#b7791f;">⚠️ ${strippedImages} تصویر، چون فایلش خراب/غیرقابل‌خواندن بود، اصلاً پردازش نشد و در نسخهٔ آنلاین نیست (در خروجی PDF/Word همچنان هست).</p>`;
+  }
+  if(link.length > 6000){
+    lenWarning += `<p class="small" style="color:#b7791f;">⚠️ این لینک به‌خاطر تعداد سوالات خیلی طولانیه (${link.length} کاراکتر). بعضی اپ‌های پیام‌رسان ممکنه لینک‌های خیلی طولانی رو قطع کنن؛ ترجیحاً لینک رو به‌جای پیام معمولی، به‌صورت فایل متنی یا از طریق «اشتراک‌گذاری لینک» ارسال کنید.</p>`;
+  }
+  const sj = state.settings.examStartJalali, ej = state.settings.examEndJalali;
+  const windowText = (sj && ej) ? `${jalaliDateLabel(sj)} ساعت ${state.settings.examStartTimeStr||''} تا ${jalaliDateLabel(ej)} ساعت ${state.settings.examEndTimeStr||''}` : 'تعیین نشده';
+  document.getElementById('publishResult').innerHTML = `
+    <div class="card" style="background:#eaf2f8;">
+      <p><b>نام آزمون:</b> ${esc(state.settings.examName||'(بدون نام)')}</p>
+      <p><b>بازهٔ مجاز ورود:</b> ${windowText}</p>
+      <p><b>مدت زمان پاسخ‌گویی هر دانش‌آموز:</b> ${state.settings.durationMinutes} دقیقه</p>
+      <p>⚠️ دانش‌آموز باید بعد از پایان آزمون، کد نتیجه‌اش را برایتان بفرستد تا نمره‌اش ثبت شود (تب «تصحیح»).</p>
+      <p>لینک آزمون آنلاین:</p>
+      <div class="row"><input type="text" id="publishedLink" autocomplete="off" readonly value="${link}"><button id="btnCopyLink" class="secondary">📋 کپی لینک</button></div>
+      <div class="actions-bar">
+        <button id="btnShareLink">🔗 اشتراک‌گذاری لینک</button>
+        <button id="btnDownloadExamFile" class="secondary">📁 دانلود به‌صورت فایل (برای ارسال به دانش‌آموزان)</button>
+      </div>
+      <p class="small">فایل، همان آزمون را با کیفیت اصلی تصاویر و بدون هیچ محدودیت طولی داخل خودش دارد؛ کافیست آن را (مثلاً در همان پیام‌رسان، ایمیل یا فلش) برای دانش‌آموزان بفرستید تا با باز کردنش (دوبار کلیک) آزمون را ببینند — بدون نیاز به اینترنت یا هیچ لینکی.</p>
+      ${lenWarning}
+      <p class="small">شناسه آزمون: ${state.examId}</p>
+    </div>`;
+  document.getElementById('btnCopyLink').addEventListener('click', ()=>{
+    const inp = document.getElementById('publishedLink'); inp.select();
+    navigator.clipboard && navigator.clipboard.writeText(inp.value).then(()=>toast('لینک کپی شد')).catch(()=>{ document.execCommand('copy'); toast('لینک کپی شد'); });
+  });
+  document.getElementById('btnShareLink').addEventListener('click', async ()=>{
+    if(navigator.share){
+      try{ await navigator.share({ title: state.settings.examName||'آزمون آنلاین', url: link }); return; }
+      catch(e){ /* user cancelled the native share sheet — fall through to copy */ }
+    }
+    // No native share support on this browser/device — copy instead and
+    // explain the next step, so the button always does something useful.
+    const inp = document.getElementById('publishedLink'); inp.select();
+    const doToast = ()=> toast('این مرورگر اشتراک‌گذاری مستقیم را پشتیبانی نمی‌کند — لینک کپی شد، آن را در پیام‌رسان پیست کنید');
+    if(navigator.clipboard){ navigator.clipboard.writeText(inp.value).then(doToast).catch(doToast); }
+    else { document.execCommand('copy'); doToast(); }
+  });
+  document.getElementById('btnDownloadExamFile').addEventListener('click', async ()=>{
+    toast('در حال ساخت فایل...');
+    try{
+      // Unlike the link, a downloaded file has no length limit at all, so
+      // images go in at their original full quality — no compression needed.
+      const fullExam = {
+        id: publicExam.id,
+        headerFields: state.headerFields.map(f=>({label:f.label, value:f.value})),
+        questions: state.questions.map(q=>{ const c = Object.assign({}, q); delete c.id; delete c.order; return c; }),
+        settings: linkExam.settings
+      };
+      const html = await buildStandaloneExamFile(fullExam);
+      const safeName = (state.settings.examName || 'آزمون').replace(/[\\/:*?"<>|]/g,'').trim() || 'آزمون';
+      download(safeName + '.html', html, 'text/html;charset=utf-8');
+      toast('فایل آماده شد ✓ آن را برای دانش‌آموزان بفرستید');
+    }catch(e){
+      toast('ساخت فایل با خطا مواجه شد');
+    }
+  });
+  saveDraft();
+  toast('آزمون منتشر شد ✓');
+});
+
+/* ============ LIST PUBLISHED EXAMS (helper) ============ */
+function listPublishedExams(){
+  const out = [];
+  for(let i=0;i<AppStorage.length;i++){
+    const k = AppStorage.key(i);
+    if(k && k.indexOf('exam_')===0){
+      try{ const ex = JSON.parse(AppStorage.getItem(k)); out.push(ex); }catch(e){}
+    }
+  }
+  return out.sort((a,b)=>b.publishedAt-a.publishedAt);
+}
+function examLabel(ex){
+  const name = (ex.settings && ex.settings.examName) || '';
+  const d = new Date(ex.publishedAt);
+  return `${name||'آزمون بدون‌نام'} - ${ex.id} (${d.toLocaleDateString('fa-IR')})`;
+}
+
+/* ============ SAVED EXAM PROJECTS (whole-exam save/load) ============ */
+function getProjects(){ try{ return JSON.parse(AppStorage.getItem('examProjects'))||[]; }catch(e){ return []; } }
+function setProjects(arr){
+  try{ AppStorage.setItem('examProjects', JSON.stringify(arr)); }
+  catch(e){ toast('⚠️ ذخیرهٔ پروژه ناموفق بود؛ حافظهٔ مرورگر پر است. یک نسخهٔ پشتیبان بگیرید و چند پروژهٔ قدیمی را پاک کنید.'); }
+  renderStorageUsage();
+}
+function renderProjectSelect(){
+  const sel = document.getElementById('projectSelect');
+  const list = getProjects();
+  sel.innerHTML = '<option value="">— هیچ‌کدام —</option>' + list.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');
+}
+document.getElementById('btnSaveProject').addEventListener('click', ()=>{
+  const name = prompt('اسم این آزمون را برای ذخیره وارد کنید:', state.settings.examName || '');
+  if(!name) return;
+  const list = getProjects();
+  list.push({id: uid(), name, savedAt: Date.now(), data: JSON.parse(JSON.stringify(state))});
+  setProjects(list);
+  renderProjectSelect();
+  toast('کل آزمون ذخیره شد ✓');
+});
+document.getElementById('btnLoadProject').addEventListener('click', ()=>{
+  const id = document.getElementById('projectSelect').value;
+  if(!id){ toast('یک آزمون ذخیره‌شده را انتخاب کنید'); return; }
+  const p = getProjects().find(x=>x.id===id);
+  if(!p) return;
+  if(!confirm('بارگذاری این آزمون، آزمونی که الان در حال طراحی آن هستید را جایگزین می‌کند. ادامه می‌دهید؟')) return;
+  state = JSON.parse(JSON.stringify(p.data));
+  renderAll();
+  saveDraft();
+  toast('آزمون بارگذاری شد ✓');
+});
+document.getElementById('btnDeleteProject').addEventListener('click', ()=>{
+  const id = document.getElementById('projectSelect').value;
+  if(!id){ toast('یک آزمون ذخیره‌شده را انتخاب کنید'); return; }
+  if(!confirm('حذف این آزمون ذخیره‌شده قطعی است، ادامه می‌دهید؟')) return;
+  setProjects(getProjects().filter(x=>x.id!==id));
+  renderProjectSelect();
+  toast('حذف شد ✓');
+});
+
+/* ============ GRADING VIEW ============ */
+function renderGradingSelect(){
+  const sel = document.getElementById('gradingExamSelect');
+  const exams = listPublishedExams();
+  sel.innerHTML = exams.length ? exams.map(ex=>`<option value="${ex.id}">${examLabel(ex)}</option>`).join('') : '<option value="">آزمونی منتشر نشده است</option>';
+  sel.onchange = ()=>renderGradingBody(sel.value);
+  if(exams.length) renderGradingBody(exams[0].id); else document.getElementById('gradingBody').innerHTML='';
+}
+function getResults(examId){ try{ return JSON.parse(AppStorage.getItem('results_'+examId))||[]; }catch(e){ return []; } }
+function saveResults(examId, arr){
+  try{ AppStorage.setItem('results_'+examId, JSON.stringify(arr)); }
+  catch(e){ toast('⚠️ ذخیرهٔ نتایج ناموفق بود؛ حافظهٔ مرورگر پر است. یک نسخهٔ پشتیبان بگیرید و فضا آزاد کنید.'); }
+  renderStorageUsage();
+}
+async function getMergedResults(examId){
+  return getResults(examId);
+}
+
+document.getElementById('btnImportResultCode').addEventListener('click', async ()=>{
+  const raw = document.getElementById('resultCodeInput').value;
+  if(!raw.trim()){ toast('کد را وارد کنید'); return; }
+  // Pull out every "EXR:..." token found anywhere in the pasted text —
+  // this lets a teacher copy-paste an entire group-chat conversation
+  // (names, timestamps, other messages, emoji, and all) in one go, not
+  // just a clean list of bare codes one per line.
+  const matches = raw.match(/EXR:[A-Za-z0-9_-]+/g) || [];
+  if(!matches.length){ toast('هیچ کد معتبری (با فرمت EXR:...) در این متن پیدا نشد'); return; }
+  let added=0, dupCount=0, invalid=0;
+  for(const m of matches){
+    const code = m.slice(4);
+    try{
+      const record = await decodeData(code);
+      if(!record.examId){ invalid++; continue; }
+      const results = getResults(record.examId);
+      const dup = results.some(r=>r.studentName===record.studentName && r.submittedAt===record.submittedAt);
+      if(dup){ dupCount++; continue; }
+      results.push({studentName: record.studentName, submittedAt: record.submittedAt, answers: record.answers, totalScore: record.totalScore, tabSwitchCount: record.tabSwitchCount||0});
+      saveResults(record.examId, results);
+      added++;
+    }catch(e){ invalid++; }
+  }
+  document.getElementById('resultCodeInput').value = '';
+  renderGradingSelect();
+  const parts = [];
+  if(added) parts.push(`${added} نتیجه اضافه شد`);
+  if(dupCount) parts.push(`${dupCount} مورد قبلاً اضافه شده بود`);
+  if(invalid) parts.push(`${invalid} کد نامعتبر بود`);
+  toast(parts.length ? parts.join(' — ') + ' ✓' : 'هیچ کدی پردازش نشد');
+});
+
+function studentAnswerPlainText(q, ans){
+  ans = ans || {};
+  if(q.type==='tf'){
+    if(ans.value===undefined || ans.value===null) return '(بدون پاسخ)';
+    return ans.value ? 'صحیح' : 'غلط';
+  }
+  if(q.type==='blank' || q.type==='paren'){
+    return ans.text ? ans.text : '(بدون پاسخ)';
+  }
+  if(q.type==='mc4'){
+    const base = (ans.value===undefined || ans.value===null) ? '(بدون پاسخ)' : ((ans.value+1)+') '+(q.options[ans.value]||''));
+    return base + (ans.image?' [+ تصویر پیوست]':'');
+  }
+  if(q.type==='match'){
+    const val = ans.value||{};
+    return q.leftItems.map((l,li)=> `${l} ← ${val[li]||'—'}`).join('، ');
+  }
+  if(q.type==='essay'){
+    return (ans.text?ans.text:'(بدون پاسخ)') + (ans.image?' [+ تصویر پیوست]':'');
+  }
+  return '';
+}
+function studentAnswerDisplay(q, ans){
+  ans = ans || {};
+  if(q.type==='tf'){
+    if(ans.value===undefined || ans.value===null) return '(بدون پاسخ)';
+    return ans.value ? 'صحیح' : 'غلط';
+  }
+  if(q.type==='blank' || q.type==='paren'){
+    return ans.text ? esc(ans.text) : '(بدون پاسخ)';
+  }
+  if(q.type==='mc4'){
+    const base = (ans.value===undefined || ans.value===null) ? '(بدون پاسخ)' : esc((ans.value+1)+') '+ (q.options[ans.value]||''));
+    return base + (ans.image?`<br><img src="${ans.image}" style="max-width:180px;display:block;margin-top:4px;">`:'');
+  }
+  if(q.type==='match'){
+    const val = ans.value||{};
+    return q.leftItems.map((l,li)=> `${esc(l)} ← ${esc(val[li]||'—')}`).join('<br>');
+  }
+  if(q.type==='essay'){
+    return (ans.text?esc(ans.text):'(بدون پاسخ)') + (ans.image?`<br><img src="${ans.image}" style="max-width:180px;display:block;margin-top:4px;">`:'');
+  }
+  return '';
+}
+async function renderGradingBody(examId){
+  const body = document.getElementById('gradingBody');
+  if(!examId){ body.innerHTML=''; return; }
+  body.innerHTML = '<div class="empty-hint">در حال بارگذاری...</div>';
+  const ex = JSON.parse(AppStorage.getItem('exam_'+examId));
+  const results = await getMergedResults(examId);
+  if(!results.length){ body.innerHTML = '<div class="empty-hint">هنوز پاسخ‌برگه‌ای ثبت نشده است.</div>'; return; }
+  body.innerHTML = results.map((r,ri)=>`
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div class="grading-header" data-ri="${ri}" style="cursor:pointer;padding:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+        <h3 style="margin:0;">${esc(r.studentName||'دانش‌آموز')} — نمره فعلی: <span class="badge" id="grade-total-${ri}">${r.totalScore}</span>${r.tabSwitchCount?` <span class="badge" style="background:#fbe8d3;color:#b7791f;" title="این دانش‌آموز حین آزمون از تب/برنامه خارج شده">⚠️ ${r.tabSwitchCount} بار خروج از صفحه</span>`:''}</h3>
+        <span class="small grading-arrow" data-ri="${ri}">برای مشاهده و تصحیح ▾</span>
+      </div>
+      <div class="grading-detail" data-ri="${ri}" style="display:none;padding:0 16px 16px 16px;">
+        <p class="small">برگهٔ کامل پاسخ‌های این دانش‌آموز — نمرهٔ هر سوال قابل ویرایش دستی است.</p>
+        ${ex.questions.map((q,qi)=>{
+          const ans = r.answers[qi]||{};
+          return `<div style="margin-bottom:10px;padding:8px;border:1px solid var(--border);border-radius:8px;">
+            <p><span class="badge">${typeLabel(q.type)}</span> <b>سوال ${qi+1}:</b> ${esc(q.text||questionSummaryText(q))}</p>
+            ${q.type==='essay'?`<p class="small">کلیدواژه‌ها: ${esc(q.keywords||'-')}</p>`:''}
+            <p class="small">پاسخ صحیح: ${esc(correctAnswerText(q))}</p>
+            <p>پاسخ دانش‌آموز: ${studentAnswerDisplay(q, ans)}</p>
+            <label>نمره این سوال (از ${q.score})</label>
+            <input type="number" step="0.25" min="0" max="${q.score}" class="q-score" data-ri="${ri}" data-qi="${qi}" value="${ans.score!=null?ans.score:0}">
+          </div>`;
+        }).join('')}
+        <div class="actions-bar">
+          <button class="btn-save-grade" data-ri="${ri}">💾 ذخیره نمره جدید</button>
+          <button class="secondary btn-feedback-msg" data-ri="${ri}">📋 ساخت پیام نتیجه برای دانش‌آموز</button>
+          <button class="ghost danger btn-del-result" data-ri="${ri}" style="color:#c0392b;">🗑 حذف این پاسخ‌برگه</button>
+        </div>
+      </div>
+    </div>`).join('');
+
+  // Accordion: clicking a student's header opens their sheet and closes any
+  // other open one, so the list stays scannable instead of showing every
+  // student's full answers at once. Clicking an already-open header closes it.
+  body.querySelectorAll('.grading-header').forEach(header=>{
+    header.addEventListener('click', ()=>{
+      const ri = header.dataset.ri;
+      const detail = body.querySelector(`.grading-detail[data-ri="${ri}"]`);
+      const arrow = body.querySelector(`.grading-arrow[data-ri="${ri}"]`);
+      const isOpen = detail.style.display !== 'none';
+      body.querySelectorAll('.grading-detail').forEach(d=>{ d.style.display = 'none'; });
+      body.querySelectorAll('.grading-arrow').forEach(a=>{ a.textContent = 'برای مشاهده و تصحیح ▾'; });
+      if(!isOpen){ detail.style.display = 'block'; arrow.textContent = 'بستن ▴'; }
+    });
+  });
+
+  body.querySelectorAll('.btn-feedback-msg').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const ri = +btn.dataset.ri;
+      const r = results[ri];
+      const totalPossible = ex.questions.reduce((s,q)=>s+q.score,0);
+      let total = 0;
+      const qLines = [];
+      ex.questions.forEach((q,qi)=>{
+        const inp = body.querySelector(`.q-score[data-ri="${ri}"][data-qi="${qi}"]`);
+        const ans = r.answers[qi]||{};
+        const score = inp ? (+inp.value||0) : (ans.score||0);
+        total += score;
+        qLines.push(`سوال ${qi+1} (${typeLabel(q.type)}) — نمره: ${score} از ${q.score}`);
+        qLines.push(`پاسخ شما: ${studentAnswerPlainText(q, ans)}`);
+        if(score < q.score) qLines.push(`پاسخ صحیح: ${correctAnswerText(q)}`);
+        qLines.push('');
+      });
+      const pct = totalPossible? Math.round((total/totalPossible)*1000)/10 : 0;
+      const header = [
+        `📄 نتیجهٔ آزمون: ${ex.settings.examName || 'آزمون آنلاین'}`,
+        `👤 دانش‌آموز: ${r.studentName||'دانش‌آموز'}`,
+        `🏆 نمرهٔ کل: ${Math.round(total*100)/100} از ${totalPossible} (${pct}%)`,
+        ''
+      ];
+      const message = header.concat(qLines).join('\n').trim();
+      const studentFileName = (r.studentName||'دانش‌آموز').replace(/[\\/:*?"<>|]/g,'').trim() || 'دانش‌آموز';
+      openModal(`
+        <h3>پیام نتیجهٔ «${esc(r.studentName||'دانش‌آموز')}»</h3>
+        <p class="small">این متن را کپی کنید و برای دانش‌آموز (مثلاً در همان پیام‌رسان) بفرستید، یا آن را به‌صورت فایل ذخیره کنید تا هر وقت خواستید برایش بفرستید. اگر نمره‌ای را تغییر داده‌اید ولی هنوز ذخیره نکرده‌اید، همان مقدار فعلی روی صفحه در این پیام لحاظ شده است.</p>
+        <textarea id="feedbackMsgText" rows="12" readonly style="width:100%;font-size:13px;">${esc(message)}</textarea>
+        <div class="actions-bar">
+          <button id="btnCopyFeedbackMsg">📋 کپی پیام</button>
+          <button id="btnSaveFeedbackMsg" class="secondary">💾 ذخیره به‌صورت فایل</button>
+          <button class="secondary" onclick="document.getElementById('modalBg').classList.remove('show')">بستن</button>
+        </div>
+      `);
+      document.getElementById('btnCopyFeedbackMsg').addEventListener('click', ()=>{
+        const ta = document.getElementById('feedbackMsgText'); ta.select();
+        navigator.clipboard && navigator.clipboard.writeText(ta.value).then(()=>toast('پیام کپی شد ✓')).catch(()=>{ document.execCommand('copy'); toast('پیام کپی شد ✓'); });
+      });
+      document.getElementById('btnSaveFeedbackMsg').addEventListener('click', ()=>{
+        download(`نتیجه-${studentFileName}.txt`, '\uFEFF'+message, 'text/plain;charset=utf-8');
+        toast('فایل ذخیره شد ✓');
+      });
+    });
+  });
+  body.querySelectorAll('.btn-del-result').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const ri = +btn.dataset.ri;
+      if(!confirm(`پاسخ‌برگهٔ «${results[ri].studentName||'دانش‌آموز'}» برای همیشه حذف می‌شود. ادامه می‌دهید؟`)) return;
+      const local = getResults(examId);
+      const idx = local.findIndex(l=>l.studentName===results[ri].studentName && l.submittedAt===results[ri].submittedAt);
+      if(idx>=0){ local.splice(idx,1); saveResults(examId, local); }
+      renderGradingBody(examId);
+      toast('پاسخ‌برگه حذف شد');
+    });
+  });
+  body.querySelectorAll('.btn-save-grade').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const ri = +btn.dataset.ri;
+      let total = 0;
+      ex.questions.forEach((q,qi)=>{
+        const inp = body.querySelector(`.q-score[data-ri="${ri}"][data-qi="${qi}"]`);
+        if(inp){
+          results[ri].answers[qi] = results[ri].answers[qi]||{};
+          let v = +inp.value; if(isNaN(v)) v=0; if(v<0) v=0; if(v>q.score) v=q.score;
+          results[ri].answers[qi].score = v;
+        }
+        total += (results[ri].answers[qi]&&results[ri].answers[qi].score)||0;
+      });
+      results[ri].totalScore = Math.round(total*100)/100;
+      const local = getResults(examId);
+      const idx = local.findIndex(l=>l.studentName===results[ri].studentName && l.submittedAt===results[ri].submittedAt);
+      if(idx>=0){ local[idx]=results[ri]; saveResults(examId, local); }
+      document.getElementById('grade-total-'+ri).textContent = results[ri].totalScore;
+      toast('نمره جدید ذخیره شد ✓');
+    });
+  });
+}
+
+/* ============ RESULTS VIEW ============ */
+function renderResultsSelect(){
+  const sel = document.getElementById('resultsExamSelect');
+  const exams = listPublishedExams();
+  sel.innerHTML = exams.length ? exams.map(ex=>`<option value="${ex.id}">${examLabel(ex)}</option>`).join('') : '<option value="">آزمونی منتشر نشده است</option>';
+  sel.onchange = ()=>renderResultsBody(sel.value);
+  if(exams.length) renderResultsBody(exams[0].id); else document.getElementById('resultsBody').innerHTML='';
+}
+document.getElementById('btnDeleteResultsExam').addEventListener('click', ()=>{
+  const sel = document.getElementById('resultsExamSelect');
+  const examId = sel.value;
+  if(!examId){ toast('آزمونی برای حذف انتخاب نشده'); return; }
+  const ex = JSON.parse(AppStorage.getItem('exam_'+examId));
+  const label = ex ? examLabel(ex) : examId;
+  if(!confirm(`آزمون «${label}» و تمام نتایج ثبت‌شده‌اش برای همیشه حذف می‌شود. ادامه می‌دهید؟`)) return;
+  AppStorage.removeItem('exam_'+examId);
+  AppStorage.removeItem('results_'+examId);
+  renderResultsSelect();
+  toast('آزمون از لیست حذف شد ✓');
+});
+async function renderResultsBody(examId){
+  const body = document.getElementById('resultsBody');
+  if(!examId){ body.innerHTML=''; return; }
+  body.innerHTML = '<div class="empty-hint">در حال بارگذاری...</div>';
+  const ex = JSON.parse(AppStorage.getItem('exam_'+examId));
+  const totalPossible = ex.questions.reduce((s,q)=>s+q.score,0);
+  const results = await getMergedResults(examId);
+  if(!results.length){ body.innerHTML = '<div class="empty-hint">هنوز نتیجه‌ای ثبت نشده است.</div>'; return; }
+  body.innerHTML = results.map((r,ri)=>{
+    const pct = totalPossible? Math.round((r.totalScore/totalPossible)*1000)/10 : 0;
+    return `<div class="card">
+      <h3>${esc(r.studentName||'دانش‌آموز')}</h3>
+      <p>نمره کل: <b>${r.totalScore}</b> از ${totalPossible} &nbsp;(${pct}%)</p>
+      <table class="qtable"><thead><tr><th class="col-num">#</th><th>سوال</th><th class="col-ans">وضعیت</th></tr></thead><tbody>
+      ${ex.questions.map((q,qi)=>{
+        const a = r.answers[qi]||{};
+        let ok = a.correct;
+        return `<tr><td class="col-num">${qi+1}</td><td>${esc(q.text||questionSummaryText(q))}</td>
+          <td class="col-ans">${q.type==='essay' ? (a.score!=null?a.score+' نمره':'در انتظار تصحیح') : (ok?'✅ صحیح':'❌ غلط')}</td></tr>`;
+      }).join('')}
+      </tbody></table>
+      <div class="actions-bar"><button class="ghost danger btn-del-result-view" data-ri="${ri}" style="color:#c0392b;">🗑 حذف این نتیجه</button></div>
+    </div>`;
+  }).join('');
+  body.querySelectorAll('.btn-del-result-view').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const ri = +btn.dataset.ri;
+      if(!confirm(`نتیجهٔ «${results[ri].studentName||'دانش‌آموز'}» برای همیشه حذف می‌شود. ادامه می‌دهید؟`)) return;
+      const local = getResults(examId);
+      const idx = local.findIndex(l=>l.studentName===results[ri].studentName && l.submittedAt===results[ri].submittedAt);
+      if(idx>=0){ local.splice(idx,1); saveResults(examId, local); }
+      renderResultsBody(examId);
+      toast('نتیجه حذف شد');
+    });
+  });
+}
+
+/* ============ BANK ============ */
+function getBank(){ try{ return JSON.parse(AppStorage.getItem('questionBank'))||[]; }catch(e){ return []; } }
+function setBank(arr){
+  try{ AppStorage.setItem('questionBank', JSON.stringify(arr)); }
+  catch(e){ toast('⚠️ ذخیرهٔ بانک سوالات ناموفق بود؛ حافظهٔ مرورگر پر است. یک نسخهٔ پشتیبان بگیرید و چند سوال قدیمی را پاک کنید.'); }
+  renderStorageUsage();
+}
+function addToBank(q){
+  // Guess a starting subject from a header field that looks like it holds
+  // one (e.g. "نام درس"), but always let the teacher confirm/edit it —
+  // silently trusting the guess was making the bank hard to browse, since
+  // a lot of questions ended up filed under an empty/wrong subject.
+  const guessedSubj = (state.headerFields.find(f=>f.label.indexOf('درس')>=0)||{}).value || '';
+  const subj = prompt('این سوال زیر چه درس/موضوعی در بانک سوالات دسته‌بندی شود؟', guessedSubj);
+  if(subj===null) return; // teacher cancelled — don't add
+  const bank = getBank();
+  const date = (state.headerFields.find(f=>f.label.indexOf('تاریخ')>=0)||{}).value || new Date().toLocaleDateString('fa-IR');
+  bank.push(Object.assign({}, q, {id: uid(), bankSubject: subj.trim(), bankDate: date}));
+  setBank(bank);
+  renderBankList();
+  toast('به بانک سوالات اضافه شد (درس: '+(subj.trim()||'بدون‌درس')+') ✓');
+}
+function distinctBankSubjects(bank){
+  const set = new Set(bank.map(q=>q.bankSubject||'بدون‌درس'));
+  return [...set].sort((a,b)=>a.localeCompare(b,'fa'));
+}
+function renderBankList(){
+  const bank = getBank();
+  const text = document.getElementById('bankSearchText').value.trim();
+  const type = document.getElementById('bankSearchType').value;
+
+  // Keep the subject dropdown in sync with what's actually in the bank —
+  // it's built from real data instead of free-typed text, so filtering
+  // can't miss questions due to a typo/inconsistent spelling.
+  const subjSel = document.getElementById('bankSearchSubject');
+  const subjects = distinctBankSubjects(bank);
+  const prevVal = subjSel.value;
+  subjSel.innerHTML = '<option value="">همهٔ درس‌ها</option>' + subjects.map(s=>
+    `<option value="${esc(s)}">${esc(s)} (${bank.filter(q=>(q.bankSubject||'بدون‌درس')===s).length})</option>`
+  ).join('');
+  if(subjects.includes(prevVal)) subjSel.value = prevVal;
+  const subjFilter = subjSel.value;
+
+  const list = document.getElementById('bankList');
+  if(!bank.length){ list.innerHTML = '<div class="empty-hint">هنوز سوالی به بانک اضافه نشده. از تب «سوالات»، کنار هر سوال دکمهٔ 🏦 را بزنید.</div>'; return; }
+
+  const filtered = bank.filter(q=>
+    (!text || (q.text||'').includes(text)) &&
+    (!type || q.type===type) &&
+    (!subjFilter || (q.bankSubject||'بدون‌درس')===subjFilter)
+  );
+  if(!filtered.length){ list.innerHTML = '<div class="empty-hint">سوالی با این فیلتر یافت نشد.</div>'; return; }
+
+  // Grouped by subject (collapsible) instead of one long flat list, so a
+  // bank with many questions across several subjects stays navigable.
+  const groups = {};
+  filtered.forEach(q=>{ const s=q.bankSubject||'بدون‌درس'; (groups[s]=groups[s]||[]).push(q); });
+  const subjectNames = Object.keys(groups).sort((a,b)=>a.localeCompare(b,'fa'));
+  const singleGroup = subjectNames.length===1;
+
+  list.innerHTML = subjectNames.map((subj,gi)=>`
+    <div class="card" style="padding:0;overflow:hidden;margin-bottom:10px;">
+      <div class="bank-group-header" data-gi="${gi}" style="cursor:pointer;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;background:#eaf2f8;">
+        <b>${esc(subj)}</b>
+        <span class="small bank-group-arrow" data-gi="${gi}">${groups[subj].length} سوال — ${singleGroup?'باز':'مشاهده'} ${singleGroup?'▴':'▾'}</span>
+      </div>
+      <div class="bank-group-body" data-gi="${gi}" style="display:${singleGroup?'block':'none'};padding:10px 16px 16px;">
+        ${groups[subj].map(q=>`
+          <div class="field-box" style="margin-bottom:8px;">
+            <div class="grow">
+              <span class="badge">${typeLabel(q.type)}</span> ${esc(questionSummaryText(q))}
+              <div class="small">تاریخ افزودن: ${esc(q.bankDate||'-')}</div>
+            </div>
+            <div class="fb-actions">
+              <button class="secondary" data-id="${q.id}">➕ افزودن به آزمون</button>
+              <button class="ghost" data-edit-subj-id="${q.id}">✏️ تغییر درس</button>
+              <button class="ghost danger" data-del-id="${q.id}" style="color:#c0392b;">🗑 حذف</button>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+
+  list.querySelectorAll('.bank-group-header').forEach(h=>{
+    h.addEventListener('click', ()=>{
+      const gi = h.dataset.gi;
+      const subj = subjectNames[+gi];
+      const body = list.querySelector(`.bank-group-body[data-gi="${gi}"]`);
+      const arrow = list.querySelector(`.bank-group-arrow[data-gi="${gi}"]`);
+      const isOpen = body.style.display !== 'none';
+      body.style.display = isOpen ? 'none' : 'block';
+      arrow.textContent = `${groups[subj].length} سوال — ${isOpen?'مشاهده ▾':'باز ▴'}`;
+    });
+  });
+
+  list.querySelectorAll('button[data-id]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const q = bank.find(x=>x.id===btn.dataset.id);
+      const copy = Object.assign({}, q, {id: uid(), order: state.questions.length});
+      delete copy.bankSubject; delete copy.bankDate;
+      state.questions.push(copy);
+      renderQuestionsTable(); saveDraft();
+      toast('سوال به آزمون اضافه شد ✓');
+    });
+  });
+  list.querySelectorAll('button[data-edit-subj-id]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const q = bank.find(x=>x.id===btn.dataset.editSubjId);
+      const newSubj = prompt('درس/موضوع جدید برای این سوال:', q.bankSubject||'');
+      if(newSubj===null) return;
+      q.bankSubject = newSubj.trim();
+      setBank(bank);
+      renderBankList();
+      toast('بروزرسانی شد ✓');
+    });
+  });
+  list.querySelectorAll('button[data-del-id]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(!confirm('این سوال برای همیشه از بانک حذف می‌شود. ادامه می‌دهید؟')) return;
+      setBank(getBank().filter(x=>x.id!==btn.dataset.delId));
+      renderBankList();
+      toast('از بانک حذف شد');
+    });
+  });
+}
+document.getElementById('bankSearchText').addEventListener('input', debounce(renderBankList,250));
+document.getElementById('bankSearchType').addEventListener('change', renderBankList);
+document.getElementById('bankSearchSubject').addEventListener('change', renderBankList);
+
+/* ============ STATS ============ */
+function renderStatsSelect(){
+  const sel = document.getElementById('statsExamSelect');
+  const exams = listPublishedExams();
+  sel.innerHTML = exams.length ? exams.map(ex=>`<option value="${ex.id}">${examLabel(ex)}</option>`).join('') : '<option value="">آزمونی منتشر نشده است</option>';
+  sel.onchange = ()=>renderStatsBody(sel.value);
+  if(exams.length) renderStatsBody(exams[0].id); else document.getElementById('statsBody').innerHTML='';
+}
+document.getElementById('btnDeleteStatsExam').addEventListener('click', ()=>{
+  const sel = document.getElementById('statsExamSelect');
+  const examId = sel.value;
+  if(!examId){ toast('آزمونی برای حذف انتخاب نشده'); return; }
+  const ex = JSON.parse(AppStorage.getItem('exam_'+examId));
+  const label = ex ? examLabel(ex) : examId;
+  if(!confirm(`آزمون «${label}» و تمام نتایج ثبت‌شده‌اش برای همیشه حذف می‌شود. ادامه می‌دهید؟`)) return;
+  AppStorage.removeItem('exam_'+examId);
+  AppStorage.removeItem('results_'+examId);
+  renderStatsSelect();
+  toast('آزمون از لیست حذف شد ✓');
+});
+async function renderStatsBody(examId){
+  const body = document.getElementById('statsBody');
+  if(!examId){ body.innerHTML=''; return; }
+  body.innerHTML = '<div class="empty-hint">در حال بارگذاری...</div>';
+  const ex = JSON.parse(AppStorage.getItem('exam_'+examId));
+  const results = await getMergedResults(examId);
+  if(!results.length){ body.innerHTML = '<div class="empty-hint">داده‌ای برای گزارش‌گیری وجود ندارد.</div>'; return; }
+  const scores = results.map(r=>r.totalScore);
+  const avg = Math.round((scores.reduce((a,b)=>a+b,0)/scores.length)*100)/100;
+  const max = Math.max(...scores), min = Math.min(...scores);
+  const perQ = ex.questions.map((q,qi)=>{
+    if(q.type==='essay') return {q, pct:'-'};
+    const correctCount = results.filter(r=>r.answers[qi]&&r.answers[qi].correct).length;
+    return {q, pct: Math.round((correctCount/results.length)*1000)/10};
+  });
+  body.innerHTML = `
+    <div class="row">
+      <div class="card"><b>میانگین نمرات</b><br><span style="font-size:22px;color:var(--navy)">${avg}</span></div>
+      <div class="card"><b>بیشترین نمره</b><br><span style="font-size:22px;color:var(--success)">${max}</span></div>
+      <div class="card"><b>کمترین نمره</b><br><span style="font-size:22px;color:var(--danger)">${min}</span></div>
+    </div>
+    <table class="qtable"><thead><tr><th class="col-num">#</th><th>سوال</th><th>درصد پاسخ صحیح</th></tr></thead><tbody>
+    ${perQ.map((p,i)=>`<tr><td class="col-num">${i+1}</td><td>${esc(questionSummaryText(p.q))}</td><td>${p.pct}${p.pct!=='-'?'%':''}</td></tr>`).join('')}
+    </tbody></table>
+    <div class="actions-bar"><button id="btnExportCsv">⬇️ خروجی Excel (CSV)</button></div>
+  `;
+  document.getElementById('btnExportCsv').addEventListener('click', ()=>{
+    let csv = '\uFEFF' + 'نام دانش‌آموز,نمره کل\n' + results.map(r=>`${r.studentName||''},${r.totalScore}`).join('\n');
+    csv += '\n\nسوال,درصد پاسخ صحیح\n' + perQ.map(p=>`"${(p.q.text||'').replace(/"/g,'""')}",${p.pct}`).join('\n');
+    download('گزارش_آزمون.csv', csv, 'text/csv;charset=utf-8');
+  });
+}
+
+/* ============ UTILS: bulk paste, backup/restore ============ */
+// Minimal, dependency-free .docx reader: docx is a ZIP archive containing
+// word/document.xml. We locate that entry in the ZIP central directory,
+// inflate it if needed (browser-native DecompressionStream, no libraries),
+// and pull the plain text out of the <w:t> runs, one line per paragraph.
+// Everything happens locally in the browser; the file is never uploaded anywhere.
+async function extractDocxText(arrayBuffer){
+  const bytes = new Uint8Array(arrayBuffer);
+  const dv = new DataView(arrayBuffer);
+  const EOCD_SIG = 0x06054b50, CD_SIG = 0x02014b50;
+  let eocdOffset = -1;
+  const searchStart = Math.max(0, bytes.length - 65557);
+  for(let i = bytes.length - 22; i >= searchStart; i--){
+    if(dv.getUint32(i, true) === EOCD_SIG){ eocdOffset = i; break; }
+  }
+  if(eocdOffset === -1) throw new Error('این فایل یک فایل Word معتبر (docx.) نیست.');
+  const cdCount = dv.getUint16(eocdOffset+10, true);
+  let ptr = dv.getUint32(eocdOffset+16, true);
+  let target = null;
+  for(let i=0;i<cdCount;i++){
+    if(dv.getUint32(ptr, true) !== CD_SIG) break;
+    const compMethod = dv.getUint16(ptr+10, true);
+    const compSize = dv.getUint32(ptr+20, true);
+    const nameLen = dv.getUint16(ptr+28, true);
+    const extraLen = dv.getUint16(ptr+30, true);
+    const commentLen = dv.getUint16(ptr+32, true);
+    const localHeaderOffset = dv.getUint32(ptr+42, true);
+    const name = new TextDecoder('utf-8').decode(bytes.slice(ptr+46, ptr+46+nameLen));
+    if(name === 'word/document.xml'){ target = {compMethod, compSize, localHeaderOffset}; break; }
+    ptr += 46 + nameLen + extraLen + commentLen;
+  }
+  if(!target) throw new Error('متن اصلی سند در این فایل Word پیدا نشد.');
+  const lh = target.localHeaderOffset;
+  const lhNameLen = dv.getUint16(lh+26, true);
+  const lhExtraLen = dv.getUint16(lh+28, true);
+  const dataStart = lh + 30 + lhNameLen + lhExtraLen;
+  const compData = bytes.slice(dataStart, dataStart + target.compSize);
+  let xmlBytes;
+  if(target.compMethod === 0){
+    xmlBytes = compData;
+  } else if(target.compMethod === 8){
+    if(typeof DecompressionStream === 'undefined') throw new Error('مرورگر شما از باز کردن فایل Word پشتیبانی نمی‌کند؛ لطفاً از یک مرورگر جدید (مثل Chrome یا Edge) استفاده کنید.');
+    const stream = new Blob([compData]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+    xmlBytes = new Uint8Array(await new Response(stream).arrayBuffer());
+  } else {
+    throw new Error('روش فشرده‌سازی این فایل Word پشتیبانی نمی‌شود.');
+  }
+  const xmlText = new TextDecoder('utf-8').decode(xmlBytes);
+  const doc = new DOMParser().parseFromString(xmlText, 'application/xml');
+  if(doc.getElementsByTagName('parsererror').length) throw new Error('خواندن محتوای فایل Word با خطا مواجه شد.');
+  const paragraphs = Array.from(doc.getElementsByTagName('w:p'));
+  const lines = paragraphs.map(p=>Array.from(p.getElementsByTagName('w:t')).map(t=>t.textContent).join(''));
+  return lines.map(l=>l.trim()).filter(Boolean).join('\n');
+}
+document.getElementById('fileWordUpload').addEventListener('change', async (e)=>{
+  const f = e.target.files[0];
+  if(!f) return;
+  toast('در حال خواندن فایل Word...');
+  try{
+    const buf = await f.arrayBuffer();
+    const text = await extractDocxText(buf);
+    if(!text){ toast('متنی در این فایل Word پیدا نشد'); e.target.value=''; return; }
+    const area = document.getElementById('bulkPasteArea');
+    area.value = area.value ? (area.value.trim()+'\n'+text) : text;
+    toast('متن فایل Word در جعبهٔ بالا ریخته شد؛ آن را مرور و سپس «تبدیل» را بزنید ✓');
+  }catch(err){
+    toast(err.message || 'خواندن فایل Word با خطا مواجه شد');
+  }
+  e.target.value = '';
+});
+document.getElementById('btnBulkConvert').addEventListener('click', ()=>{
+  const raw = document.getElementById('bulkPasteArea').value;
+  const lines = raw.split(/\n+/).map(l=>l.trim()).filter(Boolean);
+  if(!lines.length){ toast('متنی برای تبدیل وارد نشده'); return; }
+  const counts = {blank:0, paren:0, essay:0};
+  lines.forEach(line=>{
+    let q;
+    if(/_{2,}/.test(line)){
+      // Line contains a ___ blank marker, e.g. "پایتخت ایران ___ است."
+      // -> becomes a "جای خالی" question. Correct answer must still be
+      // filled in manually in the questions tab (we can't guess it from plain text).
+      q = {id:uid(), type:'blank', text:line, answer:'', score: state.defaultScore, order: state.questions.length};
+      counts.blank++;
+    } else if(/\([^()]*\/[^()]*\)/.test(line)){
+      // Line contains a parenthetical with slash-separated choices, e.g.
+      // "آب در دمای صفر درجه (جامد/مایع/گاز) می‌شود." -> becomes a "پرانتزی" question.
+      // Correct choice must still be picked manually in the questions tab.
+      q = {id:uid(), type:'paren', text:line, answer:'', score: state.defaultScore, order: state.questions.length};
+      counts.paren++;
+    } else {
+      q = {id:uid(), type:'essay', text:line, score: state.defaultScore, keywords:'', teacherImage:null, allowStudentImage:false, order: state.questions.length};
+      counts.essay++;
+    }
+    state.questions.push(q);
+  });
+  document.getElementById('bulkPasteArea').value='';
+  renderQuestionsTable(); saveDraft();
+  const parts = [];
+  if(counts.blank) parts.push(`${counts.blank} جای‌خالی`);
+  if(counts.paren) parts.push(`${counts.paren} پرانتزی`);
+  if(counts.essay) parts.push(`${counts.essay} تشریحی`);
+  toast(`${lines.length} سوال اضافه شد (${parts.join('، ')}) — پاسخ صحیح سوالات جای‌خالی/پرانتزی را در تب «سوالات» تکمیل کنید ✓`);
+});
+document.getElementById('btnBackupJson').addEventListener('click', ()=>{
+  const backup = { state, bank: getBank(), exams: listPublishedExams().map(ex=>({exam:ex, results:getResults(ex.id)})) };
+  download('پشتیبان_آزمون‌ساز.json', JSON.stringify(backup,null,2), 'application/json');
+  try{ AppStorage.setItem('lastBackupAt', String(Date.now())); }catch(e){}
+  renderBackupReminder();
+});
+document.getElementById('fileRestore').addEventListener('change', e=>{
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = ()=>{
+    try{
+      const data = JSON.parse(r.result);
+      if(data.state){ state = data.state; }
+      if(data.bank){ setBank(data.bank); }
+      if(data.exams){ data.exams.forEach(item=>{ AppStorage.setItem('exam_'+item.exam.id, JSON.stringify(item.exam)); AppStorage.setItem('results_'+item.exam.id, JSON.stringify(item.results||[])); }); }
+      renderAll(); saveDraft();
+      toast('بازیابی با موفقیت انجام شد ✓');
+    }catch(err){ toast('فایل پشتیبان نامعتبر است'); }
+  };
+  r.readAsText(f);
+});
+document.getElementById('defaultScoreSetting').addEventListener('change', e=>{ state.defaultScore = +e.target.value; saveDraft(); });
+
+// Everything lives only in this one browser's localStorage — there is no
+// cloud sync. This can't be fixed without a real server, but a nudge to
+// take a manual backup periodically at least limits the damage if the
+// browser data is ever lost/cleared.
+function renderBackupReminder(){
+  const box = document.getElementById('backupReminder');
+  if(!box) return;
+  const hasData = state.questions.length>0 || listPublishedExams().length>0 || getBank().length>0;
+  if(!hasData){ box.innerHTML=''; return; }
+  const lastBackupAt = +(AppStorage.getItem('lastBackupAt')||0);
+  const days = lastBackupAt ? Math.floor((Date.now()-lastBackupAt)/86400000) : null;
+  if(days===null){
+    box.innerHTML = `<div class="card" style="background:#fbe8d3;"><p><b>⚠️ هنوز از داده‌هایتان (آزمون‌ها، بانک سوالات، نتایج) پشتیبان نگرفته‌اید.</b> همه این‌ها فقط در همین مرورگر ذخیره شده و با پاک شدن کش یا عوض کردن دستگاه از بین می‌رود. توصیه می‌شود همین حالا یک پشتیبان بگیرید.</p></div>`;
+  } else if(days>=3){
+    box.innerHTML = `<div class="card" style="background:#fbe8d3;"><p><b>⚠️ ${days} روز از آخرین پشتیبان‌گیری شما گذشته.</b> از آخرین آزمون یا نتیجه‌ای که اضافه کرده‌اید ممکن است نسخهٔ پشتیبان نداشته باشید. توصیه می‌شود یک پشتیبان تازه بگیرید.</p></div>`;
+  } else {
+    box.innerHTML = '';
+  }
+}
+
+/* ============ RENDER ALL ============ */
+function renderAll(){
+  renderQuestionsTable();
+  syncOnlineUi();
+  renderProjectSelect();
+  document.getElementById('defaultScoreSetting').innerHTML = scoreOptions(state.defaultScore);
+  renderBackupReminder();
+  renderStorageUsage();
+}
+
+/* ============ AUTOSAVE ============ */
+// (started conditionally below — only when this load is the teacher's builder,
+// not when a student is taking an exam on their own device/browser)
+
+/* ================================================================
+   STUDENT (ONLINE EXAM TAKING) MODE
+   ================================================================ */
+async function initStudentMode(examId, dataCode, embeddedExam){
+  document.getElementById('app').style.display='none';
+  document.getElementById('studentApp').style.display='block';
+  const main = document.getElementById('studentMain');
+  main.innerHTML = '<div class="card">در حال بارگذاری آزمون...</div>';
+
+  let ex = embeddedExam || null;
+  if(!ex && dataCode){
+    // Some messaging apps insert line breaks or stray spaces into very long
+    // text/links when displaying them — strip any whitespace before decoding,
+    // since our base64url alphabet never legitimately contains whitespace.
+    const cleanCode = dataCode.replace(/\s+/g, '');
+    try{ ex = await decodeData(cleanCode); }catch(e){ ex = null; }
+  }
+  if(!ex){
+    const exRaw = AppStorage.getItem('exam_'+examId);
+    if(exRaw){ try{ ex = JSON.parse(exRaw); }catch(e){ ex = null; } }
+  }
+  if(!ex){
+    main.innerHTML = '<div class="card">آزمونی با این شناسه یافت نشد. این معمولاً یعنی لینک هنگام ارسال ناقص یا بریده شده. از معلم خود بخواهید لینک کامل را دوباره ارسال کند — بهتر است به‌جای تایپ یا کپی‌کردن دستی، از دکمهٔ اشتراک‌گذاری همان لینک استفاده شود.</div>';
+    return;
+  }
+  // Opportunistically cache locally too, in case this device is revisited (e.g. teacher testing)
+  try{ AppStorage.setItem('exam_'+examId, JSON.stringify(ex)); }catch(e){}
+
+
+  const now = Date.now();
+  const start = ex.settings.examStart ? new Date(ex.settings.examStart).getTime() : null;
+  const end = ex.settings.examEnd ? new Date(ex.settings.examEnd).getTime() : null;
+  if(start && now < start){ main.innerHTML = `<div class="card">این آزمون هنوز شروع نشده است. زمان شروع: ${new Date(start).toLocaleString('fa-IR')}</div>`; return; }
+  if(end && now > end){ main.innerHTML = `<div class="card">مهلت این آزمون به پایان رسیده است.</div>`; return; }
+
+  let order = ex.questions.map((_,i)=>i);
+  if(ex.settings.displayModes.includes('random')) order = shuffle(order);
+  const oneByOne = ex.settings.displayModes.includes('one');
+
+  // Per-student option order for multiple-choice questions, so the same
+  // student doesn't see options reshuffled on every refresh (and so a
+  // teacher who enables this can't have a "friendlier" always-in-position
+  // option memorized across attempts).
+  const mcOptionOrder = {};
+  const shuffleOpts = ex.settings.displayModes.includes('shuffleOptions');
+
+  // Progress persists locally so an accidental refresh/tab-close doesn't
+  // wipe the student's answers or reset their timer back to full length.
+  // It's cleared the moment the exam is actually submitted, so the next
+  // person opening this same link/file on this same device always starts
+  // a clean, fresh attempt (important on shared classroom computers).
+  const progressKey = 'examProgress_' + examId;
+  let progress = null;
+  try{ progress = JSON.parse(AppStorage.getItem(progressKey)); }catch(e){ progress = null; }
+  const validProgress = progress && progress.personalDeadline && progress.personalDeadline > now;
+
+  if(validProgress && progress.mcOptionOrder){
+    Object.assign(mcOptionOrder, progress.mcOptionOrder);
+  } else if(shuffleOpts){
+    ex.questions.forEach((q,qi)=>{ if(q.type==='mc4') mcOptionOrder[qi] = shuffle(q.options.map((_,i)=>i)); });
+  }
+
+  const answers = {}; // qi -> answer object
+  if(validProgress && progress.answers) Object.assign(answers, progress.answers);
+  let tabSwitchCount = (validProgress && progress.tabSwitchCount) || 0;
+  let currentIdx = 0;
+
+  function saveProgress(){
+    try{
+      AppStorage.setItem(progressKey, JSON.stringify({
+        personalDeadline, tabSwitchCount, answers, mcOptionOrder,
+        stuFirst: (document.getElementById('stuFirst')||{}).value || '',
+        stuLast: (document.getElementById('stuLast')||{}).value || ''
+      }));
+    }catch(e){ /* storage full/unavailable — progress just won't survive a refresh */ }
+  }
+
+  main.innerHTML = `
+    <div class="card">
+      <h2>${esc(ex.settings.examName || 'آزمون آنلاین')}</h2>
+      ${ex.settings.examRules ? `<div style="background:#fbe8d3;border:1px solid #e0b878;border-radius:8px;padding:10px 14px;margin-bottom:12px;"><b>⚠️ قوانین این آزمون:</b><p style="white-space:pre-wrap;margin:6px 0 0 0;">${esc(ex.settings.examRules)}</p></div>` : ''}
+      <table class="qtable">${ex.headerFields.map(f=>`<tr><td style="font-weight:bold;background:#eaf2f8;width:40%;">${esc(f.label)}</td><td>${esc(f.value)||'&nbsp;'}</td></tr>`).join('')}</table>
+      <div class="grid2" style="margin-top:10px;">
+        <div><label>نام</label><input type="text" id="stuFirst" autocomplete="off"></div>
+        <div><label>نام خانوادگی</label><input type="text" id="stuLast" autocomplete="off"></div>
+      </div>
+      <div id="examTimerBox" style="margin-top:10px;"></div>
+      ${validProgress?'<p class="small">پاسخ‌های قبلی شما بازیابی شد (احتمالاً صفحه رفرش شده بود). اگر این آزمون متعلق به شما نیست، از دکمهٔ زیر برای شروع پاک استفاده کنید.<br><a href="#" id="lnkFreshStart">🔄 پاک کردن و شروع از نو (برای دانش‌آموز دیگر)</a></p>':''}
+    </div>
+    <div id="stuQuestions"></div>
+    <div class="card"><button id="btnSubmitExam">✅ ثبت نهایی پاسخ‌ها</button></div>
+  `;
+  if(validProgress){
+    document.getElementById('stuFirst').value = progress.stuFirst || '';
+    document.getElementById('stuLast').value = progress.stuLast || '';
+    document.getElementById('lnkFreshStart').addEventListener('click', (e)=>{
+      e.preventDefault();
+      if(!confirm('پاسخ‌های ذخیره‌شدهٔ فعلی روی این دستگاه پاک می‌شود و آزمون از نو شروع می‌شود. مطمئنید؟')) return;
+      try{ AppStorage.removeItem(progressKey); }catch(err){}
+      location.reload();
+    });
+  }
+  document.getElementById('stuFirst').addEventListener('input', saveProgress);
+  document.getElementById('stuLast').addEventListener('input', saveProgress);
+
+  // Timer — each student gets a fixed personal duration from the moment they join,
+  // capped by the overall exam window's end time. Persisted so refreshing the
+  // page can't be used to reset the clock back to the full duration.
+  const durationMs = Math.max(1, ex.settings.durationMinutes||10) * 60000;
+  const personalDeadline = validProgress ? progress.personalDeadline : (end ? Math.min(now + durationMs, end) : now + durationMs);
+  if(!validProgress) saveProgress(); // lock in the deadline immediately so an instant refresh can't extend it
+  let timerInterval=null;
+  {
+    const box = document.getElementById('examTimerBox');
+    timerInterval = setInterval(()=>{
+      const remain = personalDeadline - Date.now();
+      if(remain<=0){ clearInterval(timerInterval); box.innerHTML='<span class="timer">⏱ زمان تمام شد</span>'; submitExam(true); return; }
+      const m = Math.floor(remain/60000), s = Math.floor((remain%60000)/1000);
+      box.innerHTML = `<span class="timer">⏱ زمان باقی‌مانده: ${m}:${String(s).padStart(2,'0')}</span>`;
+    }, 1000);
+  }
+
+  // Tab-switch / app-switch detection: not preventable client-side, but
+  // logging it gives the teacher a signal to review, shown in the grading tab.
+  function onVisibilityChange(){
+    if(document.hidden){ tabSwitchCount++; saveProgress(); }
+    else if(tabSwitchCount>0){ toast('⚠️ خروج شما از این صفحه ثبت شد و برای معلم قابل مشاهده است'); }
+  }
+  document.addEventListener('visibilitychange', onVisibilityChange);
+
+  function renderQuestionCard(qi){
+    const q = ex.questions[qi];
+    let inner = '';
+    if(q.type==='tf'){
+      inner = `<div class="tf-btns">
+        <button type="button" class="secondary tf-opt" data-v="true">✓ صحیح</button>
+        <button type="button" class="secondary tf-opt" data-v="false">✗ غلط</button>
+      </div>`;
+    } else if(q.type==='blank' || q.type==='paren'){
+      inner = `<input type="text" class="stu-answer" autocomplete="off">`;
+    } else if(q.type==='mc4'){
+      const optOrder = mcOptionOrder[qi] || q.options.map((_,i)=>i);
+      inner = (q.teacherImage?`<img src="${q.teacherImage}" style="max-width:200px;display:block;margin-bottom:8px;">`:'') +
+        optOrder.map((oi,pos)=>`<button type="button" class="secondary mc-opt" data-v="${oi}" style="display:block;width:100%;text-align:right;margin-bottom:6px;">${pos+1}) ${esc(q.options[oi])}</button>`).join('') +
+        (q.allowStudentImage?`<label style="margin-top:6px;">آپلود تصویر پاسخ (اختیاری)</label><input type="file" class="stu-answer-img" accept="image/*" autocomplete="off">`:'');
+    } else if(q.type==='match'){
+      inner = q.leftItems.map((l,li)=>`
+        <div class="row" style="align-items:center;">
+          <span style="flex:1;">${li+1}) ${esc(l)}</span>
+          <select class="stu-match" data-li="${li}" autocomplete="off"><option value="">— انتخاب —</option>${q.rightItems.map(r=>`<option value="${esc(r)}">${esc(r)}</option>`).join('')}</select>
+        </div>`).join('');
+    } else if(q.type==='essay'){
+      inner = (q.teacherImage?`<img src="${q.teacherImage}" style="max-width:200px;display:block;margin-bottom:8px;">`:'') +
+        `<textarea class="stu-answer" autocomplete="off" rows="4"></textarea>` +
+        (q.allowStudentImage?`<label style="margin-top:6px;">آپلود تصویر پاسخ (اختیاری)</label><input type="file" class="stu-answer-img" accept="image/*" autocomplete="off">`:'');
+    }
+    return `<div class="card" data-qi="${qi}">
+      <p><span class="qnum-circle">${qi+1}</span><b>${esc(q.text||'وصل کنید')}</b> <span class="small">(${q.score} نمره)</span></p>
+      ${inner}
+    </div>`;
+  }
+
+  function bindQuestionCard(card){
+    const qi = +card.dataset.qi;
+    card.querySelectorAll('.tf-opt').forEach(b=>b.addEventListener('click', ()=>{
+      card.querySelectorAll('.tf-opt').forEach(x=>x.classList.remove('selected'));
+      b.classList.add('selected'); answers[qi] = Object.assign({}, answers[qi], {value: b.dataset.v==='true'}); saveProgress();
+    }));
+    card.querySelectorAll('.mc-opt').forEach(b=>b.addEventListener('click', ()=>{
+      card.querySelectorAll('.mc-opt').forEach(x=>x.style.background='');
+      b.style.background='#c8e0f0'; answers[qi] = Object.assign({}, answers[qi], {value: +b.dataset.v}); saveProgress();
+    }));
+    const ansInput = card.querySelector('.stu-answer');
+    if(ansInput) ansInput.addEventListener('input', ()=>{ answers[qi] = Object.assign({}, answers[qi], {text: ansInput.value}); saveProgress(); });
+    const imgInput = card.querySelector('.stu-answer-img');
+    if(imgInput) imgInput.addEventListener('change', e=>{
+      const f = e.target.files[0]; if(!f) return;
+      const r = new FileReader();
+      r.onload = async ()=>{
+        // Shrink before it sits in this device's localStorage while the exam is
+        // in progress; the result-code step compresses further on top of this.
+        const shrunk = await compressImageDataUrl(r.result, 1400, 0.8);
+        answers[qi] = Object.assign({}, answers[qi], {image: shrunk || r.result});
+        saveProgress();
+        toast('تصویر پاسخ پیوست شد ✓');
+      };
+      r.readAsDataURL(f);
+    });
+    card.querySelectorAll('.stu-match').forEach(sel=>sel.addEventListener('change', ()=>{
+      const matchAns = answers[qi]||{value:{}};
+      matchAns.value = matchAns.value||{};
+      matchAns.value[sel.dataset.li] = sel.value;
+      answers[qi] = matchAns;
+      saveProgress();
+    }));
+    applyStoredAnswer(card, qi);
+  }
+
+  // Reflects a previously-stored answer back into the DOM — used both when
+  // restoring a refreshed session and when navigating back to an earlier
+  // question in "one by one" mode, so the student's prior selection is
+  // still visibly marked instead of looking blank.
+  function applyStoredAnswer(card, qi){
+    const q = ex.questions[qi];
+    const a = answers[qi];
+    if(!a) return;
+    if(q.type==='tf' && a.value!==undefined && a.value!==null){
+      card.querySelectorAll('.tf-opt').forEach(b=>{ b.classList.toggle('selected', (b.dataset.v==='true')===a.value); });
+    } else if(q.type==='mc4' && a.value!==undefined && a.value!==null){
+      card.querySelectorAll('.mc-opt').forEach(b=>{ b.style.background = (+b.dataset.v===a.value) ? '#c8e0f0' : ''; });
+    } else if((q.type==='blank'||q.type==='paren'||q.type==='essay') && a.text!==undefined){
+      const inp = card.querySelector('.stu-answer'); if(inp) inp.value = a.text;
+    } else if(q.type==='match' && a.value){
+      card.querySelectorAll('.stu-match').forEach(sel=>{ const v=a.value[sel.dataset.li]; if(v!==undefined) sel.value=v; });
+    }
+  }
+
+  const stuQ = document.getElementById('stuQuestions');
+  if(oneByOne){
+    function showOne(pos){
+      currentIdx = pos;
+      const qi = order[pos];
+      stuQ.innerHTML = renderQuestionCard(qi) + `
+        <div class="actions-bar">
+          ${pos>0?'<button class="secondary" id="btnPrevQ">← قبلی</button>':''}
+          ${pos<order.length-1?'<button id="btnNextQ">بعدی →</button>':''}
+        </div>`;
+      bindQuestionCard(stuQ.querySelector('.card'));
+      if(pos>0) document.getElementById('btnPrevQ').addEventListener('click', ()=>showOne(pos-1));
+      if(pos<order.length-1) document.getElementById('btnNextQ').addEventListener('click', ()=>showOne(pos+1));
+    }
+    showOne(0);
+  } else {
+    stuQ.innerHTML = order.map(qi=>renderQuestionCard(qi)).join('');
+    stuQ.querySelectorAll('.card').forEach(bindQuestionCard);
+  }
+
+  async function submitExam(auto){
+    if(timerInterval) clearInterval(timerInterval);
+    document.removeEventListener('visibilitychange', onVisibilityChange);
+    const studentName = (document.getElementById('stuFirst').value+' '+document.getElementById('stuLast').value).trim() || 'دانش‌آموز';
+    let total = 0;
+    const finalAnswers = ex.questions.map((q,qi)=>{
+      const a = answers[qi]||{};
+      let correct=false, score=0, textOut=undefined, imageOut=undefined, valueOut=undefined;
+      if(q.type==='tf'){ correct = a.value===q.correctAnswer; score = correct?q.score:0; valueOut = a.value; }
+      else if(q.type==='blank' || q.type==='paren'){
+        const norm = s=> (s||'').toString().trim().toLowerCase();
+        correct = norm(a.text) === norm(q.answer);
+        score = correct?q.score:0; textOut = a.text;
+      } else if(q.type==='mc4'){ correct = a.value===q.correctIndex; score = correct?q.score:0; valueOut = a.value; imageOut = a.image; }
+      else if(q.type==='match'){
+        const val = a.value||{};
+        correct = q.leftItems.every((l,li)=> val[li]===q.correctMap[li]);
+        score = correct?q.score:0; valueOut = val;
+      } else if(q.type==='essay'){
+        textOut = a.text; imageOut = a.image; score = ex.settings.autoGrade? 0 : null;
+      }
+      return {correct, score, text:textOut, image:imageOut, value:valueOut};
+    });
+    finalAnswers.forEach(a=>{ if(a.score) total += a.score; });
+    const resultRecord = {studentName, submittedAt: Date.now(), answers: finalAnswers, totalScore: Math.round(total*100)/100, tabSwitchCount};
+    const results = getResults(ex.id);
+    results.push(resultRecord);
+    saveResults(ex.id, results);
+    try{ AppStorage.removeItem(progressKey); }catch(e){}
+    const totalPossible = ex.questions.reduce((s,q)=>s+q.score,0);
+    const pct = totalPossible? Math.round((total/totalPossible)*1000)/10 : 0;
+
+    main.innerHTML = `<div class="card">
+      <h2>✅ آزمون ثبت شد</h2>
+      <p>${auto?'(به دلیل پایان زمان به‌صورت خودکار ثبت شد)':''}</p>
+      <p>نمره: <b>${Math.round(total*100)/100}</b> از ${totalPossible} (${pct}%)</p>
+      <p class="small">در صورت وجود سوالات تشریحی، نمره نهایی پس از بازبینی معلم اعلام می‌شود.</p>
+      ${auto?'<p class="small">این صفحه دیگر قابل ویرایش نیست. می‌توانید آن را ببندید.</p>':''}
+    </div>
+    <div class="card" style="background:#eaf2f8;">
+      <p><b>⚠️ مهم:</b> این نمره فقط روی همین گوشی/مرورگر شما ذخیره شد. برای اینکه معلمتان آن را ببیند، کد زیر را کپی کنید و برایشان ارسال کنید (مثلاً در همان پیام‌رسان).</p>
+      <div id="resultCodeBox"><p class="small">در حال آماده‌سازی کد نتیجه...</p></div>
+    </div>`;
+    try{
+      // Images bloat the code hugely for a copy-paste flow — instead of
+      // dropping them, shrink them down as needed so the teacher can still
+      // see the attached image clearly, not just the text. Starts at a
+      // fairly high quality and only degrades further if there are
+      // several image answers pushing the code very long.
+      const codePayload = JSON.parse(JSON.stringify(Object.assign({examId: ex.id}, resultRecord)));
+      const codeCompressSteps = [[480,0.65],[380,0.5],[260,0.4],[160,0.3],[110,0.22]];
+      for(const a of codePayload.answers){
+        if(a && a.image){
+          let best = null;
+          for(const [dim, quality] of codeCompressSteps){
+            const small = await compressImageDataUrl(a.image, dim, quality);
+            if(small){ best = small; if(small.length <= 70000) break; }
+          }
+          a.image = best; // null only if the image couldn't be decoded at all
+        }
+      }
+      const code = await encodeData(codePayload);
+      document.getElementById('resultCodeBox').innerHTML = `
+        <textarea id="resultCodeText" readonly rows="3" style="font-size:12px;" autocomplete="off">${esc('EXR:'+code)}</textarea>
+        <div class="actions-bar">
+          <button id="btnCopyResultCode" class="secondary">📋 کپی کد نتیجه</button>
+          <button id="btnShareResultCode">🔗 اشتراک‌گذاری کد نتیجه</button>
+        </div>`;
+      document.getElementById('btnCopyResultCode').addEventListener('click', ()=>{
+        const ta = document.getElementById('resultCodeText'); ta.select();
+        navigator.clipboard && navigator.clipboard.writeText(ta.value).then(()=>toast('کد کپی شد')).catch(()=>{ document.execCommand('copy'); toast('کد کپی شد'); });
+      });
+      document.getElementById('btnShareResultCode').addEventListener('click', async ()=>{
+        const ta = document.getElementById('resultCodeText');
+        if(navigator.share){
+          try{ await navigator.share({ title:'کد نتیجهٔ آزمون', text: ta.value }); return; }
+          catch(e){ /* cancelled — fall through to copy */ }
+        }
+        ta.select();
+        navigator.clipboard && navigator.clipboard.writeText(ta.value).then(()=>toast('این دستگاه اشتراک‌گذاری مستقیم ندارد — کد کپی شد، آن را پیست کنید')).catch(()=>{ document.execCommand('copy'); toast('کد کپی شد'); });
+      });
+    }catch(e){
+      document.getElementById('resultCodeBox').innerHTML = '<p class="small">ساخت کد نتیجه با خطا مواجه شد.</p>';
+    }
+    // Note: we deliberately do NOT auto-close the tab here anymore — it was
+    // giving the student only ~1 second to copy their result code before the
+    // page vanished. The page now just stays open and locked; the student
+    // closes it themselves whenever they're done copying the code.
+  }
+  document.getElementById('btnSubmitExam').addEventListener('click', ()=>{ if(confirm('آیا از ثبت نهایی پاسخ‌ها مطمئن هستید؟')) submitExam(false); });
+}
+
+/* ============ BOOT ============ */
+const params = new URLSearchParams(location.search);
+(async ()=>{
+  await AppStorage.ready();
+  const embedTag = document.getElementById('examDataEmbed');
+  const embedRaw = embedTag && embedTag.textContent ? embedTag.textContent.trim() : '';
+  if(embedRaw){
+    // This is a standalone exam file (from "دانلود فایل آزمون") — the whole
+    // exam, including full-quality images, is embedded right in this file,
+    // so there's no link/length limit to worry about at all.
+    let embedded = null;
+    try{ embedded = await decodeData(embedRaw); }catch(e){ embedded = null; }
+    if(embedded){ initStudentMode(embedded.id, null, embedded); return; }
+    document.getElementById('app').style.display='none';
+    document.getElementById('studentApp').style.display='block';
+    document.getElementById('studentMain').innerHTML = '<div class="card">این فایل آزمون خراب است یا به‌درستی دانلود نشده. آن را دوباره از معلم بگیرید.</div>';
+    return;
+  }
+  if(params.get('exam')){
+    initStudentMode(params.get('exam'), params.get('d'));
+  } else {
+    loadDraft();
+    renderAll();
+    setInterval(saveDraft, 8000);
+  }
+})();
+
+/* PWA service worker registration (works only when served over http/https) */
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+  window.addEventListener('load', ()=>{ navigator.serviceWorker.register('service-worker.js').catch(()=>{}); });
+}
+
+/* Explicit install button (more reliable than relying on the browser menu) */
+let deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', (e)=>{
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  const card = document.getElementById('installCard');
+  if(card) card.style.display = 'block';
+});
+document.getElementById('btnInstallApp').addEventListener('click', async ()=>{
+  if(!deferredInstallPrompt){ toast('نصب هم‌اکنون در دسترس نیست یا قبلاً نصب شده'); return; }
+  deferredInstallPrompt.prompt();
+  const choice = await deferredInstallPrompt.userChoice;
+  deferredInstallPrompt = null;
+  document.getElementById('installCard').style.display = 'none';
+  toast(choice.outcome==='accepted' ? 'نصب شد ✓' : 'نصب لغو شد');
+});
+window.addEventListener('appinstalled', ()=>{
+  const card = document.getElementById('installCard');
+  if(card) card.style.display = 'none';
+});
+
+})();
+</script>
+</body>
+</html>
