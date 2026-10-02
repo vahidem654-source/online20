@@ -453,8 +453,8 @@ async function rsDraw(){const exm=exams.find(k=>k.id==RS.ex),box=$('#rl');if(!bo
  const rowSt=exm.rows.map((rw,ri)=>{const w=gw(exm,rw)||1,p=L.reduce((s,x)=>s+rw.items.reduce((q,it)=>q+x.g.det[keyOf(rw,it)].sc,0)/w,0)/L.length*100;return `<div class="r" style="align-items:center"><span style="width:62px">سوال ${fa(ri+1)}</span><div style="flex:1">${bar(p)}</div><span>${fa(Math.round(p))}٪</span></div>`}).join('');
  box.innerHTML=`<div class="card"><h3>آمار</h3><p>تعداد: ${fa(L.length)} · میانگین: ${r2(avg)} از ${r2(mx)} · بیشترین: ${r2(Math.max(...T))} · کمترین: ${r2(Math.min(...T))} · میانه: ${r2(med)}</p>`+
  bins.map((c,i)=>`<div class="r" style="align-items:center"><span style="width:90px">${fa(i*20)}–${fa(i*20+20)}٪</span><div style="flex:1">${bar(c/L.length*100)}</div><span>${fa(c)}</span></div>`).join('')+`<h3>میانگین نمره‌ی هر سؤال (درصد)</h3>${rowSt}</div>
- <div class="card"><h3>نتایج</h3>${L.map(({r,g},i)=>`<div class="it"><span class="tg">${fa(i+1)}</span><span class="pv"><b>${esc(r.name)}</b> ${esc(r.cls||'')}${g.pend&&(exm.ol||{}).auto!==false?' ⚠ تصحیح‌نشده':''}</span><b>${r2(g.tot)} / ${r2(g.max)}</b><span class="acts"><button data-a="rgr" data-i="${r.id}">✎ تصحیح</button><button data-a="rdl" data-i="${r.id}">🗑</button></span></div>`).join('')}
- <div class="r"><button class="p" data-a="rpt">📦 فایل نتایج برای دانش‌آموزان</button><button data-a="rcsv">⬇️ CSV</button></div></div>`}
+ <div class="card"><h3>نتایج</h3>${L.map(({r,g},i)=>`<div class="it"><span class="tg">${fa(i+1)}</span><span class="pv"><b>${esc(r.name)}</b> ${esc(r.cls||'')}${g.pend&&(exm.ol||{}).auto!==false?' ⚠ تصحیح‌نشده':''}</span><b>${r2(g.tot)} / ${r2(g.max)}</b><span class="acts"><button data-a="rgr" data-i="${r.id}">✎ تصحیح</button><button data-a="rrf" data-i="${r.id}" title="فایل کارنامه">📄</button><button data-a="rrl" data-i="${r.id}" title="لینک کارنامه">🔗</button><button data-a="rdl" data-i="${r.id}">🗑</button></span></div>`).join('')}
+ <div class="r"><button class="p" data-a="rzip">🗂 ZIP کارنامه‌ی کامل همه</button><button data-a="rpt">📦 فایل فقط نمرات (برای همه)</button><button data-a="rcsv">⬇️ CSV</button></div></div>`}
 async function addCodes(txt){let n=0,bad=0,last=null;const have=await all('results');
  for(const c of txt.split(/\s+/).filter(x=>x.length>20)){try{const r=await decodeData(c);if(!r.ex||!r.ans)throw 0;if(!exams.find(k=>k.id==r.ex)){bad++;continue}last=r.ex;
   if(have.find(x=>x.exId==r.ex&&x.t0==r.t0&&x.name==r.name))continue;const o={id:uid(),exId:r.ex,name:r.name,cls:r.cls,t0:r.t0,t1:r.t1,ans:r.ans,man:{}};await put('results',o);have.push(o);n++}catch{bad++}}
@@ -482,18 +482,52 @@ $('#v').addEventListener('click',async e=>{const b=e.target.closest('button');if
  else if(a=='rgr')gradeM(id);
  else if(a=='rdl'){if(confirm('این نتیجه حذف شود؟')){await del('results',id);rsDraw()}}
  else if(a=='rpt'){const exm=exams.find(k=>k.id==RS.ex);saveBlob(new Blob([portalHtml(exm,RS.L)],{type:'text/html'}),exm.title+' - نتایج.html')}
+ else if(a=='rrf'||a=='rrl'){const x=RS.L.find(q=>q.r.id==id),exm=exams.find(k=>k.id==RS.ex);toast('در حال ساخت کارنامه…');
+  if(a=='rrf')saveBlob(new Blob([await standalone(await repData(x.r,exm,900,.75))],{type:'text/html'}),'کارنامه - '+x.r.name+'.html');
+  else{const L=baseUrl()+'?r='+await encodeData(await repData(x.r,exm,520,.55));showM(`<h3>لینک کارنامه‌ی ${esc(x.r.name)}</h3><textarea id="rlk" readonly rows="5" style="width:100%">${L}</textarea><small>طول لینک: ${fa(L.length)} نویسه</small><div class="ft"><button class="p" data-x="cpl">کپی</button><button data-x="cl">بستن</button></div>`)}}
+ else if(a=='rzip'){const exm=exams.find(k=>k.id==RS.ex),E=new TextEncoder(),fs=[];toast('در حال ساخت کارنامه‌ها…');
+  for(const[i,x]of RS.L.entries())fs.push({name:`${i+1}-${x.r.name.replace(/[^\u0600-\u06FF\w \-]/g,'')}.html`,data:E.encode(await standalone(await repData(x.r,exm,900,.75)))});
+  saveBlob(zipBlob(fs),exm.title+' - کارنامه‌ها.zip')}
  else if(a=='rcsv'){const exm=exams.find(k=>k.id==RS.ex);saveBlob(new Blob(['\ufeffنام,کلاس,نمره,از\n'+RS.L.map(({r,g})=>`"${r.name}","${r.cls||''}",${+g.tot.toFixed(2)},${+g.max.toFixed(2)}`).join('\n')],{type:'text/csv'}),exm.title+'.csv')}});
 $('#v').addEventListener('input',e=>{const t=e.target,o=olv();if(t.id=='o_name')o.name=t.value;else if(t.id=='o_min')o.minutes=+t.value||0;else if(t.id=='o_rules')o.rules=t.value;else return;persist()});
 $('#v').addEventListener('change',async e=>{const t=e.target,id=t.id||'';
  if(id=='rsx'){RS.ex=t.value;rsDraw();return}if(id=='rfl'){for(const f of t.files)await addCodes(await f.text());t.value='';return}
  if(!/^(o_|os_|oe_)/.test(id))return;const o=olv();if(id=='o_sh')o.shuffle=t.checked;else if(id=='o_lim'){o.lim=t.checked;if(t.checked)winRead();$('#o_win').hidden=!t.checked}else winRead();persist()});
 $('#md').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const x=b.dataset.x;
- if(x=='pi'){if(DIP){DIP.prompt()}else toast('از منوی مرورگر گزینه‌ی «نصب برنامه» را بزن')}
+ if(x=='cpl'){navigator.clipboard?.writeText($('#rlk').value);toast('کپی شد')}else if(x=='pi'){if(DIP){DIP.prompt()}else toast('از منوی مرورگر گزینه‌ی «نصب برنامه» را بزن')}
  else if(x=='gs'){const r=RS.rs.find(q=>q.id==b.dataset.n),exm=exams.find(k=>k.id==r.exId),a0=gradeRes({...r,man:{}},exm);r.man={};
   $$('[data-gk]').forEach(i=>{const v=+i.value,k=i.dataset.gk;if(Math.abs(v-a0.det[k].sc)>.005)r.man[k]=v});put('results',r);hideM();rsDraw();toast('ذخیره شد')}});
+// ---- personal report cards (full answer sheet: question + student's answer + correct answer)
+//#ZIP-START
+const crcT=(()=>{const t=[];for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
+const crc32=u=>{let c=-1;for(const b of u)c=crcT[(c^b)&255]^(c>>>8);return(~c)>>>0};
+function zipBlob(files){const E=new TextEncoder(),parts=[],cd=[];let off=0;
+ for(const f of files){const nm=E.encode(f.name),d=f.data,c=crc32(d),h=new DataView(new ArrayBuffer(30));
+  h.setUint32(0,0x04034b50,true);h.setUint16(4,20,true);h.setUint16(6,0x0800,true);h.setUint16(12,0x21,true);h.setUint32(14,c,true);h.setUint32(18,d.length,true);h.setUint32(22,d.length,true);h.setUint16(26,nm.length,true);
+  parts.push(new Uint8Array(h.buffer),nm,d);
+  const g=new DataView(new ArrayBuffer(46));g.setUint32(0,0x02014b50,true);g.setUint16(4,20,true);g.setUint16(6,20,true);g.setUint16(8,0x0800,true);g.setUint16(14,0x21,true);g.setUint32(16,c,true);g.setUint32(20,d.length,true);g.setUint32(24,d.length,true);g.setUint16(28,nm.length,true);g.setUint32(42,off,true);
+  cd.push(new Uint8Array(g.buffer),nm);off+=30+nm.length+d.length}
+ const cl=cd.reduce((s,x)=>s+x.length,0),e=new DataView(new ArrayBuffer(22));e.setUint32(0,0x06054b50,true);e.setUint16(8,files.length,true);e.setUint16(10,files.length,true);e.setUint32(12,cl,true);e.setUint32(16,off,true);
+ return new Blob([...parts,...cd,new Uint8Array(e.buffer)],{type:'application/zip'})}
+//#ZIP-END
+async function repData(r,exm,mx,q){const g=gradeRes(r,exm),rows=[];
+ for(const rw of exm.rows){const its=[];for(const it of rw.items){const k=keyOf(rw,it),d=g.det[k];let kh=keyText(it),ah=ansText(it,r.ans[k]);
+  if(it.type=='desc'){ah=ah.replace(/\n/g,'<br>');kh=it.ans||'—'}else if(it.type=='mc'&&it.ans)kh+='<div>'+it.ans+'</div>';
+  its.push({q:await shrink(itemHtml(it,false),mx,q),a:ah,c:await shrink(kh,mx,q),sc:+d.sc.toFixed(2),w:+d.w.toFixed(2)})}
+  rows.push({t:rw.title||'',s:rw.score||0,i:its})}
+ return{v:1,rep:1,title:exm.title,name:r.name,cls:r.cls||'',tot:+g.tot.toFixed(2),max:+g.max.toFixed(2),rows}}
+function showReport(P){document.title='کارنامه '+P.name;document.body.innerHTML='<div class="ui" id="st" style="max-width:820px;margin:auto;padding:14px 12px 60px"></div>';
+ const col=(s,w)=>s>=w-.001?'#1E9E78':s<=.001?'#D64545':'#D9962B';
+ $('#st').innerHTML=`<div class="card"><h2>کارنامه‌ی آزمون: ${esc(P.title)}</h2><p><b>${esc(P.name)}</b> ${esc(P.cls||'')}</p><p style="font-size:20px">نمره: <b style="color:var(--ac)">${sf(P.tot)}</b> از ${sf(P.max)}</p></div>`+
+ P.rows.map((r,ri)=>`<div class="card"><div class="rh"><b>سوال ${fa(ri+1)}</b>${r.s?`<span style="margin-inline-start:auto">بارم: ${sf(r.s)}</span>`:''}</div>${r.t?`<div class="qc">${esc(r.t)}</div>`:''}`+
+  r.i.map((it,ii)=>`<div style="border-top:1px dashed var(--ln);padding-top:8px;margin-top:8px"><div class="qc">${r.i.length>1?`<b>${fa(ii+1)})</b> `:''}${it.q}</div>
+  <div style="margin:6px 0;padding:8px;border-radius:10px;border:2px solid ${col(it.sc,it.w)}"><b>پاسخ شما:</b> ${it.a}</div>
+  <div style="padding:8px;border-radius:10px;background:var(--bg)"><b style="color:var(--ac)">پاسخ صحیح:</b> <span class="qc" style="font-size:16px">${it.c}</span></div>
+  <div style="text-align:left"><b style="color:${col(it.sc,it.w)}">نمره: ${sf(it.sc)} از ${sf(it.w)}</b></div></div>`).join('')+'</div>').join('')}
 // ================= STUDENT MODE =================
 async function startStudent(code){
- let P;try{P=await decodeData(code.trim())}catch{document.body.innerHTML='<p style="padding:30px;text-align:center">آزمون معتبر نیست یا لینک ناقص کپی شده است.</p>';return}
+ let P;try{P=await decodeData(code.trim())}catch{document.body.innerHTML='<p style="padding:30px;text-align:center">لینک یا فایل معتبر نیست یا ناقص کپی شده است.</p>';return}
+ if(P.rep)return showReport(P);
  document.title=P.title;document.body.innerHTML='<div class="ui" id="st" style="max-width:820px;margin:auto;padding:14px 12px 60px"></div><div id="ts"></div>';
  const st=$('#st'),O=P.ol||{},K='ao_'+P.id;let Z=null,tid;
  const tm=(j,t)=>{if(!j)return null;const g=toGregorianYMD(j.jy,j.jm,j.jd),h=(t||'00:00').split(':');return new Date(g.gy,g.gm-1,g.gd,+h[0],+h[1]).getTime()};
@@ -530,5 +564,5 @@ async function startStudent(code){
  if(done)fin(done);else if(sv){try{Z=JSON.parse(sv);run()}catch{intro()}}else intro()}
 
 // ---------- start
-(async()=>{const D0=(document.getElementById('examDataEmbed')?.textContent||'').trim()||new URLSearchParams(location.search).get('d');if(D0)return startStudent(D0);db=await idb();exams=await all('exams');bank=await all('bank');ex=exams.find(e=>e.id==localStorage.ao_cur)||exams[0];if(!ex)newExam();else render();navigator.storage?.persist?.();setTimeout(loadDocx,3000);if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js')})();
+(async()=>{const D0=(document.getElementById('examDataEmbed')?.textContent||'').trim()||new URLSearchParams(location.search).get('d')||new URLSearchParams(location.search).get('r');if(D0)return startStudent(D0);db=await idb();exams=await all('exams');bank=await all('bank');ex=exams.find(e=>e.id==localStorage.ao_cur)||exams[0];if(!ex)newExam();else render();navigator.storage?.persist?.();setTimeout(loadDocx,3000);if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js')})();
 </script></body></html>
