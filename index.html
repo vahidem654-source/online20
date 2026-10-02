@@ -210,7 +210,7 @@ $('#md').addEventListener('click',e=>{const t=e.target;if(t.tagName=='IMG'&&t.cl
  else if(x=='rB'&&ED.d.B.length>1){sync();ED.d.B.splice(+n,1);ED.d.map=ED.d.map.map(m=>m>+n?m-1:Math.min(m,ED.d.B.length-1));$('#e_m').innerHTML=matchRows(ED.d)}
  else if(x=='xo'){ex=exams.find(k=>k.id==n);localStorage.ao_cur=n;hideM();T='ex';render()}
  else if(x=='xd'){const c=clone(exams.find(k=>k.id==n));c.id=uid();c.title+=' (کپی)';exams.push(c);put('exams',c);mExams()}
- else if(x=='xx'){if(confirm('کل این آزمون حذف شود؟')){exams=exams.filter(k=>k.id!=n);del('exams',n);if(ex.id==n){ex=exams[0];if(!ex)return newExam(),hideM();localStorage.ao_cur=ex.id}hideM();render()}}
+ else if(x=='xx'){if(confirm('کل این آزمون حذف شود؟')){exams=exams.filter(k=>k.id!=n);del('exams',n);all('results').then(rs=>rs.filter(r=>r.exId==n).forEach(r=>del('results',r.id)));if(ex.id==n){ex=exams[0];if(!ex)return newExam(),hideM();localStorage.ao_cur=ex.id}hideM();render()}}
  else if(x=='xn'){hideM();newExam()}
  else if(x=='xj')saveBlob(new Blob([JSON.stringify({app:'azmoon',v:1,exam:ex})]),ex.title+'.json');
  else if(x=='xb')all('results').then(rs=>rs.filter(q=>!String(q.id).startsWith('stu:'))).then(rs=>saveBlob(new Blob([JSON.stringify({app:'azmoon',v:1,exams,bank,subs:SUBS,results:rs})]),'azmoon-online-backup.json'))});
@@ -442,11 +442,13 @@ const winRead=()=>{const o=olv();o.s={...readJalaliSelects('os'),t:$('#o_st').va
 // ---- results / grading / stats
 let RS={ex:'',rs:[],L:[]};
 const vRs=()=>{if(!exams.find(k=>k.id==RS.ex))RS.ex=ex.id;return `<div class="card"><label>آزمون</label><select id="rsx" style="width:100%">${[...exams].sort((a,b)=>b.t-a.t).map(k=>`<option value="${k.id}" ${k.id==RS.ex?'selected':''}>${esc(k.title)}</option>`).join('')}</select>
- <label>کد نتیجه‌ی دانش‌آموزان (هر کد در یک خط)</label><textarea id="rcd" rows="3" style="width:100%;background:var(--bg);color:inherit;border:1px solid var(--ln);border-radius:10px;padding:8px"></textarea>
- <div class="r"><button class="p" data-a="rimp">➕ افزودن نتیجه‌ها</button><label class="b">📂 فایل کدها<input type="file" id="rfl" accept=".txt,text/plain" multiple hidden></label></div></div><div id="rl"></div>`};
+ <label>فایل‌های نتیجه‌ی دانش‌آموزان (چند فایل را می‌توانی یک‌جا انتخاب کنی)</label><div class="r"><label class="b p">📂 افزودن فایل‌های نتیجه<input type="file" id="rfl" multiple hidden></label></div>
+ <details><summary style="cursor:pointer;color:var(--mu)">چسباندن کد متنی (برای نتیجه‌های قدیمی)</summary><textarea id="rcd" rows="3" style="width:100%;background:var(--bg);color:inherit;border:1px solid var(--ln);border-radius:10px;padding:8px"></textarea><button class="p" data-a="rimp">➕ افزودن نتیجه‌ها</button></details></div><div id="rl"></div><div id="rm"></div>`};
+function rsManage(A){const m=$('#rm');if(!m)return;const by={};A.forEach(r=>by[r.exId]=(by[r.exId]||0)+1);const l=exams.filter(k=>by[k.id]);
+ m.innerHTML=l.length?`<div class="card"><h3>حذف نتایج آزمون‌ها</h3><small style="color:var(--mu)">با زدن دکمه‌ی هر آزمون، همه‌ی نتایج همان آزمون یک‌جا حذف می‌شود.</small>${l.map(k=>`<div class="it"><span class="pv"><b>${esc(k.title)}</b></span><span>${fa(by[k.id])} نتیجه</span><button data-a="rdall" data-i="${k.id}" style="border-color:var(--dg);color:var(--dg)">🗑 حذف همه‌ی نتایج</button></div>`).join('')}</div>`:''}
 const bar=p=>`<div style="background:var(--ln);border-radius:8px;height:10px"><div style="width:${Math.max(0,Math.min(100,Math.round(p)))}%;height:10px;border-radius:8px;background:linear-gradient(90deg,#1E9E78,var(--ac2))"></div></div>`;
 const r2=n=>sf(+(+n).toFixed(2));
-async function rsDraw(){const exm=exams.find(k=>k.id==RS.ex),box=$('#rl');if(!box||!exm)return;RS.rs=(await all('results')).filter(r=>r.exId==RS.ex);
+async function rsDraw(){const exm=exams.find(k=>k.id==RS.ex),box=$('#rl');if(!box||!exm)return;const A0=(await all('results')).filter(r=>!String(r.id).startsWith('stu:'));RS.rs=A0.filter(r=>r.exId==RS.ex);rsManage(A0);
  const L=RS.rs.map(r=>({r,g:gradeRes(r,exm)})).sort((a,b)=>b.g.tot-a.g.tot);RS.L=L;
  if(!L.length){box.innerHTML='<div class="em">هنوز نتیجه‌ای وارد نشده است.</div>';return}
  const T=L.map(x=>x.g.tot),mx=L[0].g.max||1,avg=T.reduce((a,b)=>a+b,0)/T.length,med=[...T].sort((a,b)=>a-b)[Math.floor(T.length/2)],bins=[0,0,0,0,0];
@@ -456,10 +458,10 @@ async function rsDraw(){const exm=exams.find(k=>k.id==RS.ex),box=$('#rl');if(!bo
  bins.map((c,i)=>`<div class="r" style="align-items:center"><span style="width:90px">${fa(i*20)}–${fa(i*20+20)}٪</span><div style="flex:1">${bar(c/L.length*100)}</div><span>${fa(c)}</span></div>`).join('')+`<h3>میانگین نمره‌ی هر سؤال (درصد)</h3>${rowSt}</div>
  <div class="card"><h3>نتایج</h3>${L.map(({r,g},i)=>`<div class="it"><span class="tg">${fa(i+1)}</span><span class="pv"><b>${esc(r.name)}</b> ${esc(r.cls||'')}${g.pend&&(exm.ol||{}).auto!==false?' ⚠ تصحیح‌نشده':''}</span><b>${r2(g.tot)} / ${r2(g.max)}</b><span class="acts"><button data-a="rgr" data-i="${r.id}">✎ تصحیح</button><button data-a="rrf" data-i="${r.id}" title="فایل کارنامه">📄</button><button data-a="rrl" data-i="${r.id}" title="لینک کارنامه">🔗</button><button data-a="rdl" data-i="${r.id}">🗑</button></span></div>`).join('')}
  <div class="r"><button class="p" data-a="rzip">🗂 ZIP کارنامه‌ی کامل همه</button><button data-a="rpt">📦 فایل فقط نمرات (برای همه)</button><button data-a="rcsv">⬇️ CSV</button></div></div>`}
-async function addCodes(txt){let n=0,bad=0,last=null;const have=await all('results');
+async function addCodes(txt){let n=0,bad=0,dup=0,last=null;const have=await all('results');
  for(const c of txt.split(/\s+/).filter(x=>x.length>20)){try{const r=await decodeData(c);if(!r.ex||!r.ans)throw 0;if(!exams.find(k=>k.id==r.ex)){bad++;continue}last=r.ex;
-  if(have.find(x=>x.exId==r.ex&&x.t0==r.t0&&x.name==r.name))continue;const o={id:uid(),exId:r.ex,name:r.name,cls:r.cls,t0:r.t0,t1:r.t1,ans:r.ans,img:r.img||{},man:{}};await put('results',o);have.push(o);n++}catch{bad++}}
- if(last)RS.ex=last;toast(`${fa(n)} نتیجه افزوده شد`+(bad?` · ${fa(bad)} کد نامعتبر یا مربوط به آزمون دیگر`:''));render()}
+  if(have.find(x=>x.exId==r.ex&&x.t0==r.t0&&x.name==r.name)){dup++;continue}const o={id:uid(),exId:r.ex,name:r.name,cls:r.cls,t0:r.t0,t1:r.t1,ans:r.ans,img:r.img||{},man:{}};await put('results',o);have.push(o);n++}catch{bad++}}
+ if(last)RS.ex=last;toast(`${fa(n)} نتیجه افزوده شد`+(dup?` · ${fa(dup)} تکراری`:'')+(bad?` · ${fa(bad)} کد نامعتبر یا مربوط به آزمون دیگر`:''));render()}
 const tfT=v=>v=='T'?'صحیح':v=='F'?'غلط':'—';
 function ansText(it,a){if(a==null||a==='')return'—';if(it.type=='tf')return tfT(a);if(it.type=='mc'||it.type=='paren')return fa(+a+1)+') '+esc(it.opts[a]);
  if(it.type=='match')return it.A.map((_,i)=>fa(i+1)+'→'+(a[i]>=0?lt(a[i]):'—')).join('، ');if(it.type=='blank')return esc([].concat(a).join('، '));return esc(a)}
@@ -481,6 +483,7 @@ $('#v').addEventListener('click',async e=>{const b=e.target.closest('button');if
  else if(a=='op'){const v=b.dataset.v;olv()[b.dataset.k]=v=='true'?true:v=='false'?false:v;persist();render()}
  else if(a=='rimp'){await addCodes($('#rcd').value)}
  else if(a=='rgr')gradeM(id);
+ else if(a=='rdall'){const k=exams.find(q=>q.id==id),L=(await all('results')).filter(r=>r.exId==id&&!String(r.id).startsWith('stu:'));if(confirm(`همه‌ی ${fa(L.length)} نتیجه‌ی آزمون «${k?k.title:''}» حذف شود؟ این کار قابل برگشت نیست.`)){for(const r of L)await del('results',r.id);toast('نتایج آزمون حذف شد');rsDraw()}}
  else if(a=='rdl'){if(confirm('این نتیجه حذف شود؟')){await del('results',id);rsDraw()}}
  else if(a=='rpt'){const exm=exams.find(k=>k.id==RS.ex);saveBlob(new Blob([portalHtml(exm,RS.L)],{type:'text/html'}),exm.title+' - نتایج.html')}
  else if(a=='rrf'||a=='rrl'){const x=RS.L.find(q=>q.r.id==id),exm=exams.find(k=>k.id==RS.ex);toast('در حال ساخت کارنامه…');
@@ -530,18 +533,18 @@ async function startStudent(code){
  let P;try{P=await decodeData(code.trim())}catch{document.body.innerHTML='<p style="padding:30px;text-align:center">لینک یا فایل معتبر نیست یا ناقص کپی شده است.</p>';return}
  if(P.rep)return showReport(P);
  document.title=P.title;document.body.innerHTML='<div class="ui" id="st" style="max-width:820px;margin:auto;padding:14px 12px 60px"></div><div id="ts"></div>';
- const st=$('#st'),O=P.ol||{},K='ao_'+P.id;let Z=null,tid;
+ const st=$('#st'),O=P.ol||{},K='ao_'+P.id;let Z=null,tid,fdone=false;
  try{db=await idb()}catch{db=null}
  const sget=async k=>{try{const r=await tx('results','readonly',o=>o.get('stu:'+P.id+':'+k));return r&&r.v}catch{return null}},sput=(k,v)=>db?put('results',{id:'stu:'+P.id+':'+k,v}).catch(()=>{}):0,sdel=k=>db?del('results','stu:'+P.id+':'+k).catch(()=>{}):0;
  const tm=(j,t)=>{if(!j)return null;const g=toGregorianYMD(j.jy,j.jm,j.jd),h=(t||'00:00').split(':');return new Date(g.gy,g.gm-1,g.gd,+h[0],+h[1]).getTime()};
- const S0=O.lim?tm(O.s,O.s&&O.s.t):null,E0=O.lim?tm(O.e,O.e&&O.e.t):null,save=()=>{clearTimeout(window.__svT);window.__svT=setTimeout(()=>sput('s',Z),350)},shot=f=>createImageBitmap(f).then(b=>{const q=Math.min(1,800/Math.max(b.width,b.height)),w=Math.round(b.width*q),h=Math.round(b.height*q),c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,w,h);x.drawImage(b,0,0,w,h);return c.toDataURL('image/jpeg',.6)}),
+ const S0=O.lim?tm(O.s,O.s&&O.s.t):null,E0=O.lim?tm(O.e,O.e&&O.e.t):null,save=()=>{if(fdone)return;clearTimeout(window.__svT);window.__svT=setTimeout(()=>{if(!fdone)sput('s',Z)},350)},shot=f=>createImageBitmap(f).then(b=>{const q=Math.min(1,800/Math.max(b.width,b.height)),w=Math.round(b.width*q),h=Math.round(b.height*q),c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,w,h);x.drawImage(b,0,0,w,h);return c.toDataURL('image/jpeg',.6)}),
  drawPh=k=>{const e=document.querySelector(`.phs[data-pk="${k}"]`);if(e)e.innerHTML=((Z.img||{})[k]||[]).map((u,i)=>`<span style="position:relative;display:inline-block"><img src="${u}" style="height:70px;border-radius:8px;margin:3px"><button data-rm="${k}|${i}" style="position:absolute;top:0;right:0;padding:0 6px;min-height:22px">✕</button></span>`).join('')};
  const intro=()=>{const n=Date.now(),bad=S0&&n<S0?'آزمون هنوز شروع نشده است. شروع: '+jalaliDateLabel(O.s)+' ساعت '+fa(O.s.t):(E0&&n>E0?'زمان این آزمون به پایان رسیده است.':'');
   st.innerHTML=`<div class="card"><h2>${esc(P.title)}</h2>${O.rules?`<p style="white-space:pre-wrap;color:var(--dg)">${esc(O.rules)}</p>`:''}<p>تعداد سؤال: ${fa(P.rows.length)}${O.minutes?' · مدت: '+fa(O.minutes)+' دقیقه':''}</p>`+(bad?`<p><b>${bad}</b></p>`:'')+
   `<label>نام و نام خانوادگی</label><input id="sn" style="width:100%">`+(bad?'':`<label>کلاس / شماره (اختیاری)</label><input id="sc" style="width:100%">`)+
-  `<div class="r">${bad?'':'<button class="p" id="sgo">شروع آزمون</button>'}<button id="srec">🔎 قبلاً آزمون را داده‌ام و فقط کد نتیجه‌ام را می‌خواهم</button></div><div id="sro"></div></div>`;
+  `<div class="r">${bad?'':'<button class="p" id="sgo">شروع آزمون</button>'}<button id="srec">🔎 قبلاً آزمون را داده‌ام و فقط فایل نتیجه‌ام را می‌خواهم</button></div><div id="sro"></div><small style="color:var(--mu)">نسخه‌ی برنامه: ۵</small></div>`;
   if(!bad)$('#sgo').onclick=async()=>{const nm=$('#sn').value.trim();if(!nm)return toast('نام را وارد کن');const prev=await sget('d:'+nz(nm));if(prev){toast('برای این نام قبلاً نتیجه ثبت شده است');return fin(prev)}
-   const ix=P.rows.map((_,i)=>i);Z={nm,cls:$('#sc').value.trim(),t0:Date.now(),ord:O.order=='random'?shuf(ix):ix,pos:0,mo:{},ans:{},img:{}};await sput('s',Z);run()};
+   const ix=P.rows.map((_,i)=>i);Z={nm,cls:$('#sc').value.trim(),t0:Date.now(),ord:O.order=='random'?shuf(ix):ix,pos:0,mo:{},ans:{},img:{}};fdone=false;await sput('s',Z);run()};
   $('#srec').onclick=async()=>{const nm=$('#sn').value.trim();if(!nm)return toast('اول نام را همان‌طور که موقع آزمون نوشتی وارد کن');const c=await sget('d:'+nz(nm));if(c)fin(c);else $('#sro').innerHTML='<p>برای این نام روی این دستگاه نتیجه‌ای پیدا نشد. باید از همان گوشی و همان مرورگری باز کنی که آزمون را در آن دادی.</p>'}};
  const sIt=(it,k)=>sIt0(it,k)+`<div class="ph" style="margin-top:8px"><label class="b">📷 پاسخ با عکس<input type="file" accept="image/*" multiple hidden data-pk="${k}"></label><span class="phs" data-pk="${k}"></span></div>`;
  const sIt0=(it,k)=>{const h=it.html||'';
@@ -566,9 +569,12 @@ async function startStudent(code){
   else if(t.tagName=='SELECT')(Z.ans[t.dataset.k]=Z.ans[t.dataset.k]||[])[+t.dataset.n]=+t.value;else if(t.classList.contains('da'))Z.ans[t.dataset.k]=t.value;else return;save()});
  st.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.n){Z.pos+=+b.dataset.n;save();nav();scrollTo(0,0)}else if(b.id=='fresh'){if(confirm('پاسخ‌های فعلی پاک شود و از اول شروع شود؟')){sdel('s');Z=null;clearInterval(tid);intro()}}else if(b.dataset.rm){const[k,i]=b.dataset.rm.split('|');Z.img[k].splice(+i,1);if(!Z.img[k].length)delete Z.img[k];save();drawPh(k)}else if(b.id=='sub'){if(confirm('پاسخ‌برگه ثبت نهایی شود؟'))finish(false)}});
  st.addEventListener('change',async e=>{const t=e.target,k=t.dataset&&t.dataset.pk;if(!k||!t.files||!Z)return;const a=Z.img[k]=Z.img[k]||[];for(const f of t.files){if(a.length>=3){toast('حداکثر ۳ عکس برای هر سؤال');break}try{a.push(await shot(f))}catch{toast('عکس خوانده نشد')}}t.value='';if(!a.length)delete Z.img[k];save();drawPh(k)});
- const finish=async auto=>{clearInterval(tid);const c=await encodeData({v:1,ex:P.id,title:P.title,name:Z.nm,cls:Z.cls,t0:Z.t0,t1:Date.now(),ans:Z.ans,img:Z.img});await sput('d:'+nz(Z.nm),c);await sdel('s');fin(c,auto)};
- const fin=(c,auto)=>{st.innerHTML=`<div class="card"><h2>✅ پاسخ‌برگه ثبت شد</h2>${auto?'<p>زمان تمام شد و پاسخ‌ها خودکار ثبت شد.</p>':''}<p>این کد را برای معلم بفرست تا نتیجه‌ات ثبت شود:</p><p style="color:var(--mu);font-size:13px">اگر فراموش کردی بفرستی، همین لینک یا فایل را روی همین دستگاه دوباره باز کن و «کد نتیجه‌ام را می‌خواهم» را بزن.</p>${c.length>60000?'<p style="color:var(--dg)">چون عکس داری، کد طولانی است؛ «ذخیره به‌صورت فایل» را بزن و فایل را برای معلم بفرست.</p>':''}<textarea id="rc" readonly rows="5" style="width:100%">${c}</textarea><div class="r"><button class="p" id="cc">کپی کد</button><button id="dc">ذخیره به‌صورت فایل</button><button id="sh2">ارسال</button></div></div>`;
-  $('#cc').onclick=()=>{navigator.clipboard?.writeText(c);toast('کپی شد')};$('#dc').onclick=()=>saveBlob(new Blob([c],{type:'text/plain'}),'نتیجه آزمون.txt');$('#sh2').onclick=()=>{const f=new File([c],'نتیجه آزمون.txt',{type:'text/plain'});if(navigator.canShare&&navigator.canShare({files:[f]}))navigator.share({files:[f],title:'نتیجه آزمون'}).catch(()=>{});else if(navigator.share)navigator.share({title:'نتیجه آزمون',text:c}).catch(()=>{});else toast('اشتراک‌گذاری پشتیبانی نمی‌شود')}};
+ const finish=async auto=>{if(fdone)return;fdone=true;clearTimeout(window.__svT);clearInterval(tid);const c=await encodeData({v:1,ex:P.id,title:P.title,name:Z.nm,cls:Z.cls,t0:Z.t0,t1:Date.now(),ans:Z.ans,img:Z.img});const rec={c,nm:Z.nm};await sput('d:'+nz(Z.nm),rec);await sdel('s');fin(rec,auto)};
+ const fin=(rec,auto)=>{const R=typeof rec=='string'?{c:rec,nm:''}:rec,c=R.c,cl=t=>String(t||'').replace(/[^\u0600-\u06FF\w \-]/g,'').trim(),fn='نتیجه - '+cl(P.title)+(R.nm?' - '+cl(R.nm):'')+'.txt';
+  st.innerHTML=`<div class="card"><h2>✅ پاسخ‌برگه ثبت شد</h2>${auto?'<p>زمان تمام شد و پاسخ‌ها خودکار ثبت شد.</p>':''}<p>برای کامل شدن آزمون، <b>فایل نتیجه</b> را برای معلم بفرست.</p><div class="r"><button class="p" id="sf" style="font-size:17px;padding:10px 18px">📤 ارسال فایل نتیجه</button></div>
+  <p style="color:var(--mu);font-size:13px">اگر منوی ارسال باز نشد، فایل در دستگاه ذخیره می‌شود؛ آن را از پوشه‌ی دانلودها برای معلم بفرست.</p>
+  <p style="color:var(--mu);font-size:13px">اگر فراموش کردی بفرستی، همین لینک یا فایل آزمون را روی همین دستگاه دوباره باز کن و «فقط فایل نتیجه‌ام را می‌خواهم» را بزن.</p></div>`;
+  $('#sf').onclick=async()=>{const f=new File([c],fn,{type:'text/plain'});if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:fn});return}catch(e){if(e&&e.name=='AbortError')return}}saveBlob(new Blob([c],{type:'text/plain'}),fn);toast('فایل در دستگاه ذخیره شد')}};
  const sv=await sget('s');
  if(sv){Z=sv;run()}else intro()}
 
