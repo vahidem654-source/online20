@@ -36,14 +36,14 @@ nav button{flex:1;border:0;border-radius:0;justify-content:center;min-height:50p
 #ts{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:8px 14px;border-radius:12px;opacity:0;transition:.2s;pointer-events:none;z-index:50}
 /* paper (shared by preview, PDF print and mirrored by the Word export) */
 .paper{background:#fff;color:#000;direction:rtl;font-family:'B Nazanin','Vazirmatn',Tahoma,serif;font-size:14pt;line-height:1.7;width:210mm;padding:15mm;box-sizing:border-box}
-.paper .q{margin:0 0 5px;break-inside:avoid}.paper .s{margin:0 0 4px}.paper .an{color:#0a6b3a;margin-top:2px}
+.paper .q{margin:0 0 5px;break-inside:avoid}.paper .s{margin:0 0 4px}.paper .an{color:#d00;margin-top:2px}.rd{color:#d00}
 .ed img,.paper img{max-width:340px;height:auto;vertical-align:middle}.ed img.sel{outline:3px solid var(--ac2)}
 .fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 2px;line-height:1.3}.fr>span:first-child{border-bottom:1px solid currentColor;padding:0 3px}
 .qt{border-collapse:collapse;margin:4px 0}.qt td{border:1px solid #444;padding:3px 8px;min-width:46px}
 .ot,.mt{width:100%;border-collapse:collapse;table-layout:fixed}.ot td{vertical-align:top;padding:1px 4px}
 .mt td:nth-child(1){width:42%}.mt td:nth-child(2){width:14%;text-align:center}.mt td:nth-child(3){width:44%}.mt td{vertical-align:top;padding:2px 4px}
-.ln{border-bottom:1px dotted #888;height:calc(1em*var(--ls,1.7))}.bl.a{font-weight:700;text-decoration:underline}
-.et{width:100%;border-collapse:collapse;table-layout:fixed}.et>thead>tr>th,.et>tbody>tr>td{border:1px solid #000;padding:4px 8px;vertical-align:top}.et>thead>tr>th{background:#e8e8e8;text-align:center}.et>thead>tr>th:nth-child(1),.et>tbody>tr>td:nth-child(1){width:9%;text-align:center}.et>thead>tr>th:nth-child(3),.et>tbody>tr>td:nth-child(3){width:12%;text-align:center}.et>tbody>tr{break-inside:avoid}
+.ln{height:calc(1em*var(--ls,1.7))}.bl.a{font-weight:700;text-decoration:underline}
+.et{width:100%;border-collapse:collapse;table-layout:fixed}.et>thead>tr>th,.et>tbody>tr>td{border:1px solid #000;padding:4px 8px;vertical-align:top}.et>thead>tr>th{background:#e8e8e8;text-align:center}.et>thead>tr>th:nth-child(1),.et>tbody>tr>td:nth-child(1){width:9%;text-align:center}.et>thead>tr>th:nth-child(3),.et>tbody>tr>td:nth-child(3){width:12%;text-align:center}.et>tbody>tr{break-inside:avoid}.et.nr>thead{display:table-row-group}
 .sum{background:var(--cd);border:1px solid var(--ln);border-radius:12px;padding:6px 12px;margin-bottom:10px;color:var(--ac);font-weight:700}
 .row{display:flex;flex-wrap:wrap;gap:6px}nav button{font-size:13px;padding:6px 2px}
 .ch{display:inline-flex;gap:4px;align-items:center;margin:2px 6px;cursor:pointer}
@@ -80,45 +80,45 @@ const toast=t=>{const e=$('#ts');e.textContent=t;e.style.opacity=1;clearTimeout(
 const idb=()=>new Promise((res,rej)=>{const r=indexedDB.open('azmoon_online',1);r.onupgradeneeded=()=>{['exams','bank','results'].forEach(n=>r.result.objectStoreNames.contains(n)||r.result.createObjectStore(n,{keyPath:'id'}))};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
 const tx=(s,m,f)=>new Promise((res,rej)=>{const t=db.transaction(s,m),q=f(t.objectStore(s));t.oncomplete=()=>res(q?.result);t.onerror=()=>rej(t.error)});
 const put=(s,v)=>tx(s,'readwrite',o=>o.put(v)),all=s=>tx(s,'readonly',o=>o.getAll()),del=(s,k)=>tx(s,'readwrite',o=>o.delete(k));
-const persist=()=>{clearTimeout(pt);pt=setTimeout(()=>{ex.t=Date.now();put('exams',ex)},300)};
+const persist=()=>{clearTimeout(pt);pt=setTimeout(()=>{ex.rows.forEach(r=>r.score=rowTotal(r));ex.t=Date.now();put('exams',ex)},300)};
 function newExam(){ex={id:uid(),title:'آزمون جدید',rows:[],t:Date.now()};exams.push(ex);localStorage.ao_cur=ex.id;put('exams',ex);T='ex';render()}
 const saveBlob=(b,n)=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=n;a.style.display='none';document.body.appendChild(a);a.click();setTimeout(()=>{a.remove();URL.revokeObjectURL(a.href)},8000)};
 // ---------- helpers
 const strip=h=>{const d=document.createElement('div');d.innerHTML=h||'';return d.textContent};
-const R_DOTS=()=>/\.{3,}|…{2,}/g,nzb=x=>String(x==null?'':x).replace(/[\u200c\u200f\u200e\s]/g,'').replace(/ي/g,'ی').replace(/ك/g,'ک').toLowerCase(),LSV=()=>+ex.ls||1.7;
+const R_DOTS=()=>/\.{3,}|…{2,}/g,nzb=x=>String(x==null?'':x).replace(/[\u200c\u200f\u200e\s]/g,'').replace(/ي/g,'ی').replace(/ك/g,'ک').toLowerCase(),LSV=()=>+ex.ls||1.7,CPV=()=>ex.cp!=null?+ex.cp:4;
 function legacy(it){if(it.type=='blank'&&!it.blanks){const a=[];it.html=(it.html||'').replace(/\[\[(.*?)\]\]/g,(m,x)=>{a.push(strip(x));return'……………'});it.blanks=a}
  if(it.type=='paren'&&it.opts&&it.ans==null){const o='( '+it.opts.join(' - ')+' )';it.html=(it.html||'').includes('{{}}')?it.html.replace('{{}}',o):(it.html||'')+' '+o;it.ans=it.opts[it.ok]||'';delete it.opts;delete it.ok}return it}
-const migr=e=>(e.rows||[]).forEach(r=>r.items.forEach(legacy));
+const migr=e=>(e.rows||[]).forEach(r=>{r.items.forEach(legacy);if(+r.score&&r.items.every(i=>!i.score)){const n=r.items.length,q=+(r.score/n).toFixed(2);r.items.forEach((i,k)=>i.score=k?q:+(r.score-q*(n-1)).toFixed(2))}});
 function mapDots(h,fn){const d=document.createElement('div');d.innerHTML=h||'';let i=0;const w=document.createTreeWalker(d,NodeFilter.SHOW_TEXT),ns=[];while(w.nextNode())ns.push(w.currentNode);
  for(const n of ns){const t=n.nodeValue;if(t.search(R_DOTS())<0)continue;const fr=document.createDocumentFragment(),re=R_DOTS();let last=0,m;
   while((m=re.exec(t))){fr.append(t.slice(last,m.index));const x=fn(i++,m[0]);if(typeof x=='string'){const sp=document.createElement('span');sp.innerHTML=x;fr.append(...sp.childNodes)}else fr.append(x);last=m.index+m[0].length}
   fr.append(t.slice(last));n.replaceWith(fr)}return d.innerHTML}
-const fillB=(it,a)=>{const bl=it.blanks||[];return a?mapDots(it.html,(i,m)=>{if(!bl[i])return document.createTextNode(m);const sp=document.createElement('span');sp.className='bl a';sp.textContent=bl[i];return sp}):(it.html||'')};
-function markParen(h,ans){let hit=0;const out=(h||'').replace(/\(([^()<>]*)\)/g,(m,g)=>'('+g.split(/(\s*[-–—،\/|]\s*)/).map((p,i)=>{if(i%2||!ans)return p;const q=p.match(/^(\s*)([\s\S]*?)(\s*)$/);if(nzb(strip(q[2]))!=nzb(ans))return p;hit=1;return `${q[1]}<b><u>${q[2]}</u></b>${q[3]}`}).join('')+')');return hit||!ans?out:out+` <b><u>(${esc(ans)})</u></b>`}
+const fillB=(it,a)=>{const bl=it.blanks||[];return a?mapDots(it.html,(i,m)=>{if(!bl[i])return document.createTextNode(m);const sp=document.createElement('span');sp.className='bl a rd';sp.textContent=bl[i];return sp}):(it.html||'')};
+function markParen(h,ans){let hit=0;const out=(h||'').replace(/\(([^()<>]*)\)/g,(m,g)=>'('+g.split(/(\s*[-–—،\/|]\s*)/).map((p,i)=>{if(i%2||!ans)return p;const q=p.match(/^(\s*)([\s\S]*?)(\s*)$/);if(nzb(strip(q[2]))!=nzb(ans))return p;hit=1;return `${q[1]}<span class="rd"><b><u>${q[2]}</u></b></span>${q[3]}`}).join('')+')');return hit||!ans?out:out+` <span class="rd"><b><u>(${esc(ans)})</u></b></span>`}
 function lead(it,a){legacy(it);
  if(it.type=='blank')return fillB(it,a);
  if(it.type=='paren')return a?markParen(it.html,it.ans):(it.html||'');
  const t=it.html||'';
- if(it.type=='tf')return t+` <span class="nb">(${a&&it.ok?'☒':'☐'} صحیح &nbsp; ${a&&!it.ok?'☒':'☐'} غلط)</span>`;
+ if(it.type=='tf')return t+` <span class="nb">(${a&&it.ok?'<span class="rd">☒</span>':'☐'} صحیح &nbsp; ${a&&!it.ok?'<span class="rd">☒</span>':'☐'} غلط)</span>`;
  return t}
-const optCell=(it,k,a)=>{const o=it.opts[k];return o==null?'':(a&&k==it.ok?`<b><u>${fa(k+1)}) ${esc(o)}</u></b>`:`${fa(k+1)}) ${esc(o)}`)};
+const optCell=(it,k,a)=>{const o=it.opts[k];return o==null?'':(a&&k==it.ok?`<span class="rd"><b><u>${fa(k+1)}) ${esc(o)}</u></b></span>`:`${fa(k+1)}) ${esc(o)}`)};
 function itemHtml(it,a){let h=lead(it,a);
  if(it.type=='mc'){const c=it.lay||4;let r='';for(let i=0;i<it.opts.length;i+=c)r+='<tr>'+Array.from({length:c},(_,j)=>`<td>${optCell(it,i+j,a)}</td>`).join('')+'</tr>';
   h+=`<table class="ot">${r}</table>`+(a?`<div class="an"><b>پاسخ:</b> گزینه‌ی ${fa(it.ok+1)}${it.ans?' — '+it.ans:''}</div>`:'')}
- if(it.type=='match'){let r='';const n=Math.max(it.A.length,it.B.length),inv=j=>{const i=it.map.indexOf(j);return i>=0?fa(i+1):'—'};for(let i=0;i<n;i++){r+=`<tr><td>${i<it.A.length?fa(i+1)+'. '+esc(it.A[i]):''}</td><td>${i<it.B.length?'( '+(a?inv(i):'&emsp;&emsp;')+' )':''}</td><td>${i<it.B.length?esc(it.B[i]):''}</td></tr>`}h+=`<table class="mt">${r}</table>`}
+ if(it.type=='match'){let r='';const n=Math.max(it.A.length,it.B.length),inv=j=>{const i=it.map.indexOf(j);return i>=0?fa(i+1):'—'};for(let i=0;i<n;i++){r+=`<tr><td>${i<it.A.length?fa(i+1)+'. '+esc(it.A[i]):''}</td><td>${i<it.B.length?'( '+(a?`<span class="rd">${inv(i)}</span>`:'&emsp;&emsp;')+' )':''}</td><td>${i<it.B.length?esc(it.B[i]):''}</td></tr>`}h+=`<table class="mt">${r}</table>`}
  if(it.type=='desc')h+='<div class="ln"></div>'.repeat(it.lines||0)+(a?`<div class="an"><b>پاسخ:</b> ${it.ans||''}</div>`:'');
  return h}
-const sf=v=>fa(String(v).replace('.','٫')),total=()=>ex.rows.reduce((t,r)=>t+(+r.score||0),0);
+const sf=v=>fa(String(+(+v).toFixed(2)).replace('.','٫')),rowTotal=r=>r.items.reduce((s,i)=>s+(+i.score||0),0),total=()=>ex.rows.reduce((t,r)=>t+rowTotal(r),0);
 function cellHtml(r,a){const s=r.items,t=r.title?`<div>${esc(r.title)}</div>`:'';if(s.length==1)return t+itemHtml(s[0],a);return t+s.map((it,i)=>`<div class="s"><b>${lt(i)})</b> ${itemHtml(it,a)}</div>`).join('')}
-function paperHtml(a){return(ex.vl?`<div style="text-align:center;font-weight:700;margin-bottom:6px">نسخه‌ی ${ex.vl}</div>`:'')+`<table class="et"><thead><tr><th>ردیف</th><th>سوالات</th><th>بارم</th></tr></thead><tbody>${ex.rows.map((r,i)=>`<tr><td>${fa(i+1)}</td><td>${cellHtml(r,a)}</td><td>${r.score?sf(r.score):''}</td></tr>`).join('')}</tbody></table>`}
+function paperHtml(a){return(ex.vl?`<div style="text-align:center;font-weight:700;margin-bottom:6px">نسخه‌ی ${ex.vl}</div>`:'')+`<table class="et${ex.hdr===false?' nr':''}"><thead><tr><th>ردیف</th><th>سوالات</th><th>بارم</th></tr></thead><tbody>${ex.rows.map((r,i)=>`<tr><td>${fa(i+1)}</td><td data-q style="padding:4px ${CPV()}mm">${cellHtml(r,a)}</td><td>${rowTotal(r)?sf(rowTotal(r)):''}</td></tr>`).join('')}</tbody></table>`}
 // ---------- main views
 function find(id){for(let ri=0;ri<ex.rows.length;ri++){const r=ex.rows[ri],ii=r.items.findIndex(x=>x.id==id);if(ii>=0)return{r,ri,ii,it:r.items[ii]}}}
 function render(){$('#ttl').value=ex.title;$$('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t==T));$('#add').style.display=T=='ex'?'':'none';
  $('#v').innerHTML=(T=='ex'?bkBanner():'')+(T=='ex'?vEx():T=='bk'?vBk():T=='ol'?vOl():T=='rs'?vRs():vOut());if(T=='bk'){bkChips();bkList()}if(T=='out')fitPv();if(T=='rs')rsDraw()}
 function vEx(){if(!ex.rows.length)return'<div class="em">هنوز سؤالی نیست.<br>دکمه‌ی «＋ سؤال» را بزن.</div>';
  return `<div class="sum" id="sum">جمع بارم: ${sf(total())}</div>`+ex.rows.map((r,ri)=>`<section class="card" id="r_${r.id}"><div class="rh"><b>سوال ${fa(ri+1)}</b><input class="rtl" data-r="${r.id}" value="${esc(r.title)}" placeholder="دستور سؤال (اختیاری) مثلاً: جاهای خالی را پر کنید">
- <select class="sc" data-r="${r.id}" title="بارم">${scOpts(r)}</select><span class="acts"><button data-a="rup" data-r="${r.id}">↑</button><button data-a="rdn" data-r="${r.id}">↓</button>${ri?`<button data-a="mrg" data-r="${r.id}" title="ادغام با ردیف قبل">⇡ ادغام</button>`:''}<button data-a="rdel" data-r="${r.id}">🗑</button></span></div>
- ${r.items.map((it,ii)=>`<div class="it" id="i_${it.id}"><span class="tg">${r.items.length>1?lt(ii)+') ':''}${TN[it.type]}</span><span class="pv">${esc(strip(it.html).slice(0,90))||'(بدون متن)'}</span>
+ <span class="tg" style="background:var(--ac2);color:#2b1a00">جمع بارم: ${sf(rowTotal(r))}</span><span class="acts"><button data-a="rup" data-r="${r.id}">↑</button><button data-a="rdn" data-r="${r.id}">↓</button>${ri?`<button data-a="mrg" data-r="${r.id}" title="ادغام با ردیف قبل">⇡ ادغام</button>`:''}<button data-a="rdel" data-r="${r.id}">🗑</button></span></div>
+ ${r.items.map((it,ii)=>`<div class="it" id="i_${it.id}"><span class="tg">${r.items.length>1?lt(ii)+') ':''}${TN[it.type]}</span>${it.score?`<span class="tg" style="background:var(--ac2);color:#2b1a00">بارم ${sf(it.score)}</span>`:''}<span class="pv">${esc(strip(it.html).slice(0,90))||'(بدون متن)'}</span>
  <span class="acts"><button data-a="ied" data-i="${it.id}">✎</button><button data-a="iup" data-i="${it.id}">↑</button><button data-a="idn" data-i="${it.id}">↓</button>${r.items.length>1?`<button data-a="iout" data-i="${it.id}" title="خروج از ردیف">⤴ خروج</button>`:''}<button data-a="ibk" data-i="${it.id}" title="ذخیره در بانک">📥</button><button data-a="idel" data-i="${it.id}">🗑</button></span></div>`).join('')}
  <button data-a="addin" data-r="${r.id}">＋ سؤال در همین ردیف</button></section>`).join('')}
 let SUBS=[],SC=null;try{SUBS=JSON.parse(localStorage.ao_subs||'[]')}catch{}
@@ -126,11 +126,12 @@ const saveSubs=()=>localStorage.ao_subs=JSON.stringify(SUBS),addSub=n=>{if(!SUBS
 function chooseSubj(cb){SC=cb;showM(`<h3>درس را انتخاب کن</h3><div class="r">${subjects().map((x,i)=>`<button class="p" data-x="bs" data-n="${i}">${esc(x)}</button>`).join('')}<button data-x="bs" data-n="-1">بدون درس</button></div><div class="orow"><input id="ns" placeholder="درس جدید (مثلاً ریاضی)"><button class="p" data-x="bsn">＋ ایجاد و انتخاب</button></div><button data-x="cl">انصراف</button>`)}
 function bkChips(){const n=v=>bank.filter(b=>v==''?1:v=='_none'?!b.subj:b.subj==v).length,c=(v,t)=>`<button data-a="bsel" data-i="${esc(v)}" class="${BK.s==v?'p':''}">${esc(t)} (${fa(n(v))})</button>`;
  $('#bc').innerHTML=c('','همه')+subjects().map(x=>c(x,x)).join('')+c('_none','بدون درس')+'<button data-a="bnew">＋ درس جدید</button><button data-a="bpaste">📋 چسباندن گروهی</button>'+(BK.s&&BK.s!='_none'?'<button data-a="bren">✎ نام درس</button><button data-a="bdsub">🗑 حذف درس</button>':'')}
+const scO=v=>'<option value="0">بدون بارم</option>'+Array.from({length:80},(_,i)=>{const x=(i+1)*.25;return`<option value="${x}" ${+v==x?'selected':''}>${sf(x)}</option>`}).join('');
 const scOpts=r=>'<option value="0">بارم؟</option>'+Array.from({length:80},(_,i)=>{const v=(i+1)*.25;return`<option value="${v}" ${r.score==v?'selected':''}>${sf(v)}</option>`}).join('');
 const vBk=()=>`<div class="r" id="bc"></div><div class="r"><input id="bq" placeholder="جست‌وجو در بانک…" style="flex:1" value="${esc(BK.q)}"><select id="bt"><option value="">همه‌ی انواع</option>${Object.entries(TN).map(([k,v])=>`<option value="${k}" ${BK.ty==k?'selected':''}>${v}</option>`).join('')}</select></div><div id="bl"></div>`;
 function bkList(){const l=bank.filter(b=>(!BK.ty||b.item.type==BK.ty)&&(BK.s==''||(BK.s=='_none'?!b.subj:b.subj==BK.s))&&(!BK.q||strip(b.item.html).includes(BK.q))).sort((a,b)=>b.t-a.t);
  $('#bl').innerHTML=l.length?l.map(b=>`<div class="it"><span class="tg">${TN[b.item.type]}</span>${b.subj?`<span class="tg" style="background:var(--ac2);color:#2b1a00">${esc(b.subj)}</span>`:''}<span class="pv">${esc(strip(b.item.html).slice(0,90))}</span><span class="acts"><button class="p" data-a="bad" data-i="${b.id}">＋ به آزمون</button><button data-a="bsub" data-i="${b.id}" title="تغییر درس">🏷</button><button data-a="bed" data-i="${b.id}">✎</button><button data-a="bdel" data-i="${b.id}">🗑</button></span></div>`).join(''):`<div class="em">بانک خالی است (${fa(bank.length)} سؤال).<br>در تب آزمون روی 📥 بزن.</div>`}
-const vOut=()=>`<div class="card"><div class="r"><button class="p" data-a="pdf0">PDF بدون پاسخ</button><button class="p" data-a="pdf1">PDF با پاسخ</button></div><div class="r"><button class="p" data-a="doc0">Word بدون پاسخ</button><button class="p" data-a="doc1">Word با پاسخ</button></div><div class="r"><button data-a="json">ذخیره‌ی JSON این آزمون</button><button data-a="pv0" class="${AN?'':'p'}">پیش‌نمایش: بدون پاسخ</button><button data-a="pv1" class="${AN?'p':''}">با پاسخ</button></div><small style="color:var(--mu)">PDF: در پنجره‌ی چاپ «ذخیره به‌صورت PDF» را انتخاب کن.</small><div class="r" style="align-items:center"><label>نسخه:</label><select id="vsel">${[['','اصلی'],['الف','الف'],['ب','ب'],['ج','ج'],['د','د']].map(([v,t])=>`<option value="${v}" ${VAR==v?'selected':''}>${t}</option>`).join('')}</select><label><input type="checkbox" id="vopt" ${VOPT?'checked':''}> ترتیب گزینه‌های چهارگزینه‌ای هم عوض شود</label></div><div class="r" style="align-items:center"><label for="lsr">فاصله‌ی خطوط:</label><input type="range" id="lsr" min="1" max="3" step="0.1" value="${LSV()}" style="flex:1;accent-color:var(--ac)"><b id="lsv">${sf(LSV())}</b></div></div><div style="overflow:hidden"><div class="paper" id="pv" style="--ls:${LSV()};line-height:${LSV()}">${withV(()=>paperHtml(AN))}</div></div>`;
+const vOut=()=>`<div class="card"><div class="r"><button class="p" data-a="pdf0">PDF بدون پاسخ</button><button class="p" data-a="pdf1">PDF با پاسخ</button></div><div class="r"><button class="p" data-a="doc0">Word بدون پاسخ</button><button class="p" data-a="doc1">Word با پاسخ</button></div><div class="r"><button data-a="json">ذخیره‌ی JSON این آزمون</button><button data-a="pv0" class="${AN?'':'p'}">پیش‌نمایش: بدون پاسخ</button><button data-a="pv1" class="${AN?'p':''}">با پاسخ</button></div><small style="color:var(--mu)">PDF: در پنجره‌ی چاپ «ذخیره به‌صورت PDF» را انتخاب کن.</small><div class="r"><label><input type="checkbox" id="hdr" ${ex.hdr===false?'':'checked'}> تکرار سطر عنوان جدول (ردیف / سوالات / بارم) و سربرگ در همه‌ی صفحات</label></div><small style="color:var(--mu)">اگر خاموش باشد، عنوان ستون‌ها و سربرگی که در Word بالای آن اضافه می‌کنی فقط در صفحه‌ی اول می‌ماند.</small><div class="r" style="align-items:center"><label>نسخه:</label><select id="vsel">${[['','اصلی'],['الف','الف'],['ب','ب'],['ج','ج'],['د','د']].map(([v,t])=>`<option value="${v}" ${VAR==v?'selected':''}>${t}</option>`).join('')}</select><label><input type="checkbox" id="vopt" ${VOPT?'checked':''}> ترتیب گزینه‌های چهارگزینه‌ای هم عوض شود</label></div><div class="r" style="align-items:center"><label for="pns">شماره‌ی صفحه (پایین برگه):</label><select id="pns">${[['','ندارد'],['n','فقط شماره'],['nt','صفحه ۱ از ۳']].map(([v,t])=>`<option value="${v}" ${(ex.pn||'')==v?'selected':''}>${t}</option>`).join('')}</select></div><div class="r" style="align-items:center"><label for="cpr">فاصله‌ی نوشته‌ها از خط جدول:</label><input type="range" id="cpr" min="0" max="15" step="1" value="${CPV()}" style="flex:1;accent-color:var(--ac)"><b id="cpv">${fa(CPV())} میلی‌متر</b></div><div class="r" style="align-items:center"><label for="lsr">فاصله‌ی خطوط:</label><input type="range" id="lsr" min="1" max="3" step="0.1" value="${LSV()}" style="flex:1;accent-color:var(--ac)"><b id="lsv">${sf(LSV())}</b></div></div><div style="overflow:hidden"><div class="paper" id="pv" style="--ls:${LSV()};line-height:${LSV()}">${withV(()=>paperHtml(AN))}</div></div>`;
 function fitPv(){const p=$('#pv');if(p)p.style.zoom=Math.min(1,($('#v').clientWidth-4)/794)}
 function flash(id){const e=$('#'+id);e?.scrollIntoView({block:'center',behavior:'smooth'});e?.classList.add('fl');setTimeout(()=>e?.classList.remove('fl'),1800)}
 const mv=(a,i,d)=>{const j=i+d;if(j<0||j>=a.length)return false;[a[i],a[j]]=[a[j],a[i]];return true};
@@ -153,10 +154,10 @@ $('#v').onclick=e=>{const b=e.target.closest('button');if(!b)return;const a=b.da
  else if(a=='bed'){const x=bank.find(k=>k.id==id);openEd(x.item.type,{bank:id,item:x.item})}
  else if(a=='bdel'){if(confirm('از بانک حذف شود؟')){pushU({k:'bank',rec:bank.find(k=>k.id==id)});bank=bank.filter(k=>k.id!=id);del('bank',id);bkList();bkChips()}}
  else if(a=='pv0'||a=='pv1'){AN=+a[2];render()}
- else if(a=='pdf0'||a=='pdf1'){$('#pp').innerHTML=`<div class="paper" style="--ls:${LSV()};line-height:${LSV()}">${withV(()=>paperHtml(+a[3]))}</div>`;const o=document.title;document.title=ex.title+(VAR?' - نسخه '+VAR:'')+(+a[3]?' - با پاسخ':'');setTimeout(()=>{print();document.title=o},200)}
+ else if(a=='pdf0'||a=='pdf1'){$('#pp').innerHTML=`<div class="paper" style="--ls:${LSV()};line-height:${LSV()}">${withV(()=>paperHtml(+a[3]))}</div>`;const o=document.title;document.title=ex.title+(VAR?' - نسخه '+VAR:'')+(+a[3]?' - با پاسخ':'');pgStyle();setTimeout(()=>{print();document.title=o;pgStyle(true)},200)}
  else if(a=='doc0'||a=='doc1'){const bak=ex;ex=variantOf(bak,VAR);mkDocx(+a[3]).finally(()=>{ex=bak})}
  else if(a=='json')saveBlob(new Blob([JSON.stringify({app:'azmoon',v:1,exam:ex})],{type:'application/json'}),ex.title+'.json')};
-$('#v').oninput=e=>{const t=e.target;if(t.id=='lsr'){ex.ls=+t.value;persist();$('#lsv').textContent=sf(ex.ls);const p=$('#pv');if(p){p.style.lineHeight=ex.ls;p.style.setProperty('--ls',ex.ls)}return}if(t.classList.contains('rtl')){ex.rows.find(r=>r.id==t.dataset.r).title=t.value;persist()}if(t.id=='bq'){BK.q=t.value;bkList()}};
+$('#v').oninput=e=>{const t=e.target;if(t.id=='cpr'){ex.cp=+t.value;persist();$('#cpv').textContent=fa(ex.cp)+' میلی‌متر';$$('#pv [data-q]').forEach(c=>{c.style.paddingLeft=c.style.paddingRight=ex.cp+'mm'});return}if(t.id=='lsr'){ex.ls=+t.value;persist();$('#lsv').textContent=sf(ex.ls);const p=$('#pv');if(p){p.style.lineHeight=ex.ls;p.style.setProperty('--ls',ex.ls)}return}if(t.classList.contains('rtl')){ex.rows.find(r=>r.id==t.dataset.r).title=t.value;persist()}if(t.id=='bq'){BK.q=t.value;bkList()}};
 $('#v').onchange=e=>{if(e.target.classList.contains('sc')){ex.rows.find(r=>r.id==e.target.dataset.r).score=+e.target.value;persist();const m=$('#sum');if(m)m.textContent='جمع بارم: '+sf(total())}if(e.target.id=='bt'){BK.ty=e.target.value;bkList()}};
 $('#ttl').oninput=e=>{ex.title=e.target.value;persist()};
 $$('nav button').forEach(b=>b.onclick=()=>{T=b.dataset.t;render();scrollTo(0,0)});
@@ -171,19 +172,19 @@ const rte=(id,h,ph)=>`<div class="ed" id="${id}" contenteditable="true" data-ph=
 const TBAR=ty=>`<div class="tb">${[['b','<b>B</b>'],['i','<i>I</i>'],['u','<u>U</u>'],['sup','x²'],['sub','x₂'],['fr','کسر'],['tbl','جدول'],['tr','＋سطر'],['tc','＋ستون'],['dr','－سطر'],['dc','－ستون'],['dt','✕جدول'],['img','🖼 تصویر'],['rmimg','✕تصویر'],['sym','Ω علامت']].map(([c,l])=>`<button data-c="${c}">${l}</button>`).join('')}${ty=='blank'?'<button class="p" data-c="bl">نقطه‌چین</button>':''}${ty=='paren'?'<button class="p" data-c="pr">( ) پرانتز گزینه‌ها</button>':''}</div><div class="sym" hidden>${SYM.map(s=>`<button data-s="${s}">${s}</button>`).join('')}</div>`;
 const optRows=(d,ok)=>d.opts.map((o,i)=>`<div class="orow">${ok?`<input type="radio" name="ok" value="${i}" ${i==d.ok?'checked':''}>`:''}<span>${fa(i+1)})</span><input class="oi" value="${esc(o)}"><button data-x="ro" data-n="${i}">✕</button></div>`).join('');
 const matchRows=d=>`<b>ستون راست (شماره‌دار؛ گزینه‌ی صحیح هر مورد را از لیست انتخاب کن)</b>${d.A.map((a,i)=>`<div class="orow"><span>${fa(i+1)}</span><input class="ia" value="${esc(a)}"><select class="im" title="پاسخ">${d.B.map((_,j)=>`<option value="${j}" ${d.map[i]==j?'selected':''}>${lt(j)}</option>`).join('')}</select><button data-x="rA" data-n="${i}">✕</button></div>`).join('')}<button data-x="aA">＋ آیتم راست</button><br><b>ستون چپ (جلوی هر مورد یک پرانتز می‌آید)</b>${d.B.map((b,j)=>`<div class="orow"><span>${lt(j)}</span><input class="ib" value="${esc(b)}"><button data-x="rB" data-n="${j}">✕</button></div>`).join('')}<button data-x="aB">＋ آیتم چپ</button>`;
-function edBody(d){const t=d.type;let h=`<h3>${TN[t]}</h3>${TBAR(t)}${ED.bank?'':`<label>دستور کلی سؤال (اختیاری؛ بالای سؤال می‌آید، مثلاً «گزینه‌ی مناسب را انتخاب کنید»)</label><input id="e_pre" style="width:100%" placeholder="مثلاً: در بین گزینه‌های زیر، گزینه‌ی مناسب را انتخاب کنید" value="${esc(ED.pre||'')}">`}<label>متن سؤال</label>${rte('e_html',d.html,'متن سؤال…')}`;
+function edBody(d){const t=d.type;let h=`<h3>${TN[t]}</h3>${TBAR(t)}${ED.bank?'':`<label>دستور کلی سؤال (اختیاری؛ بالای سؤال می‌آید، مثلاً «گزینه‌ی مناسب را انتخاب کنید»)</label><input id="e_pre" style="width:100%" placeholder="مثلاً: در بین گزینه‌های زیر، گزینه‌ی مناسب را انتخاب کنید" value="${esc(ED.pre||'')}">`}<label>بارم این سؤال (در برگه، جمع بارم‌های هر ردیف می‌آید)</label><select id="e_sc">${scO(d.score)}</select><label>متن سؤال</label>${rte('e_html',d.html,'متن سؤال…')}`;
  if(t=='blank')h+='<small>فقط نقطه‌چین بگذار (با دکمه‌ی «نقطه‌چین» یا خودت با ... تایپ کن). کلمه‌ی صحیح هر نقطه‌چین را پایین بنویس؛ در پاسخ‌نامه جای نقطه‌چین می‌نشیند.</small><label>پاسخ هر نقطه‌چین (به ترتیب)</label><div id="e_bl"></div>';
  if(t=='tf')h+=`<label>پاسخ</label><select id="e_ok"><option value="1" ${d.ok?'selected':''}>صحیح</option><option value="0" ${d.ok?'':'selected'}>غلط</option></select>`;
  if(t=='paren')h+=`<small>گزینه‌ها را داخل پرانتز بنویس و با خط تیره جدا کن؛ مثلاً: زمین به دور ( ماه - خورشید ) می‌چرخد. بعد گزینه‌ی صحیح را پایین بنویس؛ در پاسخ‌نامه همان گزینه پررنگ می‌شود.</small><label>گزینه‌ی صحیح (پاسخ)</label><input id="e_pa" style="width:100%" value="${esc(d.ans||'')}">`;
  if(t=='mc')h+=`<label>گزینه‌ها (دایره = گزینه‌ی درست)</label><div id="e_o">${optRows(d,1)}</div><button data-x="ao">＋ گزینه</button><label>چیدمان گزینه‌ها</label><select id="e_lay">${[[4,'۴ ستونی (در یک خط)'],[2,'۲ ستونی'],[1,'۱ ستونی']].map(([v,l])=>`<option value="${v}" ${d.lay==v?'selected':''}>${l}</option>`).join('')}</select><label>توضیح پاسخ (اختیاری، با تصویر)</label>${rte('e_ans',d.ans,'')}`;
  if(t=='match')h+=`<div id="e_m">${matchRows(d)}</div>`;
- if(t=='desc')h+=`<label>تعداد خط پاسخ در برگه</label><input type="number" id="e_ln" min="0" max="30" value="${d.lines||0}"><label>پاسخ (با تصویر)</label>${rte('e_ans',d.ans,'پاسخ تشریحی…')}`;
+ if(t=='desc')h+=`<label>فضای خالی برای پاسخ (تعداد خط؛ خطی کشیده نمی‌شود)</label><input type="number" id="e_ln" min="0" max="30" value="${d.lines||0}"><label>پاسخ (با تصویر)</label>${rte('e_ans',d.ans,'پاسخ تشریحی…')}`;
  return h+`<div class="ft"><button class="p" data-x="sv">ثبت</button>${ED.edit||ED.bank?'':'<button class="p" data-x="sn">ثبت و سؤال بعدی در همین ردیف</button>'}<button data-x="cl">انصراف</button></div>`}
 function openEd(type,c){ED={...c,type,d:legacy(c.item?clone(c.item):{...NEW[type](),id:uid()}),edit:c.bank?null:c.item};if(c.bank)ED.d.id=ED.d.id||uid();{const ro=c.bank?null:(c.item?find(c.item.id)?.r:(c.row?ex.rows.find(x=>x.id==c.row):null));ED.pre=ro?.title||''}showM(edBody(ED.d));lastE=$('#e_html');if(ED.d.type=='blank')syncBl(ED.d.blanks)}
 const clean=h=>{const d=document.createElement('div');d.innerHTML=h;d.querySelectorAll('.sel').forEach(x=>x.classList.remove('sel'));return d.innerHTML.replace(/<br>$/,'')};
 function sync(){const d=ED.d;if($('#e_o')){d.opts=$$('.oi').map(i=>i.value);d.ok=+($('input[name=ok]:checked')?.value||0)}
  if($('#e_m')){d.A=$$('.ia').map(i=>i.value);d.B=$$('.ib').map(i=>i.value);d.map=$$('.im').map(s=>+s.value)}}
-function collect(){sync();const d=ED.d;d.html=clean($('#e_html').innerHTML);if($('#e_ok'))d.ok=$('#e_ok').value=='1';if($('#e_lay'))d.lay=+$('#e_lay').value;if($('#e_ans'))d.ans=clean($('#e_ans').innerHTML);if($('#e_ln'))d.lines=+$('#e_ln').value||0;if(d.type=='blank')d.blanks=$$('.bli').map(i=>i.value.trim());if($('#e_pa'))d.ans=$('#e_pa').value.trim()}
+function collect(){sync();const d=ED.d;d.score=+$('#e_sc').value||0;d.html=clean($('#e_html').innerHTML);if($('#e_ok'))d.ok=$('#e_ok').value=='1';if($('#e_lay'))d.lay=+$('#e_lay').value;if($('#e_ans'))d.ans=clean($('#e_ans').innerHTML);if($('#e_ln'))d.lines=+$('#e_ln').value||0;if(d.type=='blank')d.blanks=$$('.bli').map(i=>i.value.trim());if($('#e_pa'))d.ans=$('#e_pa').value.trim()}
 function syncBl(vals){const box=$('#e_bl'),ed=$('#e_html');if(!box||!ed)return;const n=(ed.textContent.match(R_DOTS())||[]).length,old=vals||$$('.bli').map(i=>i.value);if(!vals&&box.dataset.n==n)return;box.dataset.n=n;
  box.innerHTML=n?Array.from({length:n},(_,i)=>`<div class="orow"><span>${fa(i+1)})</span><input class="bli" value="${esc(old[i]||'')}"></div>`).join(''):'<small>هنوز نقطه‌چینی در متن نیست.</small>'}
 $('#md').addEventListener('input',e=>{if(e.target.id=='e_html')syncBl()});
@@ -240,38 +241,40 @@ $('#mnu').onclick=mExams;
 // ---------- Word export (mirrors the PDF layout)
 const loadDocx=async()=>{if(window.docx)return window.docx;for(const u of['https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js','https://unpkg.com/docx@8.5.0/build/index.umd.js','https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.min.js']){try{await new Promise((ok,no)=>{const x=document.createElement('script');x.src=u;x.onload=ok;x.onerror=no;document.head.appendChild(x)});if(window.docx)return window.docx}catch{}}return null};
 async function mkDocx(a){toast('در حال ساخت Word…');const d=await loadDocx();if(!d)return toast('کتابخانه‌ی Word لود نشد؛ اینترنت را بررسی کن و دوباره بزن');
- try{const FN={ascii:'B Nazanin',cs:'B Nazanin',hAnsi:'B Nazanin',eastAsia:'B Nazanin'},W=10206,GW=7500;
- const R=(t,o={})=>new d.TextRun({text:t,font:FN,size:28,sizeComplexScript:28,rightToLeft:true,bold:!!o.b,boldComplexScript:!!o.b,italics:!!o.i,italicsComplexScript:!!o.i,underline:o.u?{}:undefined,superScript:!!o.sup,subScript:!!o.sub});
+ try{const FN={ascii:'B Nazanin',cs:'B Nazanin',hAnsi:'B Nazanin',eastAsia:'B Nazanin'},RED='D00000',W=10206,GW=7500;
+ const R=(t,o={})=>new d.TextRun({text:t,font:FN,size:28,sizeComplexScript:28,rightToLeft:true,bold:!!o.b,boldComplexScript:!!o.b,italics:!!o.i,italicsComplexScript:!!o.i,underline:o.u?{}:undefined,superScript:!!o.sup,subScript:!!o.sub,color:o.col});
  const Pg=(r,ind)=>new d.Paragraph({children:r,bidirectional:true,indent:ind?{start:ind}:undefined,spacing:{after:80,line:Math.round(240*LSV())}});
  const img=c=>{const w0=+c.dataset.w||200,h0=+c.dataset.h||150,s=Math.min(1,340/w0),b=atob(c.getAttribute('src').split(',')[1]),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return new d.ImageRun({data:u,type:'jpg',transformation:{width:Math.round(w0*s),height:Math.round(h0*s)}})};
  const frac=(x,y)=>{try{return new d.Math({children:[new d.MathFraction({numerator:[new d.MathRun(x)],denominator:[new d.MathRun(y)]})]})}catch{return R(x+'/'+y)}};
  const inl=(n,st,out)=>{n.childNodes.forEach(c=>{if(c.nodeType==3){if(c.textContent)out.push(R(c.textContent,st))}else if(c.nodeType==1){const g=c.tagName,s={...st};
-  if(g=='B'||g=='STRONG')s.b=1;if(g=='I'||g=='EM')s.i=1;if(g=='U')s.u=1;if(g=='SUP')s.sup=1;if(g=='SUB')s.sub=1;
+  if(g=='B'||g=='STRONG')s.b=1;if(g=='I'||g=='EM')s.i=1;if(g=='U')s.u=1;if(g=='SUP')s.sup=1;if(g=='SUB')s.sub=1;if(c.classList.contains('rd'))s.col=RED;
   if(g=='BR')out.push(new d.TextRun({break:1}));else if(g=='IMG')out.push(img(c));
-  else if(c.classList.contains('bl'))out.push(R(c.textContent,c.classList.contains('a')?{...st,b:1,u:1}:st));
+  else if(c.classList.contains('bl'))out.push(R(c.textContent,c.classList.contains('a')?{...st,b:1,u:1,col:RED}:st));
   else if(c.classList.contains('fr'))out.push(frac(c.children[0]?.textContent||'',c.children[1]?.textContent||''));else inl(c,s,out)}})};
- const blocks=html=>{const root=document.createElement('div');root.innerHTML=html;const res=[];let cur=[];const fl=()=>{if(cur.length){res.push(cur);cur=[]}};
-  (function walk(n){n.childNodes.forEach(c=>{const g=c.tagName;if(g=='TABLE'){fl();res.push(tbl(c))}else if(/^(DIV|P|LI|UL|OL)$/.test(g)){fl();walk(c);fl()}else inl({childNodes:[c]},{},cur)})})(root);fl();return res};
+ const blocks=(html,st0={})=>{const root=document.createElement('div');root.innerHTML=html;const res=[];let cur=[];const fl=()=>{if(cur.length){res.push(cur);cur=[]}};
+  (function walk(n){n.childNodes.forEach(c=>{const g=c.tagName;if(g=='TABLE'){fl();res.push(tbl(c))}else if(/^(DIV|P|LI|UL|OL)$/.test(g)){fl();walk(c);fl()}else inl({childNodes:[c]},st0,cur)})})(root);fl();return res};
  const kids=h=>{const b=blocks(h);return(b.length?b:[[]]).map(x=>Array.isArray(x)?Pg(x):x).concat(blocks(h).at(-1)instanceof d.Table?[Pg([])]:[])};
  const tbl=el=>new d.Table({rows:[...el.querySelectorAll('tr')].map(tr=>new d.TableRow({children:[...tr.children].map(td=>new d.TableCell({children:kids(td.innerHTML)}))})),visuallyRightToLeft:true});
- const P=(pre,html,ind)=>{const b=blocks(html);if(Array.isArray(b[0]))b[0]=[...pre,...b[0]];else b.unshift(pre);return b.map(x=>Array.isArray(x)?Pg(x,ind):x)};
+ const P=(pre,html,ind,st)=>{const b=blocks(html,st);if(Array.isArray(b[0]))b[0]=[...pre,...b[0]];else b.unshift(pre);return b.map(x=>Array.isArray(x)?Pg(x,ind):x)};
  const grid=(rows,w,ind)=>new d.Table({rows:rows.map(cs=>new d.TableRow({children:cs.map((c,i)=>new d.TableCell({width:{size:Math.round(GW*w[i]),type:d.WidthType.DXA},children:[Pg(c)]}))})),visuallyRightToLeft:true,width:{size:GW,type:d.WidthType.DXA},columnWidths:w.map(x=>Math.round(GW*x)),borders:d.TableBorders.NONE});
- const optRun=(it,k)=>{const o=it.opts[k];return o==null?[]:[R(`${fa(k+1)}) ${o}`,{b:a&&k==it.ok,u:a&&k==it.ok})]};
+ const optRun=(it,k)=>{const o=it.opts[k];return o==null?[]:[R(`${fa(k+1)}) ${o}`,{b:a&&k==it.ok,u:a&&k==it.ok,col:a&&k==it.ok?RED:undefined})]};
  const itemK=(it,pre,ind)=>{const o=P(pre,lead(it,a),ind);
   if(it.type=='mc'){const c=it.lay||4,rows=[];for(let i=0;i<it.opts.length;i+=c)rows.push(Array.from({length:c},(_,j)=>optRun(it,i+j)));o.push(grid(rows,Array(c).fill(1/c)));
-   if(a)o.push(...P([R('پاسخ: ',{b:1}),R('گزینه‌ی '+fa(it.ok+1)+(it.ans?' — ':''))],it.ans||'',ind))}
-  if(it.type=='match'){const rows=[],n=Math.max(it.A.length,it.B.length),inv=j=>{const i=it.map.indexOf(j);return i>=0?fa(i+1):'—'};for(let i=0;i<n;i++){const x=i<it.B.length;rows.push([i<it.A.length?[R(fa(i+1)+'. '+it.A[i])]:[],x?[R('( '+(a?inv(i):'      ')+' )')]:[],x?[R(it.B[i])]:[]])}o.push(grid(rows,[.42,.14,.44]))}
-  if(it.type=='desc'){for(let i=0;i<(it.lines||0);i++)o.push(new d.Paragraph({border:{bottom:{style:d.BorderStyle.DOTTED,size:4,color:'888888',space:1}},spacing:{after:120,line:Math.round(240*LSV())},children:[]}));if(a)o.push(...P([R('پاسخ: ',{b:1})],it.ans||'',ind))}
+   if(a)o.push(...P([R('پاسخ: ',{b:1,col:RED}),R('گزینه‌ی '+fa(it.ok+1)+(it.ans?' — ':''),{col:RED})],it.ans||'',ind,{col:RED}))}
+  if(it.type=='match'){const rows=[],n=Math.max(it.A.length,it.B.length),inv=j=>{const i=it.map.indexOf(j);return i>=0?fa(i+1):'—'};for(let i=0;i<n;i++){const x=i<it.B.length;rows.push([i<it.A.length?[R(fa(i+1)+'. '+it.A[i])]:[],x?(a?[R('( '),R(inv(i),{col:RED}),R(' )')]:[R('(       )')]):[],x?[R(it.B[i])]:[]])}o.push(grid(rows,[.42,.14,.44]))}
+  if(it.type=='desc'){for(let i=0;i<(it.lines||0);i++)o.push(new d.Paragraph({spacing:{after:0,line:Math.round(240*LSV())},children:[R('\u00a0')]}));if(a)o.push(...P([R('پاسخ: ',{b:1,col:RED})],it.ans||'',ind,{col:RED}))}
   return o};
  const endP=l=>l.at(-1)instanceof d.Paragraph?l:[...l,new d.Paragraph({spacing:{before:0,after:0,line:20,lineRule:d.LineRuleType.EXACTLY},children:[]})];
  const cp=(t,b)=>new d.Paragraph({alignment:d.AlignmentType.CENTER,bidirectional:true,children:t?[R(t,{b})]:[]});
- const cw=[.09,.79,.12],C=(ch,i,fill)=>new d.TableCell({width:{size:Math.round(W*cw[i]),type:d.WidthType.DXA},shading:fill?{fill,type:d.ShadingType.CLEAR,color:'auto'}:undefined,children:ch});
- const trs=[new d.TableRow({tableHeader:true,children:['ردیف','سوالات','بارم'].map((t,i)=>C([cp(t,1)],i,'E8E8E8'))})];
+ const cw=[.09,.79,.12],C=(ch,i,fill)=>new d.TableCell({width:{size:Math.round(W*cw[i]),type:d.WidthType.DXA},shading:fill?{fill,type:d.ShadingType.CLEAR,color:'auto'}:undefined,margins:i==1?{marginUnitType:d.WidthType.DXA,top:0,bottom:0,left:Math.round(CPV()*56.69),right:Math.round(CPV()*56.69)}:undefined,children:ch});
+ const trs=[new d.TableRow({tableHeader:ex.hdr!==false?true:undefined,children:['ردیف','سوالات','بارم'].map((t,i)=>C([cp(t,1)],i,'E8E8E8'))})];
  ex.rows.forEach((r,ri)=>{const s=r.items;let k=[];
   if(r.title)k.push(...P([],esc(r.title),0));if(s.length==1)k.push(...itemK(s[0],[],0));else{s.forEach((it,i)=>k.push(...itemK(it,[R(lt(i)+') ',{b:1})],0)))}
-  trs.push(new d.TableRow({cantSplit:true,children:[C([cp(fa(ri+1),1)],0),C(endP(k),1),C([cp(r.score?sf(r.score):'')],2)]}))});
+  trs.push(new d.TableRow({cantSplit:true,children:[C([cp(fa(ri+1),1)],0),C(endP(k),1),C([cp(rowTotal(r)?sf(rowTotal(r)):'')],2)]}))});
  const out=[...(ex.vl?[new d.Paragraph({alignment:d.AlignmentType.CENTER,bidirectional:true,spacing:{after:80},children:[R('نسخه‌ی '+ex.vl,{b:1})]})]:[]),new d.Table({rows:trs,visuallyRightToLeft:true,width:{size:W,type:d.WidthType.DXA},columnWidths:cw.map(x=>Math.round(W*x))})];
- const doc=new d.Document({sections:[{properties:{page:{size:{width:11906,height:16838},margin:{top:850,right:850,bottom:850,left:850}}},children:out}]});
+ const fr=t=>new d.TextRun({text:t,font:FN,size:22,sizeComplexScript:22,rightToLeft:true}),fp=g=>new d.TextRun({children:[g],font:FN,size:22,sizeComplexScript:22,rightToLeft:true}),
+  foot=ex.pn?new d.Footer({children:[new d.Paragraph({alignment:d.AlignmentType.CENTER,bidirectional:true,children:ex.pn=='nt'?[fr('صفحه '),fp(d.PageNumber.CURRENT),fr(' از '),fp(d.PageNumber.TOTAL_PAGES)]:[fp(d.PageNumber.CURRENT)]})]}):null;
+ const doc=new d.Document({sections:[{properties:{page:{size:{width:11906,height:16838},margin:{top:850,right:850,bottom:850,left:850}}},footers:foot?{default:foot}:undefined,children:out}]});
  saveBlob(await d.Packer.toBlob(doc),ex.title+(ex.vl?' - نسخه '+ex.vl:'')+(a?' - با پاسخ':' - بدون پاسخ')+'.docx');toast('فایل Word ساخته شد')}catch(e){console.error(e);toast('خطا در ساخت Word')}}
 function arrayBufferToBase64Url(buf){
   let binary=''; const bytes=new Uint8Array(buf);
@@ -425,7 +428,7 @@ let DIP=null;addEventListener('beforeinstallprompt',e=>{e.preventDefault();DIP=e
 //#GRADE-START
 const nz=s=>String(s==null?'':s).replace(/[\u200c\u200f\u200e\s]/g,'').replace(/ي/g,'ی').replace(/ك/g,'ک').replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).toLowerCase();
 function parenInfo(it){const h=it.html||'',re=/\(([^()<>]*)\)/g;let m,g=-1;while((m=re.exec(h))){g++;const o=m[1].split(/\s*[-–—،\/|]\s*/).map(x=>strip(x).trim()).filter(Boolean),ok=o.findIndex(x=>nz(x)==nz(it.ans));if(ok>=0)return{g,opts:o,ok}}return null}
-const gw=(m,r)=>{const t=m.rows.reduce((s,x)=>s+(+x.score||0),0);return t?(+r.score||0):1};
+const gw=(m,r)=>{const t=m.rows.reduce((s,x)=>s+rowTotal(x),0);return t?rowTotal(r):1},iw=(m,r,it)=>{const t=m.rows.reduce((s,x)=>s+rowTotal(x),0);return t?(+it.score||0):1/(r.items.length||1)};
 function autoFrac(it,a){
  if(it.type=='desc')return null;if(a==null||a==='')return 0;
  if(it.type=='tf')return a==(it.ok?'T':'F')?1:0;
@@ -435,18 +438,18 @@ function autoFrac(it,a){
  if(it.type=='blank'){const ks=(it.blanks||[]).map(nz),v=[].concat(a);return ks.length?ks.filter((k,i)=>k.split('|').some(x=>x&&x==nz(v[i]))).length/ks.length:0}
  return null}
 function gradeRes(res,exm){const auto=(exm.ol||{}).auto!==false;let tot=0,max=0,pend=0;const det={};
- exm.rows.forEach(r=>{const w=gw(exm,r)/(r.items.length||1);r.items.forEach(it=>{const k=keyOf(r,it),m=res.man&&res.man[k],a0=res.ans[k],im=res.img&&res.img[k]&&res.img[k].length,emp=a0==null||a0===''||(Array.isArray(a0)&&!a0.some(x=>x!=null&&x!==''&&x!==-1)),f=auto&&!(im&&emp)?autoFrac(it,a0):null;
+ exm.rows.forEach(r=>{r.items.forEach(it=>{const w=iw(exm,r,it),k=keyOf(r,it),m=res.man&&res.man[k],a0=res.ans[k],im=res.img&&res.img[k]&&res.img[k].length,emp=a0==null||a0===''||(Array.isArray(a0)&&!a0.some(x=>x!=null&&x!==''&&x!==-1)),f=auto&&!(im&&emp)?autoFrac(it,a0):null;
   const sc=m!=null?m:(f==null?0:f*w);if(m==null&&(f==null))pend++;det[k]={sc,w};tot+=sc;max+=w})});return{tot,max,det,pend}}
 //#GRADE-END
 // ---- publish
 async function shrink(h,mx,q){if(!h||!h.includes('<img'))return h;const d=document.createElement('div');d.innerHTML=h;for(const im of d.querySelectorAll('img')){const u=await compressImageDataUrl(im.src,mx,q);if(u)im.src=u}return d.innerHTML}
 async function payload(mx,q){const o=olv(),rows=[];
- for(const r of ex.rows){const items=[];for(const it of r.items){const c=clone(legacy(it));if(c.type=='paren'){const pi=parenInfo(it);c.po=pi?pi.opts:null;c.pg=pi?pi.g:-1}delete c.ok;delete c.ans;delete c.map;delete c.blanks;c.html=await shrink(c.html||'',mx,q);items.push(c)}rows.push({id:r.id,title:r.title||'',score:r.score||0,items})}
- return{v:1,id:ex.id,title:o.name||ex.title,ol:{minutes:o.minutes,rules:o.rules,order:o.order,view:o.view,shuffle:o.shuffle,lim:o.lim,s:o.s,e:o.e},rows}}
+ for(const r of ex.rows){const items=[];for(const it of r.items){const c=clone(legacy(it));if(c.type=='paren'){const pi=parenInfo(it);c.po=pi?pi.opts:null;c.pg=pi?pi.g:-1}delete c.ok;delete c.ans;delete c.map;delete c.blanks;c.html=await shrink(c.html||'',mx,q);items.push(c)}rows.push({id:r.id,title:r.title||'',score:rowTotal(r),items})}
+ return{v:1,id:ex.id,title:o.name||ex.title,ol:{minutes:o.minutes,rules:o.rules,order:o.order,view:o.view,shuffle:o.shuffle,lim:o.lim,s:o.s,e:o.e},col:(()=>{const C=COL();return C.u&&o.col!==false?{u:C.u,k:C.sk}:null})(),rows}}
 async function standalone(p){const code=await encodeData(p),mk='<scr'+'ipt id="examDataEmbed" type="application/octet-stream"></scr'+'ipt>';
  if(!PRISTINE.includes(mk))throw new Error('marker');return PRISTINE.replace(mk,()=>'<scr'+'ipt id="examDataEmbed" type="application/octet-stream">'+code+'</scr'+'ipt>').replace(/<title>.*?<\/title>/,'<title>'+esc(p.title)+'</title>')}
 const baseUrl=()=>location.protocol=='file:'?location.href.split('?')[0]:location.origin+location.pathname;
-const vOl=()=>{const o=olv(),j=jalaaliToday(),S=o.s||{jy:j.jy,jm:j.jm,jd:j.jd,t:'08:00'},E=o.e||{jy:j.jy,jm:j.jm,jd:j.jd,t:'20:00'};
+const vOl=()=>{const GC=colInit(),o=olv(),j=jalaaliToday(),S=o.s||{jy:j.jy,jm:j.jm,jd:j.jd,t:'08:00'},E=o.e||{jy:j.jy,jm:j.jm,jd:j.jd,t:'20:00'};
  const pl=(k,v,t)=>`<button data-a="op" data-k="${k}" data-v="${v}" class="${o[k]===v?'p':''}">${t}</button>`;
  return `<div class="card"><h3>مشخصات آزمون آنلاین</h3><label>نام آزمون (برای نمایش به دانش‌آموز)</label><input id="o_name" style="width:100%" value="${esc(o.name||ex.title)}">
  <label>مدت پاسخ‌گویی هر دانش‌آموز (دقیقه؛ ۰ = نامحدود)</label><input type="number" id="o_min" min="0" value="${o.minutes}">
@@ -454,6 +457,14 @@ const vOl=()=>{const o=olv(),j=jalaaliToday(),S=o.s||{jy:j.jy,jm:j.jm,jd:j.jd,t:
  <div class="card"><h3>تنظیمات نمایش</h3><div class="r"><b>ترتیب سؤال‌ها:</b>${pl('order','ordered','منظم')}${pl('order','random','تصادفی')}</div><div class="r"><b>نمایش:</b>${pl('view','all','یک‌جا')}${pl('view','one','تک‌تک')}</div>
  <div class="r"><label><input type="checkbox" id="o_sh" ${o.shuffle?'checked':''}> ترتیب گزینه‌های چهارگزینه‌ای تصادفی</label></div><div class="r"><b>تصحیح:</b>${pl('auto',true,'خودکار')}${pl('auto',false,'دستی')}</div></div>
  <div class="card"><label><input type="checkbox" id="o_lim" ${o.lim?'checked':''}> محدودیت بازه‌ی زمانی آزمون (تاریخ شمسی)</label><div id="o_win" ${o.lim?'':'hidden'}><label>شروع</label><div class="row">${jalaliDateSelectsHtml('os',S.jy,S.jm,S.jd)}<input type="time" id="o_st" value="${S.t}"></div><label>پایان</label><div class="row">${jalaliDateSelectsHtml('oe',E.jy,E.jm,E.jd)}<input type="time" id="o_et" value="${E.t}"></div></div></div>
+ <div class="card"><h3>دریافت خودکار نتایج (Google Sheets)</h3><small style="color:var(--mu)">اختیاری. اگر تنظیم نکنی، دانش‌آموز فقط فایل نتیجه را می‌فرستد.</small>
+ <details><summary style="cursor:pointer;margin:8px 0">📖 راهنمای نصب (یک بار)</summary><ol style="line-height:2;padding-inline-start:20px"><li>در حساب گوگل خودت یک Google Sheet جدید بساز.</li><li>منوی <b>Extensions ← Apps Script</b> را باز کن، همه‌ی کدهای داخلش را پاک کن، کد زیر را بچسبان و ذخیره (Save) کن.</li><li>بالا سمت راست <b>Deploy ← New deployment</b> را بزن. نوع را <b>Web app</b> بگذار. <b>Execute as: Me</b> و <b>Who has access: Anyone</b>. بعد Deploy را بزن و اجازه‌ی دسترسی (Authorize) را تأیید کن.</li><li>آدرس <b>Web app</b> را که آخرش <code>/exec</code> است کپی کن و در کادر پایین بچسبان.</li></ol>
+ <textarea readonly id="g_code" rows="6" style="width:100%;direction:ltr;font-size:11px;background:var(--bg);color:inherit;border:1px solid var(--ln);border-radius:10px">${esc(scriptCode(GC))}</textarea></details>
+ <div class="r"><button data-a="gcopy">📋 کپی کد اسکریپت</button></div>
+ <input id="g_url" style="width:100%;direction:ltr" placeholder="https://script.google.com/macros/s/.../exec" value="${esc(GC.u||'')}">
+ <div class="r"><button class="p" data-a="gtest">🔌 آزمایش اتصال</button></div><div id="g_st"></div>
+ <div class="r"><label><input type="checkbox" id="g_on" ${o.col===false?'':'checked'}> ارسال خودکار نتیجه برای این آزمون</label></div>
+ <small style="color:var(--mu)">بعد از تنظیم یا تغییر آدرس، فایل و لینک آزمون را دوباره بساز.</small></div>
  <div class="card"><h3>انتشار</h3><div class="r"><button class="p" data-a="olink">🔗 ساخت لینک آزمون</button><button class="p" data-a="ofile">📦 دانلود فایل آزمون (HTML)</button></div><div id="o_out"></div>
  <small style="color:var(--mu)">لینک نیاز دارد برنامه روی یک آدرس اینترنتی باشد. فایل HTML مستقل است و بدون اینترنت هم روی گوشی دانش‌آموز باز می‌شود. کلید پاسخ‌ها داخل لینک یا فایل نیست.</small></div>`};
 const winRead=()=>{const o=olv();o.s={...readJalaliSelects('os'),t:$('#o_st').value||'08:00'};o.e={...readJalaliSelects('oe'),t:$('#o_et').value||'20:00'}};
@@ -461,7 +472,7 @@ const winRead=()=>{const o=olv();o.s={...readJalaliSelects('os'),t:$('#o_st').va
 let RS={ex:'',rs:[],L:[]};
 const vRs=()=>{if(!exams.find(k=>k.id==RS.ex))RS.ex=ex.id;return `<div class="card"><label>آزمون</label><select id="rsx" style="width:100%">${[...exams].sort((a,b)=>b.t-a.t).map(k=>`<option value="${k.id}" ${k.id==RS.ex?'selected':''}>${esc(k.title)}</option>`).join('')}</select>
  <label>فایل‌های نتیجه‌ی دانش‌آموزان (چند فایل را می‌توانی یک‌جا انتخاب کنی)</label><div class="r"><label class="b p">📂 افزودن فایل‌های نتیجه<input type="file" id="rfl" multiple hidden></label></div>
- <details><summary style="cursor:pointer;color:var(--mu)">چسباندن کد متنی (برای نتیجه‌های قدیمی)</summary><textarea id="rcd" rows="3" style="width:100%;background:var(--bg);color:inherit;border:1px solid var(--ln);border-radius:10px;padding:8px"></textarea><button class="p" data-a="rimp">➕ افزودن نتیجه‌ها</button></details></div><div id="rl"></div><div id="rm"></div>`};
+ ${COL().u?'<div class="r"><button class="p" data-a="gpull">☁️ دریافت نتایج از Google Sheet</button></div>':''}<details><summary style="cursor:pointer;color:var(--mu)">چسباندن کد متنی (برای نتیجه‌های قدیمی)</summary><textarea id="rcd" rows="3" style="width:100%;background:var(--bg);color:inherit;border:1px solid var(--ln);border-radius:10px;padding:8px"></textarea><button class="p" data-a="rimp">➕ افزودن نتیجه‌ها</button></details></div><div id="rl"></div><div id="rm"></div>`};
 function rsManage(A){const m=$('#rm');if(!m)return;const by={};A.forEach(r=>by[r.exId]=(by[r.exId]||0)+1);const l=exams.filter(k=>by[k.id]);
  m.innerHTML=l.length?`<div class="card"><h3>حذف نتایج آزمون‌ها</h3><small style="color:var(--mu)">با زدن دکمه‌ی هر آزمون، همه‌ی نتایج همان آزمون یک‌جا حذف می‌شود.</small>${l.map(k=>`<div class="it"><span class="pv"><b>${esc(k.title)}</b></span><span>${fa(by[k.id])} نتیجه</span><button data-a="rdall" data-i="${k.id}" style="border-color:var(--dg);color:var(--dg)">🗑 حذف همه‌ی نتایج</button></div>`).join('')}</div>`:''}
 const bar=p=>`<div style="background:var(--ln);border-radius:8px;height:10px"><div style="width:${Math.max(0,Math.min(100,Math.round(p)))}%;height:10px;border-radius:8px;background:linear-gradient(90deg,#1E9E78,var(--ac2))"></div></div>`;
@@ -501,7 +512,7 @@ $('#v').addEventListener('click',async e=>{const b=e.target.closest('button');if
  else if(a=='op'){const v=b.dataset.v;olv()[b.dataset.k]=v=='true'?true:v=='false'?false:v;persist();render()}
  else if(a=='rimp'){await addCodes($('#rcd').value)}
  else if(a=='rgr')gradeM(id);
- else if(a=='rdall'){const k=exams.find(q=>q.id==id),L=(await all('results')).filter(r=>r.exId==id&&!String(r.id).startsWith('stu:'));if(confirm(`همه‌ی ${fa(L.length)} نتیجه‌ی آزمون «${k?k.title:''}» حذف شود؟ این کار قابل برگشت نیست.`)){for(const r of L)await del('results',r.id);toast('نتایج آزمون حذف شد');rsDraw()}}
+ else if(a=='rdall'){const k=exams.find(q=>q.id==id),L=(await all('results')).filter(r=>r.exId==id&&!String(r.id).startsWith('stu:'));if(confirm(`همه‌ی ${fa(L.length)} نتیجه‌ی آزمون «${k?k.title:''}» حذف شود؟ این کار قابل برگشت نیست.`)){for(const r of L)await del('results',r.id);localStorage.removeItem('ao_pk_'+id);toast('نتایج آزمون حذف شد');rsDraw()}}
  else if(a=='rdl'){if(confirm('این نتیجه حذف شود؟')){await del('results',id);rsDraw()}}
  else if(a=='rpt'){const exm=exams.find(k=>k.id==RS.ex);saveBlob(new Blob([portalHtml(exm,RS.L)],{type:'text/html'}),exm.title+' - نتایج.html')}
  else if(a=='rrf'||a=='rrl'){const x=RS.L.find(q=>q.r.id==id),exm=exams.find(k=>k.id==RS.ex);toast('در حال ساخت کارنامه…');
@@ -536,7 +547,7 @@ async function repData(r,exm,mx,q){const g=gradeRes(r,exm),rows=[];
  for(const rw of exm.rows){const its=[];for(const it of rw.items){const k=keyOf(rw,it),d=g.det[k];let kh=keyText(it),ah=ansText(it,r.ans[k]);
   ah+=((r.img||{})[k]||[]).map(u=>`<br><img src="${u}">`).join('');if(it.type=='desc'){ah=ah.replace(/\n/g,'<br>');kh=it.ans||'—'}else if(it.type=='mc'&&it.ans)kh+='<div>'+it.ans+'</div>';
   its.push({q:await shrink(itemHtml(it,false),mx,q),a:await shrink(ah,mx,q),c:await shrink(kh,mx,q),sc:+d.sc.toFixed(2),w:+d.w.toFixed(2)})}
-  rows.push({t:rw.title||'',s:rw.score||0,i:its})}
+  rows.push({t:rw.title||'',s:rowTotal(rw),i:its})}
  return{v:1,rep:1,title:exm.title,name:r.name,cls:r.cls||'',tot:+g.tot.toFixed(2),max:+g.max.toFixed(2),rows}}
 function showReport(P){document.title='کارنامه '+P.name;document.body.innerHTML='<div class="ui" id="st" style="max-width:820px;margin:auto;padding:14px 12px 60px"></div><div id="cr">تهیه‌کننده: وحیده محجوب</div>';
  const col=(s,w)=>s>=w-.001?'#1E9E78':s<=.001?'#D64545':'#D9962B';
@@ -560,7 +571,7 @@ async function startStudent(code){
  const intro=()=>{const n=Date.now(),bad=S0&&n<S0?'آزمون هنوز شروع نشده است. شروع: '+jalaliDateLabel(O.s)+' ساعت '+fa(O.s.t):(E0&&n>E0?'زمان این آزمون به پایان رسیده است.':'');
   st.innerHTML=`<div class="card"><h2>${esc(P.title)}</h2>${O.rules?`<p style="white-space:pre-wrap;color:var(--dg)">${esc(O.rules)}</p>`:''}<p>تعداد سؤال: ${fa(P.rows.length)}${O.minutes?' · مدت: '+fa(O.minutes)+' دقیقه':''}</p>`+(bad?`<p><b>${bad}</b></p>`:'')+
   `<label>نام و نام خانوادگی</label><input id="sn" style="width:100%">`+(bad?'':`<label>کلاس / شماره (اختیاری)</label><input id="sc" style="width:100%">`)+
-  `<div class="r">${bad?'':'<button class="p" id="sgo">شروع آزمون</button>'}<button id="srec">🔎 قبلاً آزمون را داده‌ام و فقط فایل نتیجه‌ام را می‌خواهم</button></div><div id="sro"></div><small style="color:var(--mu)">نسخه‌ی برنامه: ۱۲</small></div>`;
+  `<div class="r">${bad?'':'<button class="p" id="sgo">شروع آزمون</button>'}<button id="srec">🔎 قبلاً آزمون را داده‌ام و فقط فایل نتیجه‌ام را می‌خواهم</button></div><div id="sro"></div><small style="color:var(--mu)">نسخه‌ی برنامه: ۱۵</small></div>`;
   if(!bad)$('#sgo').onclick=async()=>{const nm=$('#sn').value.trim();if(!nm)return toast('نام را وارد کن');const prev=await sget('d:'+nz(nm));if(prev){toast('برای این نام قبلاً نتیجه ثبت شده است');return fin(prev)}
    const ix=P.rows.map((_,i)=>i);Z={nm,cls:$('#sc').value.trim(),t0:Date.now(),ord:O.order=='random'?shuf(ix):ix,pos:0,mo:{},ans:{},img:{}};fdone=false;await sput('s',Z);run()};
   $('#srec').onclick=async()=>{const nm=$('#sn').value.trim();if(!nm)return toast('اول نام را همان‌طور که موقع آزمون نوشتی وارد کن');const c=await sget('d:'+nz(nm));if(c)fin(c);else $('#sro').innerHTML='<p>برای این نام روی این دستگاه نتیجه‌ای پیدا نشد. باید از همان گوشی و همان مرورگری باز کنی که آزمون را در آن دادی.</p>'}};
@@ -587,14 +598,21 @@ async function startStudent(code){
   else if(t.tagName=='SELECT')(Z.ans[t.dataset.k]=Z.ans[t.dataset.k]||[])[+t.dataset.n]=+t.value;else if(t.classList.contains('da'))Z.ans[t.dataset.k]=t.value;else return;save()});
  st.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.n){Z.pos+=+b.dataset.n;save();nav();scrollTo(0,0)}else if(b.id=='fresh'){if(confirm('پاسخ‌های فعلی پاک شود و از اول شروع شود؟')){sdel('s');Z=null;clearInterval(tid);intro()}}else if(b.dataset.rm){const[k,i]=b.dataset.rm.split('|');Z.img[k].splice(+i,1);if(!Z.img[k].length)delete Z.img[k];save();drawPh(k)}else if(b.id=='sub'){if(confirm('پاسخ‌برگه ثبت نهایی شود؟'))finish(false)}});
  st.addEventListener('change',async e=>{const t=e.target,k=t.dataset&&t.dataset.pk;if(!k||!t.files||!Z)return;const a=Z.img[k]=Z.img[k]||[];for(const f of t.files){if(a.length>=3){toast('حداکثر ۳ عکس برای هر سؤال');break}try{a.push(await shot(f))}catch{toast('عکس خوانده نشد')}}t.value='';if(!a.length)delete Z.img[k];save();drawPh(k)});
- const finish=async auto=>{if(fdone)return;fdone=true;clearTimeout(window.__svT);clearInterval(tid);const c=await encodeData({v:1,ex:P.id,title:P.title,name:Z.nm,cls:Z.cls,t0:Z.t0,t1:Date.now(),ans:Z.ans,img:Z.img});const rec={c,nm:Z.nm};await sput('d:'+nz(Z.nm),rec);await sdel('s');fin(rec,auto)};
+ const finish=async auto=>{if(fdone)return;fdone=true;clearTimeout(window.__svT);clearInterval(tid);const c=await encodeData({v:1,ex:P.id,title:P.title,name:Z.nm,cls:Z.cls,t0:Z.t0,t1:Date.now(),ans:Z.ans,img:Z.img});const rec={c,nm:Z.nm,cls:Z.cls,t0:Z.t0};await sput('d:'+nz(Z.nm),rec);await sdel('s');fin(rec,auto)};
+ const autoSend=async R=>{const id=P.id+'|'+(R.t0||R.c.length)+'|'+nz(R.nm),body=JSON.stringify({k:P.col.k,id,title:P.title,name:R.nm||'',cls:R.cls||'',code:R.c});
+  for(let i=0;i<6;i++){try{const r=await fetch(P.col.u,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body}),j=await r.json();if(j&&j.ok)return true;if(j&&j.e=='key')return false}catch(e){}await new Promise(r=>setTimeout(r,1500+Math.random()*3500*(i+1)))}return false};
+ const trySend=async R=>{const b=$('#cs');if(!b)return;if(R.sent){b.innerHTML='✅ نتیجه‌ات برای معلم ارسال شده است؛ نیازی به فرستادن فایل نیست.';return}
+  b.innerHTML='⏳ در حال ارسال خودکار نتیجه برای معلم… (صفحه را نبند)';const ok=await autoSend(R);if(!$('#cs'))return;
+  if(ok){R.sent=true;await sput('d:'+nz(R.nm),R);b.innerHTML='✅ نتیجه‌ات برای معلم ارسال شد؛ نیازی به فرستادن فایل نیست. (فایل زیر فقط برای نگه‌داشتن است.)'}
+  else{b.innerHTML='⚠️ ارسال خودکار انجام نشد (اینترنت یا محدودیت). فایل نتیجه را دانلود کن و برای معلم بفرست.<div class="r"><button id="rt">🔄 تلاش دوباره</button></div>';$('#rt').onclick=()=>trySend(R)}};
  const fin=(rec,auto)=>{const R=typeof rec=='string'?{c:rec,nm:''}:rec,c=R.c,fn='natije_'+Date.now().toString(36)+'.txt',url=URL.createObjectURL(new Blob([c],{type:'text/plain'})),
    mob=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)||(navigator.maxTouchPoints>1&&/Mac/.test(navigator.platform)),fl=new File([c],fn,{type:'text/plain'}),cs=mob&&navigator.canShare&&navigator.canShare({files:[fl]});
-  st.innerHTML=`<div class="card"><h2>✅ پاسخ‌برگه ثبت شد</h2>${auto?'<p>زمان تمام شد و پاسخ‌ها خودکار ثبت شد.</p>':''}<p>برای کامل شدن آزمون، <b>فایل نتیجه</b> را دانلود کن و برای معلم بفرست.</p>
+  st.innerHTML=`<div class="card"><h2>✅ پاسخ‌برگه ثبت شد</h2>${P.col&&P.col.u?'<div id="cs" class="card" style="margin:8px 0"></div>':''}${auto?'<p>زمان تمام شد و پاسخ‌ها خودکار ثبت شد.</p>':''}<p>برای کامل شدن آزمون، <b>فایل نتیجه</b> را دانلود کن و برای معلم بفرست.</p>
   <div class="r" style="flex-direction:column;align-items:stretch"><a class="b p" id="dl" href="${url}" download="${fn}" style="font-size:17px;padding:10px 18px;justify-content:center;text-decoration:none">⬇️ دانلود فایل نتیجه</a>
   ${cs?'<button class="p" id="sf" style="font-size:16px;padding:10px 18px;justify-content:center">📤 ارسال فایل (واتساپ، تلگرام و...)</button>':''}${window.showSaveFilePicker?'<button id="sv2" style="justify-content:center">💾 ذخیره در پوشه‌ی دلخواه</button>':''}</div>
   <p id="dm" style="color:var(--ac)"></p><p style="color:var(--mu);font-size:13px">نام فایل: <b dir="ltr">${fn}</b><br>بعد از دانلود، فایل در پوشه‌ی Downloads (دانلودها) ذخیره می‌شود. در کامپیوتر با Ctrl+J فهرست دانلودهای مرورگر را می‌بینی. اگر پیدایش نکردی، «ذخیره در پوشه‌ی دلخواه» را بزن.</p>
   <p style="color:var(--mu);font-size:13px">اگر فراموش کردی بفرستی، همین لینک یا فایل آزمون را روی همین دستگاه دوباره باز کن و «فقط فایل نتیجه‌ام را می‌خواهم» را بزن.</p></div>`;
+  if(P.col&&P.col.u)trySend(R);
   $('#dl').onclick=()=>{$('#dm').textContent='✔ دانلود شروع شد: '+fn+' — اگر فایل را ندیدی، Ctrl+J را بزن یا «ذخیره در پوشه‌ی دلخواه» را انتخاب کن.'};
   if($('#sf'))$('#sf').onclick=()=>navigator.share({files:[fl],title:'نتیجه آزمون'}).catch(()=>{});
   if($('#sv2'))$('#sv2').onclick=async()=>{try{const h=await showSaveFilePicker({suggestedName:fn,types:[{description:'فایل نتیجه',accept:{'text/plain':['.txt']}}]}),w=await h.createWritable();await w.write(c);await w.close();$('#dm').textContent='✔ فایل در مکانی که انتخاب کردی ذخیره شد.'}catch(e){if(!e||e.name!='AbortError')toast('ذخیره نشد؛ از دکمه‌ی دانلود استفاده کن')}}};
@@ -682,6 +700,32 @@ function variantOf(e,L){if(!L)return e;const seed=[...(e.id+L)].reduce((h,c)=>Ma
 const withV=fn=>{const bak=ex;ex=variantOf(bak,VAR);try{return fn()}finally{ex=bak}};
 $('#v').addEventListener('change',e=>{const t=e.target;if(t.id=='vsel'){VAR=t.value;render()}else if(t.id=='vopt'){VOPT=t.checked;render()}});
 
+$('#v').addEventListener('change',e=>{if(e.target.id=='hdr'){ex.hdr=e.target.checked;persist()}});
+// ================= GOOGLE SHEETS AUTO COLLECTION =================
+const GS_TEMPLATE="var SUBMIT_KEY='__SK__';\nvar ADMIN_KEY='__AK__';\nfunction out(o){return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);}\nfunction getSheet(ss,name,head){var s=ss.getSheetByName(name);if(!s){s=ss.insertSheet(name);s.appendRow(head);}return s;}\nfunction doPost(e){\n  try{\n    var d=JSON.parse(e.postData.contents);\n    if(!d||d.k!==SUBMIT_KEY)return out({ok:false,e:'key'});\n    if(!d.id||!d.code||String(d.code).length>9000000)return out({ok:false,e:'data'});\n    var lock=LockService.getScriptLock();\n    lock.waitLock(28000);\n    try{\n      var ss=SpreadsheetApp.getActive();\n      var sh=getSheet(ss,'نتایج',['زمان','آزمون','نام','کلاس','شناسه','ردیف داده','تعداد بخش']);\n      var dt=getSheet(ss,'Data',['شناسه','بخش','متن']);\n      var n=sh.getLastRow();\n      var ids=n>1?sh.getRange(2,5,n-1,1).getValues():[];\n      for(var i=0;i<ids.length;i++){if(ids[i][0]===d.id)return out({ok:true,dup:true});}\n      var c=String(d.code),N=40000,rows=[],k=0;\n      for(var p=0;p<c.length;p+=N,k++){rows.push([d.id,k,c.slice(p,p+N)]);}\n      var start=dt.getLastRow()+1;\n      dt.getRange(start,1,rows.length,3).setValues(rows);\n      sh.appendRow([new Date(),d.title||'',d.name||'',d.cls||'',d.id,start,rows.length]);\n      try{dt.hideSheet();}catch(x){}\n      return out({ok:true});\n    }finally{lock.releaseLock();}\n  }catch(err){return out({ok:false,e:String(err)});}\n}\nfunction doGet(e){\n  try{\n    var p=e.parameter||{};\n    if(p.k!==ADMIN_KEY)return out({ok:false,e:'key'});\n    if(p.a==='ping')return out({ok:true});\n    var ss=SpreadsheetApp.getActive();\n    var sh=ss.getSheetByName('نتایج');\n    var n=sh?sh.getLastRow():0;\n    var v=n>1?sh.getRange(2,1,n-1,7).getValues():[];\n    if(p.a==='list'){return out({ok:true,rows:v.map(function(r){return {t:+new Date(r[0]),title:r[1],name:r[2],cls:r[3],id:r[4]};})});}\n    if(p.a==='get'){\n      for(var i=0;i<v.length;i++){\n        if(v[i][4]===p.id){\n          var dt=ss.getSheetByName('Data');\n          var rows=dt.getRange(v[i][5],1,v[i][6],3).getValues();\n          var s='';\n          for(var j=0;j<rows.length;j++){s+=rows[j][2];}\n          return out({ok:true,code:s});\n        }\n      }\n      return out({ok:false,e:'none'});\n    }\n    return out({ok:false,e:'a'});\n  }catch(err){return out({ok:false,e:String(err)});}\n}\n";
+const COL=()=>{try{return JSON.parse(localStorage.ao_col||'{}')||{}}catch{return{}}},colSave=c=>localStorage.ao_col=JSON.stringify(c),rk=()=>[...crypto.getRandomValues(new Uint8Array(16))].map(x=>x.toString(36).padStart(2,'0')).join('');
+function colInit(){const c=COL();if(!c.sk||!c.ak){c.sk=rk();c.ak=rk();colSave(c)}return c}
+const scriptCode=c=>GS_TEMPLATE.replace('__SK__',c.sk).replace('__AK__',c.ak);
+async function pullCloud(){const C=colInit();if(!C.u)return toast('اول در تب آنلاین آدرس Web app را وارد کن');toast('در حال دریافت فهرست…');
+ const g=q=>fetch(C.u+'?k='+C.ak+'&'+q).then(r=>r.json());
+ try{const j=await g('a=list');if(!j.ok)throw 0;const key='ao_pk_'+RS.ex,pk=JSON.parse(localStorage[key]||'[]'),all_=j.rows.filter(r=>String(r.id).startsWith(RS.ex+'|')),mine=all_.filter(r=>!pk.includes(r.id));
+  if(!mine.length){toast('نتیجه‌ی جدیدی نیست ('+fa(all_.length)+' نتیجه در شیت)');return}
+  const q=[...mine],codes=[],ok=[];let done=0;
+  await Promise.all([0,1,2].map(async()=>{while(q.length){const r=q.shift();try{const x=await g('a=get&id='+encodeURIComponent(r.id));if(x.ok){codes.push(x.code);ok.push(r.id)}}catch(e){}toast('دریافت '+fa(++done)+' از '+fa(mine.length))}}));
+  await addCodes(codes.join('\n'));localStorage[key]=JSON.stringify([...pk,...ok]);if(ok.length<mine.length)toast(fa(mine.length-ok.length)+' نتیجه دریافت نشد؛ دوباره بزن')
+ }catch(e){toast('اتصال به Google Sheet برقرار نشد. آدرس و اینترنت را بررسی کن.')}}
+$('#v').addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;const a=b.dataset.a;
+ if(a=='gcopy'){const c=colInit();try{await navigator.clipboard.writeText(scriptCode(c))}catch{const t=$('#g_code');if(t){t.parentElement.open=true;t.select();document.execCommand('copy')}}toast('کد اسکریپت کپی شد')}
+ else if(a=='gtest'){const c=colInit();if(!c.u)return toast('اول آدرس Web app را وارد کن');$('#g_st').textContent='⏳ در حال آزمایش…';
+  try{const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),20000),r=await fetch(c.u+'?a=ping&k='+c.ak,{signal:ctl.signal});clearTimeout(tm);const j=await r.json();$('#g_st').innerHTML=j.ok?'✅ اتصال برقرار است':'❌ آدرس باز شد ولی کلید قبول نشد؛ کد اسکریپت را دوباره از همین‌جا کپی و جایگزین کن و دوباره Deploy کن.'}
+  catch(err){$('#g_st').innerHTML='❌ وصل نشد. بررسی کن: دسترسی روی Anyone باشد، آدرس به /exec ختم شود و اینترنت وصل باشد.'}}
+ else if(a=='gpull')pullCloud()});
+$('#v').addEventListener('input',e=>{if(e.target.id=='g_url'){const c=colInit();c.u=e.target.value.trim();colSave(c)}});
+$('#v').addEventListener('change',e=>{if(e.target.id=='g_on'){olv().col=e.target.checked;persist()}});
+
+function pgStyle(off){const o=document.getElementById('pgs');if(o)o.remove();if(off||!ex.pn)return;const st=document.createElement('style');st.id='pgs';
+ st.textContent='@page{@bottom-center{content:'+(ex.pn=='nt'?'"صفحه " counter(page, persian) " از " counter(pages, persian)':'counter(page, persian)')+';font-family:"B Nazanin","Vazirmatn",Tahoma,sans-serif;font-size:11pt;direction:rtl}}';document.head.appendChild(st)}
+$('#v').addEventListener('change',e=>{if(e.target.id=='pns'){ex.pn=e.target.value;persist()}});
 // ---------- start
 (async()=>{const D0=(document.getElementById('examDataEmbed')?.textContent||'').trim()||new URLSearchParams(location.search).get('d')||new URLSearchParams(location.search).get('r');if(D0)return startStudent(D0);db=await idb();exams=await all('exams');bank=await all('bank');exams.forEach(migr);bank.forEach(b=>legacy(b.item));ex=exams.find(e=>e.id==localStorage.ao_cur)||exams[0];if(!ex)newExam();else render();navigator.storage?.persist?.();setTimeout(loadDocx,3000);if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js')})();
 </script></body></html>
