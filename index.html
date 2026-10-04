@@ -462,7 +462,7 @@ const vOl=()=>{const GC=colInit(),o=olv(),j=jalaaliToday(),S=o.s||{jy:j.jy,jm:j.
  <textarea readonly id="g_code" rows="6" style="width:100%;direction:ltr;font-size:11px;background:var(--bg);color:inherit;border:1px solid var(--ln);border-radius:10px">${esc(scriptCode(GC))}</textarea></details>
  <div class="r"><button data-a="gcopy">📋 کپی کد اسکریپت</button></div>
  <input id="g_url" style="width:100%;direction:ltr" placeholder="https://script.google.com/macros/s/.../exec" value="${esc(GC.u||'')}">
- <div class="r"><button class="p" data-a="gtest">🔌 آزمایش اتصال</button></div><div id="g_st"></div>
+ <div class="r"><button class="p" data-a="gtest">🔌 آزمایش اتصال</button></div><div id="g_st"></div><details><summary style="cursor:pointer;margin:6px 0">🛠 اگر وصل نشد</summary><div style="line-height:2">دکمه‌ی «🔎 باز کردن آدرس آزمایشی» را بزن و ببین در تب جدید چه می‌نویسد (بهتر است در پنجره‌ی ناشناس/Incognito باز کنی):<br>• <code>{"ok":true}</code> ← همه‌چیز درست است؛ صفحه را با Ctrl+Shift+R رفرش کن و دوباره تست کن.<br>• <code>{"ok":false,"e":"key"}</code> ← کد اسکریپت قدیمی است؛ دوباره کپی و جایگزین کن و New version منتشر کن.<br>• صفحه‌ی ورود به حساب گوگل ← دسترسی روی Anyone نیست.<br>• <code>Script function not found: doGet</code> ← کد ذخیره یا Deploy نشده.<br>• <code>Sorry, unable to open the file</code> ← آدرس اشتباه یا ناقص است.<br>اگر حساب گوگلت مدرسه‌ای/سازمانی است، ممکن است مدیر گزینه‌ی Anyone را بسته باشد؛ با یک حساب شخصی (gmail) امتحان کن.</div></details>
  <div class="r"><label><input type="checkbox" id="g_on" ${o.col===false?'':'checked'}> ارسال خودکار نتیجه برای این آزمون</label></div>
  <small style="color:var(--mu)">بعد از تنظیم یا تغییر آدرس، فایل و لینک آزمون را دوباره بساز.</small></div>
  <div class="card"><h3>انتشار</h3><div class="r"><button class="p" data-a="olink">🔗 ساخت لینک آزمون</button><button class="p" data-a="ofile">📦 دانلود فایل آزمون (HTML)</button></div><div id="o_out"></div>
@@ -571,7 +571,7 @@ async function startStudent(code){
  const intro=()=>{const n=Date.now(),bad=S0&&n<S0?'آزمون هنوز شروع نشده است. شروع: '+jalaliDateLabel(O.s)+' ساعت '+fa(O.s.t):(E0&&n>E0?'زمان این آزمون به پایان رسیده است.':'');
   st.innerHTML=`<div class="card"><h2>${esc(P.title)}</h2>${O.rules?`<p style="white-space:pre-wrap;color:var(--dg)">${esc(O.rules)}</p>`:''}<p>تعداد سؤال: ${fa(P.rows.length)}${O.minutes?' · مدت: '+fa(O.minutes)+' دقیقه':''}</p>`+(bad?`<p><b>${bad}</b></p>`:'')+
   `<label>نام و نام خانوادگی</label><input id="sn" style="width:100%">`+(bad?'':`<label>کلاس / شماره (اختیاری)</label><input id="sc" style="width:100%">`)+
-  `<div class="r">${bad?'':'<button class="p" id="sgo">شروع آزمون</button>'}<button id="srec">🔎 قبلاً آزمون را داده‌ام و فقط فایل نتیجه‌ام را می‌خواهم</button></div><div id="sro"></div><small style="color:var(--mu)">نسخه‌ی برنامه: ۱۵</small></div>`;
+  `<div class="r">${bad?'':'<button class="p" id="sgo">شروع آزمون</button>'}<button id="srec">🔎 قبلاً آزمون را داده‌ام و فقط فایل نتیجه‌ام را می‌خواهم</button></div><div id="sro"></div><small style="color:var(--mu)">نسخه‌ی برنامه: ۱۶</small></div>`;
   if(!bad)$('#sgo').onclick=async()=>{const nm=$('#sn').value.trim();if(!nm)return toast('نام را وارد کن');const prev=await sget('d:'+nz(nm));if(prev){toast('برای این نام قبلاً نتیجه ثبت شده است');return fin(prev)}
    const ix=P.rows.map((_,i)=>i);Z={nm,cls:$('#sc').value.trim(),t0:Date.now(),ord:O.order=='random'?shuf(ix):ix,pos:0,mo:{},ans:{},img:{}};fdone=false;await sput('s',Z);run()};
   $('#srec').onclick=async()=>{const nm=$('#sn').value.trim();if(!nm)return toast('اول نام را همان‌طور که موقع آزمون نوشتی وارد کن');const c=await sget('d:'+nz(nm));if(c)fin(c);else $('#sro').innerHTML='<p>برای این نام روی این دستگاه نتیجه‌ای پیدا نشد. باید از همان گوشی و همان مرورگری باز کنی که آزمون را در آن دادی.</p>'}};
@@ -716,9 +716,15 @@ async function pullCloud(){const C=colInit();if(!C.u)return toast('اول در �
  }catch(e){toast('اتصال به Google Sheet برقرار نشد. آدرس و اینترنت را بررسی کن.')}}
 $('#v').addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;const a=b.dataset.a;
  if(a=='gcopy'){const c=colInit();try{await navigator.clipboard.writeText(scriptCode(c))}catch{const t=$('#g_code');if(t){t.parentElement.open=true;t.select();document.execCommand('copy')}}toast('کد اسکریپت کپی شد')}
- else if(a=='gtest'){const c=colInit();if(!c.u)return toast('اول آدرس Web app را وارد کن');$('#g_st').textContent='⏳ در حال آزمایش…';
-  try{const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),20000),r=await fetch(c.u+'?a=ping&k='+c.ak,{signal:ctl.signal});clearTimeout(tm);const j=await r.json();$('#g_st').innerHTML=j.ok?'✅ اتصال برقرار است':'❌ آدرس باز شد ولی کلید قبول نشد؛ کد اسکریپت را دوباره از همین‌جا کپی و جایگزین کن و دوباره Deploy کن.'}
-  catch(err){$('#g_st').innerHTML='❌ وصل نشد. بررسی کن: دسترسی روی Anyone باشد، آدرس به /exec ختم شود و اینترنت وصل باشد.'}}
+ else if(a=='gtest'){const c=colInit();if(!c.u)return toast('اول آدرس Web app را وارد کن');const st=$('#g_st');st.textContent='⏳ در حال آزمایش…';
+  const url=c.u+(c.u.includes('?')?'&':'?')+'a=ping&k='+c.ak;let msg;
+  try{const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),20000),r=await fetch(url,{signal:ctl.signal});clearTimeout(tm);const t=await r.text();let j=null;try{j=JSON.parse(t)}catch(e){}
+   if(j&&j.ok)msg='✅ اتصال برقرار است';
+   else if(j&&j.e=='key')msg='❌ آدرس درست است ولی کلید قبول نشد: کد اسکریپت قدیمی است. از همین‌جا «کپی کد اسکریپت» را بزن، در Apps Script جایگزین کن و با Deploy ← Manage deployments ← ✏️ ← Version: New version ← Deploy منتشر کن.';
+   else msg='❌ سرور جواب داد ولی جوابش از اسکریپت ما نبود: «'+esc(t.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().slice(0,110))+'». معمولاً یعنی کد درست ذخیره/Deploy نشده یا آدرس ناقص است (باید با /exec تمام شود).'}
+  catch(err){let reach=false;try{await fetch(url,{mode:'no-cors',signal:AbortSignal.timeout?AbortSignal.timeout(15000):undefined});reach=true}catch(e2){}
+   msg=reach?'❌ گوگل در دسترس است ولی مرورگر اجازه‌ی خواندن پاسخ را نداد. تقریباً همیشه یعنی «Who has access» روی Anyone نیست (یا «Execute as» روی Me نیست). در Deploy ← Manage deployments ← ✏️ آن را اصلاح کن، Version را New version بگذار و Deploy کن.':'❌ به گوگل وصل نشد؛ اینترنت یا فیلتر جلوی script.google.com را گرفته است.'}
+  st.innerHTML=msg+'<div class="r"><a class="b" href="'+esc(url)+'" target="_blank" rel="noopener">🔎 باز کردن آدرس آزمایشی در تب جدید</a></div>'}
  else if(a=='gpull')pullCloud()});
 $('#v').addEventListener('input',e=>{if(e.target.id=='g_url'){const c=colInit();c.u=e.target.value.trim();colSave(c)}});
 $('#v').addEventListener('change',e=>{if(e.target.id=='g_on'){olv().col=e.target.checked;persist()}});
