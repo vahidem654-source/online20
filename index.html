@@ -1363,7 +1363,7 @@ const AR=()=>!ex||ex.ar!==false,AB=()=>!ex||ex.ab!==false,AU=()=>!ex||(ex.au!==u
 $('#v').addEventListener('change',e=>{const t=e.target;if(t.id!='ar_on'&&t.id!='ab_on'&&t.id!='au_on')return;if(t.id=='ar_on')ex.ar=t.checked;else if(t.id=='ab_on'){ex.au=AU();ex.ab=t.checked}else ex.au=t.checked;persist();const p=$('#pv');if(p)p.classList.toggle('nored',!AR());refPv()});
 
 // ---- Word: keep decimals / fractions with / in correct order (insert LRM around the separator between digits)
-const fixNum=t=>String(t).replace(/([0-9\u06F0-\u06F9\u0660-\u0669])([\/\u066B\u066C.,:])(?=[0-9\u06F0-\u06F9\u0660-\u0669])/g,'$1\u200E$2\u200E');
+const fixNum=t=>String(t).replace(/[\u200E\u200F\u202A-\u202E\u2066-\u2069]/g,'').replace(/[0-9\u06F0-\u06F9\u0660-\u0669]+(?:[\/\u066B\u066C.,:\u2044\u2215\uFF0F][0-9\u06F0-\u06F9\u0660-\u0669]+)+/g,m=>'\u202D'+m+'\u202C');
 
 // ---- exam entry code (encrypted questions), leave tracking option, Drive/mail backup
 const pwKey=async(pw,salt)=>{const k=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:120000,hash:'SHA-256'},k,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])};
