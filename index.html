@@ -60,7 +60,7 @@ nav button{flex:1;border:0;border-radius:0;justify-content:center;min-height:50p
 #tabs{display:flex;gap:6px;overflow-x:auto;padding:6px 10px;background:var(--cd);border-bottom:1px solid var(--ln);scrollbar-width:none}
 #tabs .tab{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--ln);border-radius:10px;padding:4px 10px;white-space:nowrap;cursor:pointer;max-width:190px;color:var(--mu)}
 #tabs .tab .tt{overflow:hidden;text-overflow:ellipsis}#tabs .tab.on{border-color:var(--ac);color:var(--tx);font-weight:700;box-shadow:inset 0 -3px var(--ac)}#tabs .tx{padding:0 4px;opacity:.6}.tab-add{min-height:30px;padding:2px 12px}
-.ht{width:100%;border-collapse:collapse;table-layout:fixed;margin-bottom:-1px}.ht td{padding:3px 6px;vertical-align:middle;overflow-wrap:anywhere}.ht.hb td{border:1px solid #000}
+.ht{width:100%;border-collapse:collapse;table-layout:fixed;margin-bottom:-1px}.ht td{padding:3px 6px;vertical-align:middle;overflow-wrap:anywhere;white-space:pre-wrap}.et td.c,.et th{white-space:pre-wrap}.ht.hb td{border:1px solid #000}
 .paper .bm{float:left;margin-right:10px;font-weight:700;font-size:.9em;white-space:nowrap}
 #md.ls{align-items:stretch}#md.ls .box{width:100%;max-width:none;height:100%;max-height:none;border-radius:0}#md.ls .ed{min-height:46vh}.lsfr{padding:5mm;-webkit-box-decoration-break:clone;box-decoration-break:clone}.pgfr{position:fixed;top:0;bottom:0;left:0;right:0;border:2px solid #000;border-radius:3px;pointer-events:none}.lsbox{border-radius:8px}
 #mtc{position:fixed;left:8px;right:8px;bottom:calc(54px + env(safe-area-inset-bottom));max-height:46vh;overflow:auto;z-index:20;box-shadow:0 -4px 18px #0005;display:none;margin:0}#mtc.on{display:block}body.mtopen #v{padding-bottom:52vh}#pv [data-mk]{scroll-margin-top:140px}
@@ -618,7 +618,7 @@ async function startStudent(code){
  const intro=()=>{const n=Date.now(),bad=S0&&n<S0?'آزمون هنوز شروع نشده است. شروع: '+jalaliDateLabel(O.s)+' ساعت '+fa(O.s.t):(E0&&n>E0?'زمان این آزمون به پایان رسیده است.':'');
   st.innerHTML=`<div class="card"><h2>${esc(P.title)}</h2>${O.rules?`<p style="white-space:pre-wrap;color:var(--dg)">${esc(O.rules)}</p>`:''}<p>تعداد سؤال: ${fa(P.n||P.rows.length)}${O.minutes?' · مدت: '+fa(O.minutes)+' دقیقه':''}</p>${O.lv!==false?'<p><small>⚠️ خروج از صفحه‌ی آزمون (رفتن به برنامه‌ی دیگر) برای معلم ثبت می‌شود.</small></p>':''}`+(bad?`<p><b>${bad}</b></p>`:'')+
   (P.grp?`<label>کلاس</label><select id="scl" style="width:100%"><option value="">— کلاس خود را انتخاب کن —</option>${P.grp.map((g,i)=>`<option value="${i}">${esc(g.n)}</option>`).join('')}</select><label>نام و نام خانوادگی</label><select id="sn" style="width:100%" disabled><option value="">— اول کلاس را انتخاب کن —</option></select>`:`<label>نام و نام خانوادگی</label>${P.names?`<select id="sn" style="width:100%"><option value="">— نام خود را انتخاب کن —</option>${P.names.map(n=>`<option>${esc(n)}</option>`).join('')}</select>`:'<input id="sn" style="width:100%">'}`)+(bad||P.grp?'':`<label>کلاس / شماره (اختیاری)</label><input id="sc" style="width:100%">`)+
-  `${P.enc&&!bad?'<label>رمز ورود به آزمون</label><input id="spw" dir="ltr" autocomplete="off" style="width:100%" placeholder="رمز را از معلم بگیر">':''}<div class="r">${bad?'':'<button class="p" id="sgo">شروع آزمون</button>'}<button id="srec">🔎 قبلاً آزمون را داده‌ام و فقط فایل نتیجه‌ام را می‌خواهم</button>${P.col&&P.col.u?'<button class="p" id="srep">📄 دیدن کارنامه‌ی من</button>':''}</div><div id="sro"></div><small style="color:var(--mu)">نسخه‌ی برنامه: ۵۷</small></div>`;
+  `${P.enc&&!bad?'<label>رمز ورود به آزمون</label><input id="spw" dir="ltr" autocomplete="off" style="width:100%" placeholder="رمز را از معلم بگیر">':''}<div class="r">${bad?'':'<button class="p" id="sgo">شروع آزمون</button>'}<button id="srec">🔎 قبلاً آزمون را داده‌ام و فقط فایل نتیجه‌ام را می‌خواهم</button>${P.col&&P.col.u?'<button class="p" id="srep">📄 دیدن کارنامه‌ی من</button>':''}</div><div id="sro"></div><small style="color:var(--mu)">نسخه‌ی برنامه: ۵۹</small></div>`;
   if(P.grp)$('#scl').onchange=()=>{const g=P.grp[+$('#scl').value];$('#sn').innerHTML='<option value="">— نام خود را انتخاب کن —</option>'+(g?g.names.map(n=>`<option>${esc(n)}</option>`).join(''):'');$('#sn').disabled=!g};
   if($('#srep'))$('#srep').onclick=async()=>{const nm=$('#sn').value.trim(),o=$('#sro');let tk='';if(nm){const r=await sget('d:'+nz(nm));tk=(r&&r.tk)||''}
    const go=async t=>{o.innerHTML='⏳ در حال دریافت کارنامه…';try{const r=await fetch(P.col.u+(P.col.u.includes('?')?'&':'?')+'a=rget&k='+encodeURIComponent(P.col.k)+'&tk='+encodeURIComponent(t)),j=await r.json();
@@ -1106,6 +1106,7 @@ function hdDraw(){hdTab();const[r,c]=HS,x=HD.c[r][c],tot=HD.w.reduce((a,b)=>a+b,
  <div class="r" style="align-items:center"><b>تقسیم:</b>${B('sp','جدا کردن ادغام')}${B('sc','۲ ستون')}${B('sr','۲ ردیف')}</div>
  <div class="r" style="align-items:center"><label>عرض ستون:</label><input type="range" id="hd_w" min="1" max="90" value="${wp}" style="flex:1;accent-color:var(--ac)"><b id="hd_wv">${fa(wp)}٪</b></div>
  <div class="r" style="align-items:center"><label>ارتفاع ردیف:</label><input type="range" id="hd_h" min="0" max="60" value="${HD.h[r]||0}" style="flex:1;accent-color:var(--ac)"><b id="hd_hv">${HD.h[r]?fa(HD.h[r])+' میلی‌متر':'خودکار'}</b></div>
+ <div class="r" style="align-items:center"><label>ارتفاع ردیف بر حسب خط:</label><select id="hd_ln"><option value="">— انتخاب تعداد خط —</option>${[1,2,3,4,5,6].map(n=>`<option value="${n}">${fa(n)} خط</option>`).join('')}<option value="0">خودکار</option></select><small style="color:var(--mu)">(با «اعمال روی همه‌ی خانه‌ها» برای همه‌ی ردیف‌ها)</small></div>
  <div class="r" style="align-items:center"><label>فاصله‌ی بالا و پایین نوشته:</label><input type="range" id="hd_pad" min="0" max="6" step="0.25" value="${HD.pad!=null?HD.pad:0.8}" style="flex:1;accent-color:var(--ac)"><b id="hd_padv">${fa(HD.pad!=null?HD.pad:0.8)} میلی‌متر</b></div>
  <div class="r" style="align-items:center"><label>فاصله‌ی خطوط:</label><input type="range" id="hd_lh" min="0.8" max="2" step="0.05" value="${HD.lh||1.2}" style="flex:1;accent-color:var(--ac)"><b id="hd_lhv">${fa(HD.lh||1.2)}</b></div>
  <div class="r"><label><input type="checkbox" id="hd_hx" ${HD.hx?'checked':''}> ارتفاع ردیف‌ها دقیقاً همان مقدار باشد (اگر از نوشته کمتر باشد، بریده می‌شود)</label></div>
@@ -1526,56 +1527,82 @@ async function docxText(file){const buf=new Uint8Array(await file.arrayBuffer())
   if(name=='word/document.xml'){const st=lo+30+dv.getUint16(lo+26,true)+dv.getUint16(lo+28,true);let data=buf.slice(st,st+cs);if(m==8){const ds=new DecompressionStream('deflate-raw'),w=ds.writable.getWriter(),rp=new Response(ds.readable).arrayBuffer();w.write(data);w.close();data=new Uint8Array(await rp)}
    return new TextDecoder().decode(data).replace(/<w:tab\/>/g,'\t').replace(/<\/w:p>/g,'\n').replace(/<w:br[^>]*\/>/g,'\n').replace(/<[^>]+>/g,'').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&apos;/g,"'").replace(/&amp;/g,'&').replace(/\n{3,}/g,'\n\n').trim()}
   p+=46+nl+xl+cl}throw new Error('nodoc')}
-async function pdfText(file,p1,p2){const P=await loadPdfJs(),doc=await P.getDocument({data:await file.arrayBuffer()}).promise,out=[],a=Math.max(1,p1||1),z=Math.min(doc.numPages,p2||doc.numPages);
+async function pdfText(file,p1,p2){const P=await loadPdfJs(),doc=await P.getDocument({data:await file.arrayBuffer()}).promise,out=[],a=Math.max(1,p1||1),z=Math.min(doc.numPages,p2||doc.numPages);window.AIPGINFO={a,z,n:doc.numPages};
  for(let pn=a;pn<=z;pn++){const pg=await doc.getPage(pn),tc=await pg.getTextContent(),its=tc.items.filter(i=>i.str&&i.str.trim()).map(i=>({s:i.str.trim(),x:i.transform[4],y:i.transform[5],w:i.width||0,h:i.height||10}));its.sort((q,r)=>r.y-q.y||r.x-q.x);const lines=[];let cur=null;
   for(const i of its){if(cur&&Math.abs(cur.y-i.y)<4)cur.a.push(i);else{cur={y:i.y,a:[i]};lines.push(cur)}}
   out.push(lines.map(l=>{const q=l.a.sort((u,v)=>v.x-u.x);let o='';q.forEach((i,k)=>{if(k){const pv=q[k-1],gap=pv.x-(i.x+i.w);o+=gap<0.2*(pv.h||10)?'':' '}o+=i.s});return o.normalize('NFKC')}).join('\n'))}
  return out.join('\n\n')}
-const AIK=()=>{try{return JSON.parse(localStorage.ao_ai||'{}')}catch{return{}}};
+const AIC=()=>{try{return JSON.parse(localStorage.ao_ai2||'{}')}catch{return{}}},AIP=()=>{const c=AIC(),pv=c.pv||'deepseek',D={deepseek:{u:'https://api.deepseek.com',m:'deepseek-chat'},claude:{u:'https://api.anthropic.com',m:'claude-sonnet-5-5'},custom:{u:'',m:''}},x=(c.cfg||{})[pv]||{};return{k:x.k||'',u:x.u||D[pv].u,m:x.m||D[pv].m}};
 const aiBtn=()=>`<div class="card"><button class="p" data-ai="open">🤖 ساخت سؤال با هوش مصنوعی (از روی فایل یا متن)</button><small style="color:var(--mu)"> فایل درس را بده، DeepSeek سؤال طراحی می‌کند و همین‌جا در آزمون ثبت می‌شود.</small></div>`;
 {const _vEx=vEx;vEx=function(){return aiBtn()+_vEx()}}
 const AITY=[['mc','چهارگزینه‌ای',5],['tf','صحیح / غلط',3],['blank','جای‌خالی',3],['desc','تشریحی',2],['match','وصل‌کردنی',0],['paren','گزینه‌ی صحیح در پرانتز',0]];
-function mAI(){const k=AIK();$('#md').classList.add('ls');showM(`<div class="r" style="align-items:center"><h3 style="flex:1;margin:0">🤖 ساخت سؤال با هوش مصنوعی</h3><button data-ai="close">✕ بستن</button></div>
+function mAI(){$('#md').classList.add('ls');showM(`<div class="r" style="align-items:center"><h3 style="flex:1;margin:0">🤖 ساخت سؤال با هوش مصنوعی</h3><button data-ai="close">✕ بستن</button></div>
  <small style="color:var(--mu)">مراحل: ۱) فایل یا متن درس ← ۲) تعداد سؤال‌ها ← ۳) پرامپت را در DeepSeek بچسبان (رایگان) ← ۴) پاسخ را اینجا بچسبان ← ۵) ثبت در آزمون.</small>
  <label>۱) فایل درس (PDF، Word یا متنی)</label><input type="file" id="ai_f" accept=".pdf,.docx,.txt,.md,.csv,.html,application/pdf">
- <div class="r" style="align-items:center"><label>فقط صفحه‌ی</label><input id="ai_p1" type="number" min="1" placeholder="از" style="width:70px"><label>تا</label><input id="ai_p2" type="number" min="1" placeholder="تا" style="width:70px"><small style="color:var(--mu)">(فقط برای PDF؛ خالی = همه)</small></div>
+ <div class="r" style="align-items:center"><label>فقط صفحه‌ی</label><input id="ai_p1" type="text" inputmode="numeric" placeholder="از" style="width:70px"><label>تا</label><input id="ai_p2" type="text" inputmode="numeric" placeholder="تا" style="width:70px"><button data-ai="reread">🔄 خواندن دوباره</button></div><small id="ai_pg" style="color:var(--mu)">شماره‌ی صفحه مثل شماره‌ی صفحه‌ی PDF خوان است (نه شماره‌ی چاپی کتاب). خالی = همه‌ی صفحه‌ها. عدد فارسی یا انگلیسی هر دو قبول است.</small>
  <label>یا متن درس را اینجا بچسبان / متن خوانده‌شده را اصلاح کن</label><textarea id="ai_src" rows="7" style="width:100%;background:var(--bg);color:inherit;border:1px solid var(--ln);border-radius:10px;padding:8px"></textarea><small id="ai_cnt" style="color:var(--mu)">۰ نویسه</small>
  <label>۲) تعداد سؤال از هر نوع</label><div class="r" style="align-items:center;flex-wrap:wrap">${AITY.map(([t,l,n])=>`<label style="display:flex;gap:4px;align-items:center">${l}<input type="number" min="0" max="30" id="ai_n_${t}" value="${n}" style="width:60px"></label>`).join('')}</div>
- <div class="r" style="align-items:center"><label>سطح:</label><select id="ai_lv"><option>آسان</option><option selected>متوسط</option><option>سخت</option></select><input id="ai_tp" placeholder="پایه / درس (اختیاری)" style="flex:1;min-width:140px"></div>
- <div class="r"><button class="p" data-ai="prompt">📋 ساخت و کپی پرامپت</button><button data-ai="ds">↗ باز کردن DeepSeek</button></div>
+ <div class="r" style="align-items:center"><label>سطح:</label><select id="ai_lv"><option>آسان</option><option selected>متوسط</option><option>سخت</option></select><input id="ai_tp" placeholder="پایه / درس (اختیاری)" style="flex:1;min-width:140px"></div><div class="r"><input id="ai_sty" placeholder="سبک سؤال (اختیاری): مثلاً امتحان نهایی، کنکوری، مفهومی" style="flex:1"></div><label>بخش‌هایی که نباید از آن‌ها سؤال طرح شود (با ویرگول جدا کن)</label><input id="ai_ex" value="${esc(localStorage.ao_aiex!=null?localStorage.ao_aiex:AIEX)}" style="width:100%">
+ <div class="r"><button class="p" data-ai="prompt">📋 ساخت و کپی پرامپت</button><button data-ai="ds">↗ باز کردن چت (DeepSeek یا Claude)</button></div>
  <textarea id="ai_prompt" rows="4" readonly placeholder="پرامپت اینجا ساخته می‌شود؛ کپی می‌شود و در DeepSeek می‌چسبانی." style="width:100%;background:var(--bg);color:inherit;border:1px solid var(--ln);border-radius:10px;padding:8px;display:none"></textarea>
  <label>۴) پاسخ هوش مصنوعی را اینجا بچسبان</label><textarea id="ai_out" rows="6" dir="ltr" placeholder='[ {"type":"mc", ...}, ... ]' style="width:100%;background:var(--bg);color:inherit;border:1px solid var(--ln);border-radius:10px;padding:8px"></textarea>
- <div class="r"><button class="p" data-ai="parse">✔ تبدیل به سؤال</button></div><div id="ai_list"></div>
- <details style="margin-top:10px"><summary>⚙ ارسال خودکار (اختیاری؛ نیاز به کلید API)</summary><small style="color:var(--mu)">چت DeepSeek رایگان است ولی API پولی است و به شارژ حساب نیاز دارد. بدون کلید از روش کپی و چسباندن استفاده کن. کلید فقط روی همین دستگاه ذخیره می‌شود.</small>
-  <label>کلید API</label><input id="ai_k" type="password" dir="ltr" value="${esc(k.k||'')}" style="width:100%"><label>آدرس (سازگار با OpenAI)</label><input id="ai_u" dir="ltr" value="${esc(k.u||'https://api.deepseek.com')}" style="width:100%"><label>مدل</label><input id="ai_m" dir="ltr" value="${esc(k.m||'deepseek-chat')}" style="width:100%">
+ <div class="r"><button class="p" data-ai="parse">✔ تبدیل به سؤال</button><button data-ai="review">🔍 پرامپت بازبینی (برای رفع ایرادها)</button></div><div id="ai_list"></div>
+ <details style="margin-top:10px"><summary>⚙ ارسال خودکار (اختیاری؛ نیاز به کلید API)</summary><small style="color:var(--mu)">چت‌های DeepSeek و Claude را می‌شود با کپی و چسباندن استفاده کرد. ارسال خودکار به کلید API نیاز دارد که معمولاً پولی است. کلید فقط روی همین دستگاه ذخیره می‌شود. برای سؤال‌های دقیق‌تر، Claude را امتحان کن.</small>
+  <div class="r" style="align-items:center"><label>سرویس:</label><select id="ai_pv"><option value="deepseek" ${AIC().pv!='claude'&&AIC().pv!='custom'?'selected':''}>DeepSeek</option><option value="claude" ${AIC().pv=='claude'?'selected':''}>Claude (Anthropic)</option><option value="custom" ${AIC().pv=='custom'?'selected':''}>سرویس دیگر (سازگار با OpenAI)</option></select></div>
+  <label>کلید API</label><input id="ai_k" type="password" dir="ltr" value="${esc(AIP().k||'')}" style="width:100%"><label>آدرس</label><input id="ai_u" dir="ltr" value="${esc(AIP().u||'')}" style="width:100%"><label>مدل</label><input id="ai_m" dir="ltr" value="${esc(AIP().m||'')}" style="width:100%">
   <div class="r"><button data-ai="auto">⚡ ارسال خودکار و ساخت سؤال</button></div><small id="ai_st" style="color:var(--mu)"></small></details>`)}
+const AIEX='بیشتر بدانید، جمع‌آوری اطلاعات، اعداد، آشنایی با دانشمندان، فعالیت تکمیلی، مطالعه برای انجام فعالیت';
+const aiExTxt=()=>((($('#ai_ex')||{}).value)||'').trim();
+const aiPg=id=>{const v=String(($('#'+id)||{}).value||'').replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[^0-9]/g,'');return v?+v:0};
 const aiPrompt=()=>{const g=id=>$('#'+id),src=(g('ai_src').value||'').trim();if(!src){toast('اول فایل یا متن درس را بده');return''}const cnt=AITY.map(([t,l])=>[t,l,+g('ai_n_'+t).value||0]).filter(x=>x[2]>0);if(!cnt.length){toast('تعداد سؤال‌ها را مشخص کن');return''}
- const MAXC=14000,body=src.length>MAXC?src.slice(0,MAXC)+'\n(ادامه‌ی متن به‌دلیل طول حذف شد)':src,tp=(g('ai_tp').value||'').trim();
- return `تو یک دبیر باتجربه‌ی ایرانی هستی. بر اساس «متن درس» زیر، سؤال امتحانی طراحی کن.
-قوانین:
-- فقط از روی همین متن سؤال بساز و چیزی از خودت اضافه نکن.
-- سطح دشواری: ${g('ai_lv').value}.${tp?'\n- پایه/درس: '+tp+'.':''}
-- تعداد سؤال‌ها: ${cnt.map(x=>x[1]+' '+x[2]+' تا').join('، ')}.
-- زبان همه‌ی سؤال‌ها فارسی و روان باشد. برای چهارگزینه‌ای فقط یک گزینه‌ی کاملاً درست داشته باش و گزینه‌های غلط قابل‌قبول باشند.
-- خروجی فقط و فقط یک آرایه‌ی JSON معتبر باشد؛ بدون هیچ توضیح، بدون عنوان و بدون \`\`\`.
+ const MAXC=14000,body=src.length>MAXC?src.slice(0,MAXC)+'\n(ادامه‌ی متن به‌دلیل طول حذف شد)':src,tp=(g('ai_tp').value||'').trim(),st=(g('ai_sty')?g('ai_sty').value:'').trim();
+ return `نقش تو: یک دبیر و طراح سؤال بسیار باتجربه‌ی ایرانی هستی که سؤال‌های امتحانی استاندارد، دقیق و بدون ابهام می‌نویسد.
+وظیفه: بر اساس «متن درس» پایین، سؤال امتحانی طراحی کن.
+
+اصول کیفیت (حتماً رعایت کن):
+1. فقط از اطلاعاتی سؤال بساز که صریحاً در متن آمده است؛ چیزی از خودت اضافه نکن و سؤال‌ها از بخش‌های مختلف متن (نه فقط ابتدای آن) باشند و تکراری نباشند.
+2. هر سؤال یک مفهوم مشخص را بسنجد و پاسخ درستش یکتا و قطعی باشد. از سؤال‌های مبهم، چندپاسخی و «کدام‌یک نادرست است» پرهیز کن مگر لازم باشد.
+3. چهارگزینه‌ای: متن سؤال کامل و روشن؛ یک گزینه‌ی کاملاً درست؛ سه گزینه‌ی غلط اما قابل‌قبول و هم‌طول با گزینه‌ی درست (غلط‌های رایج دانش‌آموزان). از «همه‌ی موارد»، «هیچ‌کدام» و گزینه‌های بدیهی‌الغلط خودداری کن. جای گزینه‌ی درست را بین ۰ تا ۳ متنوع کن.
+4. صحیح/غلط: جمله‌ی کوتاه و قطعی بنویس؛ نصف سؤال‌ها غلط باشند و غلط‌بودنشان با یک تغییر مهم ایجاد شود نه تغییر ظاهری.
+5. جای‌خالی: کلمه‌ی حذف‌شده یک مفهوم کلیدی باشد، نه کلمه‌ی ربط یا حرف اضافه.
+6. تشریحی: سؤال کوتاه و مشخص، با «پاسخ نمونه»ی کامل و منطبق با متن.
+7. وصل‌کردنی: موارد ستون A و B کاملاً مرتبط و پاسخ هر مورد یکتا باشد.
+8. نگارش فارسی معیار و روان؛ اصطلاحات علمی دقیقاً مطابق متن.
+9. سطح دشواری: ${g('ai_lv').value}.${tp?'\nپایه/درس: '+tp+'.':''}${st?'\nسبک سؤال: '+st+'.':''}
+10. تعداد سؤال‌ها: ${cnt.map(x=>x[1]+' '+x[2]+' تا').join('، ')}.
+${aiExTxt()?'11. ممنوع: از بخش‌ها و کادرهای فرعی کتاب با این عنوان‌ها هیچ سؤالی طرح نکن، حتی اگر متنشان در پایین آمده باشد و حتی برای جای‌خالی یا صحیح/غلط: «'+aiExTxt().split(/[،,]/).map(x=>x.trim()).filter(Boolean).join('»، «')+'». سؤال‌ها فقط از متن اصلی درس باشند.\n':''}
+خروجی: فقط و فقط یک آرایه‌ی JSON معتبر؛ بدون هیچ توضیح، بدون عنوان و بدون \`\`\`.
 قالب هر نوع سؤال (دقیقاً با همین کلیدها):
-{"type":"mc","text":"متن سؤال","options":["گزینه ۱","گزینه ۲","گزینه ۳","گزینه ۴"],"correct":0}   ← correct شماره‌ی گزینه‌ی درست از ۰ تا ۳
-{"type":"tf","text":"جمله","answer":true}   ← answer فقط true یا false
+{"type":"mc","text":"متن سؤال","options":["گزینه ۱","گزینه ۲","گزینه ۳","گزینه ۴"],"correct":2,"explanation":"توضیح کوتاه چرا این گزینه درست است"}   ← correct شماره‌ی گزینه‌ی درست از ۰ تا ۳
+{"type":"tf","text":"جمله","answer":false}   ← answer فقط true یا false
 {"type":"blank","text":"جمله‌ای که جای کلمه‌ی خالی با ................ مشخص شده","answers":["کلمه‌ی صحیح"]}   ← به تعداد نقطه‌چین‌ها پاسخ بده
 {"type":"desc","text":"سؤال تشریحی","answer":"پاسخ نمونه‌ی کامل"}
-{"type":"match","text":"دستور سؤال","A":["مورد ۱","مورد ۲"],"B":["گزینه الف","گزینه ب","گزینه ج"],"map":[1,0]}   ← B باید یک یا دو مورد اضافه‌تر از A داشته باشد؛ map[i] شماره‌ی (از ۰) گزینه‌ی درست در B برای مورد i از A است
+{"type":"match","text":"دستور سؤال","A":["مورد ۱","مورد ۲"],"B":["گزینه الف","گزینه ب","گزینه ج"],"map":[1,0]}   ← B یک یا دو مورد بیشتر از A دارد؛ map[i] شماره‌ی (از ۰) گزینه‌ی درست در B برای مورد i از A است
 {"type":"paren","text":"جمله‌ای که ( گزینه الف - گزینه ب ) در پرانتز دارد","answer":"گزینه‌ی صحیح"}
+
 متن درس:
 """
 ${body}
 """`};
+const aiReviewPrompt=()=>{const src=($('#ai_src').value||'').trim(),out=($('#ai_out').value||'').trim();if(!src||!out){toast('متن درس و پاسخ هوش مصنوعی هر دو لازم است');return''}return `تو یک بازبین دقیق سؤال‌های امتحانی هستی. «متن درس» و «سؤال‌های پیش‌نویس» (JSON) را بخوان.
+برای هر سؤال بررسی کن: ۱) پاسخ علامت‌خورده واقعاً با متن درس سازگار است؟ ۲) فقط یک پاسخ درست دارد؟ ۳) گزینه‌های غلط قابل‌قبول و هم‌طول‌اند؟ ۴) نگارش فارسی درست است؟ ۵) سؤال از خود متن است؟ ۶) ${aiExTxt()?'سؤالی که از بخش‌های «'+aiExTxt().split(/[،,]/).map(x=>x.trim()).filter(Boolean).join('»، «')+'» ساخته شده باشد را حذف و با سؤال از متن اصلی جایگزین کن.':'همه‌ی سؤال‌ها از متن اصلی درس‌اند؟'}
+سؤال‌های ایرادداررا اصلاح کن یا اگر قابل‌اصلاح نیستند با سؤال بهتر جایگزین کن. تعداد و نوع سؤال‌ها همان بماند.
+خروجی: فقط و فقط همان آرایه‌ی JSON اصلاح‌شده، با همان کلیدها (type, text, options, correct, answer, answers, A, B, map, explanation)، بدون هیچ توضیح و بدون \`\`\`.
+
+متن درس:
+"""
+${src.slice(0,14000)}
+"""
+
+سؤال‌های پیش‌نویس:
+${out}`};
 function aiConvert(arr){const out=[],warn=[],str=v=>String(v==null?'':v).trim(),dots='……………';
  const num=v=>{const n=+v;return Number.isFinite(n)?Math.floor(n):-1};
  (Array.isArray(arr)?arr:[]).forEach((q,i)=>{if(!q||typeof q!='object')return;let ty=str(q.type||q.t).toLowerCase();const alias={mcq:'mc',choice:'mc','چهارگزینه‌ای':'mc',truefalse:'tf','true_false':'tf','صحیح_غلط':'tf',fill:'blank',cloze:'blank',essay:'desc',descriptive:'desc',matching:'match',parenthesis:'paren'};ty=alias[ty]||ty;
   const text=str(q.text||q.question||q.q||q.stem);if(!text&&ty!='match'){warn.push(`سؤال ${fa(i+1)}: متن ندارد`);return}
   const id=uid();
   if(ty=='mc'){let o=(q.options||q.choices||q.opts||[]).map(str).filter(Boolean);if(o.length<2){warn.push(`سؤال ${fa(i+1)}: گزینه‌ها کافی نیست`);return}let c=num(q.correct!=null?q.correct:q.answer!=null?q.answer:q.ok);if(c<0||c>=o.length){if(typeof q.answer=='string'){c=o.findIndex(x=>x==q.answer)}if(c<0||c>=o.length){warn.push(`سؤال ${fa(i+1)}: گزینه‌ی درست مشخص نیست`);return}}
-   const ml=Math.max(...o.map(x=>x.length));out.push({id,type:'mc',html:esc(text),opts:o,ok:c,lay:ml<=14?4:ml<=34?2:1,ans:'',score:1})}
+   const ml=Math.max(...o.map(x=>x.length));out.push({id,type:'mc',html:esc(text),opts:o,ok:c,lay:ml<=14?4:ml<=34?2:1,ans:esc(str(q.explanation||q.explain||q.why||'')),score:1})}
   else if(ty=='tf'){const a=q.answer!=null?q.answer:q.correct!=null?q.correct:q.ok;const v=typeof a=='string'?!/^(غلط|نادرست|false|f|0|no)$/i.test(a.trim()):!!a;out.push({id,type:'tf',html:esc(text),ok:v,score:0.5})}
   else if(ty=='blank'){let t=text.replace(/_{2,}|\.{3,}|…{2,}|\[\s*\]/g,dots);const n=(t.match(/…{2,}/g)||[]).length,an=(q.answers||q.answer&&[q.answer]||[]).map(str);if(!n){warn.push(`سؤال ${fa(i+1)}: نقطه‌چین ندارد`);return}out.push({id,type:'blank',html:esc(t),blanks:Array.from({length:n},(_,k)=>an[k]||''),score:1})}
   else if(ty=='desc')out.push({id,type:'desc',html:esc(text),ans:esc(str(q.answer||q.ans)),lines:0,score:2})
@@ -1589,19 +1616,29 @@ function aiShow(items,warn){AIQ=items;const TNm=TN;$('#ai_list').innerHTML=(item
 document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.closest('button[data-ai]');if(!b)return;const k=b.dataset.ai;
  if(k=='open')mAI();else if(k=='close'){hideM()}
  else if(k=='prompt'){const pr=aiPrompt();if(!pr)return;const ta=$('#ai_prompt');ta.style.display='block';ta.value=pr;try{await navigator.clipboard.writeText(pr);toast('پرامپت کپی شد؛ در DeepSeek بچسبان')}catch{ta.select();toast('پرامپت ساخته شد؛ آن را کپی کن')}}
- else if(k=='ds')window.open('https://chat.deepseek.com','_blank')
+ else if(k=='ds'){const pv=($('#ai_pv')||{}).value;window.open(pv=='claude'?'https://claude.ai/new':'https://chat.deepseek.com','_blank')}
  else if(k=='parse'){try{const r=aiConvert(aiParse($('#ai_out').value));aiShow(r.items,r.warn)}catch(err){$('#ai_list').innerHTML='<small style="color:#b91c1c">پاسخ قابل‌خواندن نیست ('+esc(err.message)+'). مطمئن شو فقط آرایه‌ی JSON را کپی کرده‌ای؛ اگر هوش مصنوعی توضیح اضافه نوشته، بگو «فقط JSON بده» و دوباره بچسبان.</small>'}}
  else if(k=='add'){const ch=$$('#ai_list input[data-aic]').filter(x=>x.checked).map(x=>AIQ[+x.dataset.aic]);if(!ch.length)return toast('سؤالی انتخاب نشده');ch.forEach(it=>ex.rows.push({id:uid(),title:'',items:[it]}));persist();hideM();T='ex';render();toast(fa(ch.length)+' سؤال به آزمون اضافه شد؛ بارم‌ها را با «بررسی» تنظیم کن')}
- else if(k=='auto'){const pr=aiPrompt();if(!pr)return;const key=$('#ai_k').value.trim(),url=($('#ai_u').value.trim()||'https://api.deepseek.com').replace(/\/+$/,''),model=$('#ai_m').value.trim()||'deepseek-chat',st=$('#ai_st');if(!key){st.textContent='کلید API را وارد کن (یا از روش کپی/چسباندن استفاده کن).';return}localStorage.ao_ai=JSON.stringify({k:key,u:url,m:model});st.textContent='⏳ در حال ارسال به هوش مصنوعی…';
-  try{const r=await fetch(url+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model,temperature:0.4,messages:[{role:'system',content:'You are a careful Persian exam-question writer. Reply with a JSON array only.'},{role:'user',content:pr}]})}),j=await r.json();if(!r.ok)throw new Error((j.error&&j.error.message)||('HTTP '+r.status));const out=(j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content)||'';$('#ai_out').value=out;const c=aiConvert(aiParse(out));aiShow(c.items,c.warn);st.textContent='✅ پاسخ دریافت شد.'}
+ else if(k=='review'){const pr=aiReviewPrompt();if(!pr)return;const ta=$('#ai_prompt');ta.style.display='block';ta.value=pr;try{await navigator.clipboard.writeText(pr);toast('پرامپت بازبینی کپی شد؛ در چت بچسبان و پاسخ را دوباره در کادر پاسخ بگذار')}catch{ta.select()}}
+ else if(k=='reread'){if(!AIFILE)return toast('اول یک فایل انتخاب کن');await aiLoad(AIFILE)}
+ else if(k=='auto'){const pr=aiPrompt();if(!pr)return;const st=$('#ai_st'),pv=$('#ai_pv').value,cfg=AIC();cfg.pv=pv;cfg.cfg=cfg.cfg||{};const key=$('#ai_k').value.trim(),url=$('#ai_u').value.trim().replace(/\/+$/,''),model=$('#ai_m').value.trim();cfg.cfg[pv]={k:key,u:url,m:model};localStorage.ao_ai2=JSON.stringify(cfg);
+  if(!key){st.textContent='کلید API را وارد کن (یا از روش کپی/چسباندن استفاده کن).';return}st.textContent='⏳ در حال ارسال… (ممکن است یک دقیقه طول بکشد)';
+  try{let out='';
+   if(pv=='claude'){const r=await fetch((url||'https://api.anthropic.com')+'/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:model||'claude-sonnet-5-5',max_tokens:8000,system:'You are a careful Persian exam-question writer. Reply with a JSON array only.',messages:[{role:'user',content:pr}]})}),j=await r.json();if(!r.ok)throw new Error((j.error&&j.error.message)||('HTTP '+r.status));out=(j.content||[]).map(x=>x.text||'').join('')}
+   else{const r=await fetch((url||'https://api.deepseek.com')+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:model||'deepseek-chat',temperature:0.3,max_tokens:8000,messages:[{role:'system',content:'You are a careful Persian exam-question writer. Reply with a JSON array only.'},{role:'user',content:pr}]})}),j=await r.json();if(!r.ok)throw new Error((j.error&&j.error.message)||('HTTP '+r.status));out=(j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content)||''}
+   $('#ai_out').value=out;const c=aiConvert(aiParse(out));aiShow(c.items,c.warn);st.textContent='✅ پاسخ دریافت شد.'}
   catch(err){st.textContent='ناموفق: '+err.message+' — ممکن است اعتبار حساب کافی نباشد یا مرورگر اجازه‌ی اتصال مستقیم ندهد. از روش کپی و چسباندن استفاده کن.'}}});
-$('#md').addEventListener('change',async e=>{if(e.target.id!='ai_f'||!e.target.files[0])return;const f=e.target.files[0];toast('در حال خواندن فایل…');let t='';try{const n=f.name.toLowerCase();if(n.endsWith('.pdf')||f.type=='application/pdf')t=await pdfText(f,+$('#ai_p1').value||0,+$('#ai_p2').value||0);else if(n.endsWith('.docx'))t=await docxText(f);else{t=await f.text();if(n.endsWith('.html'))t=t.replace(/<[^>]+>/g,' ')}}catch(err){e.target.value='';return toast('فایل خوانده نشد؛ متن را کپی و در کادر بچسبان')}
- e.target.value='';if(!t.trim())return toast('متنی در فایل پیدا نشد (شاید PDF اسکن/عکس است)');$('#ai_src').value=t;$('#ai_src').dispatchEvent(new Event('input',{bubbles:true}));toast('فایل خوانده شد؛ متن را بررسی کن')});
+let AIFILE=null;
+async function aiLoad(f){const n=f.name.toLowerCase();toast('در حال خواندن فایل…');let t='';try{if(n.endsWith('.pdf')||f.type=='application/pdf'){t=await pdfText(f,aiPg('ai_p1'),aiPg('ai_p2'));const i=window.AIPGINFO;if(i&&$('#ai_pg'))$('#ai_pg').textContent=`✅ صفحه‌ی ${fa(i.a)} تا ${fa(i.z)} از ${fa(i.n)} صفحه‌ی PDF خوانده شد.`}else if(n.endsWith('.docx'))t=await docxText(f);else{t=await f.text();if(n.endsWith('.html'))t=t.replace(/<[^>]+>/g,' ')}}catch(err){return toast('فایل خوانده نشد؛ متن را کپی و در کادر بچسبان')}
+ if(!t.trim())return toast('متنی در فایل پیدا نشد (شاید PDF اسکن/عکس است)');$('#ai_src').value=t;$('#ai_src').dispatchEvent(new Event('input',{bubbles:true}));toast('فایل خوانده شد؛ متن را بررسی کن')}
+$('#md').addEventListener('change',async e=>{if(e.target.id=='ai_f'&&e.target.files[0]){AIFILE=e.target.files[0];e.target.value='';await aiLoad(AIFILE)}
+ else if(e.target.id=='ai_pv'){const pv=e.target.value,P={deepseek:{u:'https://api.deepseek.com',m:'deepseek-chat'},claude:{u:'https://api.anthropic.com',m:'claude-sonnet-5-5'},custom:{u:'',m:''}},c=(AIC().cfg||{})[pv]||{};$('#ai_k').value=c.k||'';$('#ai_u').value=c.u||P[pv].u;$('#ai_m').value=c.m||P[pv].m}});
 $('#md').addEventListener('input',e=>{if(e.target.id=='ai_src')$('#ai_cnt').textContent=fa(e.target.value.length)+' نویسه'+(e.target.value.length>14000?' — فقط ۱۴٬۰۰۰ نویسه‌ی اول فرستاده می‌شود؛ بهتر است صفحه‌ها را محدود کنی':'')});
 
 // ---- header height compacting
 $('#md').addEventListener('input',e=>{const t=e.target;if(!HD||!t)return;if(t.id=='hd_pad'){HD.pad=+t.value;$('#hd_padv').textContent=fa(t.value)+' میلی‌متر';hdTab()}else if(t.id=='hd_lh'){HD.lh=+t.value;$('#hd_lhv').textContent=fa(t.value);hdTab()}});
-$('#md').addEventListener('change',e=>{const t=e.target;if(HD&&t&&t.id=='hd_hx'){HD.hx=t.checked;hdTab()}});
+$('#md').addEventListener('change',e=>{const t=e.target;if(HD&&t&&t.id=='hd_hx'){HD.hx=t.checked;hdTab()}
+ if(HD&&t&&t.id=='hd_ln'&&t.value!==''){const n=+t.value,all=$('#hd_all')&&$('#hd_all').checked,pad=HD.pad!=null?HD.pad:0.8,lh=HD.lh||LSV(),calc=ri=>{if(!n)return 0;const fs=Math.max(...HD.c[ri].filter(x=>!x.hid).map(x=>x.z||FS()),FS());return Math.round((n*fs*lh*0.3528+2*pad)*10)/10};if(all)HD.h=HD.h.map((_,ri)=>calc(ri));else HD.h[HS[0]]=calc(HS[0]);hdDraw()}});
 
 // ---- header helpers: one-line sample, remove empty rows, measured height
 $('#md').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!b.dataset.hx||!HD)return;const k=b.dataset.hx;
@@ -1609,5 +1646,7 @@ $('#md').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||
  else if(k=='rowe'){let n=0;for(let r=HD.c.length-1;r>=0&&HD.c.length>1;r--){const empty=HD.c[r].every(x=>x.hid||!String(x.t||'').trim()),span=HD.c[r].some(x=>!x.hid&&x.rs>1);if(empty&&!span&&hDelRow(HD,r))n++}HS=[0,0];hdDraw();toast(n?fa(n)+' ردیف خالی حذف شد':'ردیف خالی‌ای نبود')}});
 {const _hc2=hdCard;hdCard=function(){return _hc2().replace(/<\/div>$/,'<small style="color:var(--mu)">ارتفاع فعلی سربرگ در برگه: <b id="hd_hmm">—</b></small></div>')}}
 {const _r4=render;render=function(){_r4();const e=$('#hd_hmm'),t=$('#pv .ht');if(e&&t)e.textContent=fa(Math.round(t.offsetHeight*25.4/96))+' میلی‌متر'}}
+
+$('#md').addEventListener('input',e=>{if(e.target.id=='ai_ex')localStorage.ao_aiex=e.target.value});
 (async()=>{const D0=(document.getElementById('examDataEmbed')?.textContent||'').trim()||new URLSearchParams(location.search).get('d')||new URLSearchParams(location.search).get('r');if(D0)return startStudent(D0);db=await idb();exams=await all('exams');bank=await all('bank');exams.forEach(migr);bank.forEach(b=>legacy(b.item));ex=exams.find(e=>e.id==localStorage.ao_cur)||exams[0];if(!ex){newExam();localStorage.ao_blank=ex.id}else render();syncAll(true);navigator.storage?.persist?.();draftPrompt();setTimeout(loadDocx,3000);if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js')})();
 </script></body></html>
