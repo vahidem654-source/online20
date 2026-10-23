@@ -838,7 +838,7 @@ async function syncAll(force){if(!SYN()||syBusy||!COL().u||!db)return;if(!force&
     else{const cp=clone(o);cp.id=uid();cp.title+=' (نسخه‌ی دستگاه دیگر)';delete cp.st;cp.t=Date.now();exams.push(cp);await put('exams',cp);await push(e)}
     ch++}}
   for(const key in R){if(!key.startsWith('exam:'))continue;const id=key.slice(5),r=R[key];if(!r.del&&!pend.includes(id)&&!exams.some(k=>k.id==id))await apply(await pull(key))}
-  ch+=await syncBank(R);ch+=await syncSubs(R);
+  ch+=await syncBank(R);ch+=await syncSubs(R);ch+=await syncCfg(R);
   {const bid=localStorage.ao_blank;if(bid){const be=exams.find(k=>k.id==bid);if(be&&!be.rows.length&&be.title==='آزمون جدید'&&!be.st&&exams.length>1){await del('exams',be.id);exams=exams.filter(k=>k.id!=bid);if(ex&&ex.id==bid)ex=exams[0];ch++}if(!be||exams.length>1)localStorage.removeItem('ao_blank')}}
   syStat('✅ آخرین همگام‌سازی: '+new Date().toLocaleTimeString('fa-IR'));
   if(ch){if(!exams.length)newExam();else if(!ex)ex=exams[0];render()}
@@ -953,7 +953,7 @@ $('#md').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
 $('#md').addEventListener('change',e=>{if(e.target.classList&&e.target.classList.contains('gs'))gAvail()});
 
 // ================= CLASS LISTS (ROSTER) AND ABSENTEES =================
-const ROS=()=>{try{return JSON.parse(localStorage.ao_ros||'[]')}catch(e){return[]}},rosSave=a=>localStorage.ao_ros=JSON.stringify(a);
+const ROS=()=>{try{return JSON.parse(localStorage.ao_ros||'[]')}catch(e){return[]}},rosSave=a=>{localStorage.ao_ros=JSON.stringify(a);cfgTouch('ao_ros')};
 const nk=n=>String(n).split(/[\s\u200c]+/).filter(Boolean).map(nz).sort().join('|');
 const parseNames=t=>[...new Set(String(t).split(/\n/).map(x=>x.replace(/^\s*[0-9۰-۹٠-٩]+\s*[\.\)\-–:]\s*/,'').trim()).filter(Boolean))];
 function mRos(id){const L=ROS(),cur=id?L.find(x=>x.id==id):null;
@@ -1295,8 +1295,8 @@ $('#md').addEventListener('click',e=>{const b=e.target.closest('button[data-x="m
  else if(t=='B'){if(j<0||j>=d.B.length)return;sw(d.B,i,j);d.map=d.map.map(v=>v==i?j:v==j?i:v);$('#e_m').innerHTML=matchRows(d)}});
 
 // ---- saved header templates & saved question instructions
-const HDLS=()=>{try{return JSON.parse(localStorage.ao_hdl||'[]')}catch{return[]}},hdlSave=a=>{localStorage.ao_hdl=JSON.stringify(a)};
-const PRES=()=>{try{return JSON.parse(localStorage.ao_pre||'{}')}catch{return{}}},preSave=o=>{localStorage.ao_pre=JSON.stringify(o)};
+const HDLS=()=>{try{return JSON.parse(localStorage.ao_hdl||'[]')}catch{return[]}},hdlSave=a=>{localStorage.ao_hdl=JSON.stringify(a);cfgTouch('ao_hdl')};
+const PRES=()=>{try{return JSON.parse(localStorage.ao_pre||'{}')}catch{return{}}},preSave=o=>{localStorage.ao_pre=JSON.stringify(o);cfgTouch('ao_pre')};
 function preOpts(t){const P=PRES(),mine=P[t]||[],oth=Object.entries(P).filter(([k,v])=>k!=t&&v.length);
  return `<option value="">${mine.length||oth.length?'📌 دستورهای ذخیره‌شده…':'📌 هنوز دستوری ذخیره نکرده‌ای'}</option>`+(mine.length?`<optgroup label="${esc(TN[t]||t)}">${mine.map(x=>`<option>${esc(x)}</option>`).join('')}</optgroup>`:'')+oth.map(([k,v])=>`<optgroup label="${esc(TN[k]||k)}">${v.map(x=>`<option>${esc(x)}</option>`).join('')}</optgroup>`).join('')}
 const preUI=t=>`<div class="r" style="align-items:center"><select id="pre_sel" style="flex:1;min-width:140px">${preOpts(t)}</select><button data-x="presv">💾 ذخیره‌ی این دستور</button><button data-x="predel" title="حذف دستور انتخاب‌شده">🗑</button></div>`;
@@ -1741,7 +1741,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.c
 
 // ---- v65: قالب‌های ذخیره‌شده‌ی تنظیمات برگه‌ی خروجی (فونت، بولد، ستون‌ها، بارم، سربرگ، …)
 const OTP_KEYS=['fs','ls','cp','pf','pn','fb','nb','th','hdr','lt','lw','cn','cb','pb','pbs','rmh','xc','ar','au','ab','dm'];
-const OTPS=()=>{try{return JSON.parse(localStorage.ao_otp||'[]')}catch{return[]}},otpSave=a=>{try{localStorage.ao_otp=JSON.stringify(a)}catch(e){toast('حافظه‌ی مرورگر پر است؛ قالب ذخیره نشد')}};
+const OTPS=()=>{try{return JSON.parse(localStorage.ao_otp||'[]')}catch{return[]}},otpSave=a=>{try{localStorage.ao_otp=JSON.stringify(a);cfgTouch('ao_otp')}catch(e){toast('حافظه‌ی مرورگر پر است؛ قالب ذخیره نشد')}};
 let OTP_SEL='',OTP_HD=true;
 const otpClone=v=>JSON.parse(JSON.stringify(v));
 const otpSnap=hd=>{const o={};OTP_KEYS.forEach(k=>{if(ex[k]!==undefined)o[k]=otpClone(ex[k])});if(ex.mt&&ex.mt.cal&&Object.keys(ex.mt.cal).length)o.mtcal=otpClone(ex.mt.cal);if(hd&&ex.hd!==undefined)o.hd=otpClone(ex.hd);return o};
@@ -1761,4 +1761,18 @@ $('#v').addEventListener('click',e=>{const b=e.target.closest&&e.target.closest(
  else if(k=='ren'){const n=(prompt('نام جدید قالب',cur.name)||'').trim();if(!n)return;cur.name=n;otpSave(L)}
  else if(k=='del'){if(!confirm('قالب «'+cur.name+'» حذف شود؟'))return;otpSave(L.filter(x=>x.id!=cur.id));OTP_SEL=''}
  const c=$('#otpc');if(c)c.outerHTML=otpCard()});
+
+// ---- v66: همگام‌سازی لیست کلاس‌ها/دانش‌آموزان، سربرگ‌های ذخیره‌شده، دستورهای ذخیره‌شده و قالب‌های برگه بین دستگاه‌ها
+function cfgTouch(k){localStorage[k+'_t']=Date.now();if(typeof syncSoon=='function')syncSoon()}
+const CFGS=[['ros','ao_ros','[]'],['hdl','ao_hdl','[]'],['otp','ao_otp','[]'],['pre','ao_pre','{}']];
+function cfgMerge(a,b){try{const x=JSON.parse(a||'null'),y=JSON.parse(b||'null');if(Array.isArray(x)||Array.isArray(y)){const o=[...(Array.isArray(y)?y:[])],ids=new Set(o.map(v=>v&&v.id));(Array.isArray(x)?x:[]).forEach(v=>{if(!(v&&ids.has(v.id)))o.push(v)});return JSON.stringify(o)}
+ const o={...(y||{})};Object.entries(x||{}).forEach(([k,v])=>{o[k]=Array.isArray(v)?[...new Set([...(Array.isArray(o[k])?o[k]:[]),...v])]:(o[k]!==undefined?o[k]:v)});return JSON.stringify(o)}catch(e){return b||a}}
+async function syncCfg(R){let ch=0;
+ for(const [k,ls,empty] of CFGS){const key='cfg:'+k,tk=ls+'_t',lt=+localStorage[tk]||0,cur=localStorage[ls]||empty,r=R[key],hasLocal=cur!==empty&&cur!=='';
+  if(r&&!r.del&&r.t>lt){const x=await syCall('a=sget&key='+encodeURIComponent(key));let nv=x.code;
+   if(!lt&&hasLocal){nv=cfgMerge(cur,x.code);const t=Math.max(Date.now(),r.t+1);localStorage[ls]=nv;localStorage[tk]=t;await syCall('',{a:'sput',key,t,del:0,data:nv});ch++;continue}
+   localStorage[ls]=nv;localStorage[tk]=r.t;ch++}
+  else if(!r){if(hasLocal){const t=lt||Date.now();await syCall('',{a:'sput',key,t,del:0,data:cur});localStorage[tk]=t}}
+  else if(!r.del&&lt>r.t){await syCall('',{a:'sput',key,t:lt,del:0,data:cur})}}
+ return ch}
 </script></body></html>
