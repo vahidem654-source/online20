@@ -1,4 +1,4 @@
-const C='ao70';
+const C='ao71';
 const LIBS=['lib/docx.js','lib/pdf.min.mjs','lib/pdf.worker.min.mjs'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(C).then(c=>c.addAll(['./','index.html','manifest.webmanifest','icon-192.png','icon-512.png']).then(()=>Promise.all(LIBS.map(u=>c.add(u).catch(()=>{}))))).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!=C).map(x=>caches.delete(x)))).then(()=>clients.claim())));
