@@ -704,6 +704,7 @@ const OPTRE=new RegExp('^\\s*\\(?\\s*'+LAB+'\\s*[\\)\\.\\-–:]\\s*(.*)$'),QRE=n
  TFCUT=/\(?\s*(?:صحیح|درست|ص)\s*(?:[-–—\/،]|یا)\s*(?:غلط|نادرست|غ)\s*\)?/;
 function inlineOpts(L,k){const ms=[...L.matchAll(MARK)];for(let s=0;s<ms.length;s++){if(!labOk(ms[s][1],k))continue;const run=[ms[s]];for(let j=s+1;j<ms.length&&labOk(ms[j][1],k+run.length);j++)run.push(ms[j]);
  if(run.length>=2)return{pre:L.slice(0,run[0].index).trim(),opts:run.map((r,i)=>L.slice(r.index+r[0].length,i+1<run.length?run[i+1].index:undefined).trim()),count:run.length}}return null}
+const BAREM=/^\s*(?:بارم|نمره)\s*[:：]\s*([0-9۰-۹٠-٩][0-9۰-۹٠-٩.٫,]*)\s*(?:نمره)?\s*$/;
 function parseBlocks(txt){
  const lines=txt.replace(/\r/g,'').replace(/\u00a0/g,' ').split('\n').map(l=>l.replace(/\s+$/,'')),numbered=lines.filter(l=>QRE.test(l)&&!l.includes('\t')).length>=2,blocks=[],pre=[];let cur=null,qn=0;
  const start=s=>{cur={stem:[s],opts:[],ans:'',tab:[]};blocks.push(cur);const io=inlineOpts(s,0);if(io){cur.stem=[io.pre];cur.opts=io.opts}};
@@ -711,6 +712,7 @@ function parseBlocks(txt){
  lines.forEach((L,li)=>{
   if(!L.trim()){if(!numbered)cur=null;return}
   let m;
+  if(cur&&(m=L.match(BAREM))){const v=parseFloat(dg(m[1]).replace(/[٫,]/g,'.'));if(v>0)cur.score=v;return}
   if(cur&&(m=L.match(ANSRE))){cur.ans=m[1].trim();return}
   if(cur&&L.includes('\t')){const c=L.split('\t').map(x=>x.trim()).filter(Boolean);if(c.length>=2){cur.tab.push(c);return}}
   if(cur){const io=inlineOpts(L,cur.opts.length);if(io&&(cur.opts.length==0||!io.pre)){if(io.pre)cur.stem.push(io.pre);cur.opts.push(...io.opts);return}
@@ -727,7 +729,8 @@ function mcOk(b){let ok=b.opts.findIndex(o=>MK.test(o));MK.lastIndex=0;if(ok<0&&
 function matchItem(b,t){const A=[],B=[];b.tab.forEach(c=>{A.push(c[0].replace(/^[0-9۰-۹٠-٩]+\s*[\.\)\-]\s*/,''));if(c.length>1)B.push(c[c.length-1].replace(/^\(\s*\)\s*|^(?:الف|ب|ج|د|ه)\s*[\.\)\-]\s*/,''))});
  const map=A.map((_,i)=>i);[...(b.ans||'').matchAll(/([0-9۰-۹٠-٩]+)\s*[-–→:]\s*(الف|ب|ج|پ|ت|ث|د|ه|[0-9۰-۹٠-٩]+|[a-fA-F])/g)].forEach(p=>{const i=+dg(p[1])-1;for(let k=0;k<B.length;k++)if(labOk(p[2],k)){map[i]=k;break}});
  return{id:uid(),type:'match',html:esc(t)||'شماره‌ی مورد مرتبط از ستون راست را در پرانتز جلوی هر مورد ستون چپ بنویسید.',A:A.length?A:['',''],B:B.length?B:['',''],map:A.length?map:[0,1]}}
-function mkItem(b){const t=b.stem.join(' ').trim(),id=uid(),ty=b.type;
+function mkItem(b){const it=mkItem0(b);if(b.score>0)it.score=b.score;return it}
+function mkItem0(b){const t=b.stem.join(' ').trim(),id=uid(),ty=b.type;
  if(ty=='mc'){const o=b.opts.map(x=>x.replace(MK,'').trim());while(o.length<2)o.push('');const ml=Math.max(...o.map(x=>x.length));return{id,type:'mc',html:esc(t),opts:o,ok:Math.max(0,mcOk(b)),lay:ml<=14?4:ml<=34?2:1,ans:''}}
  if(ty=='tf')return{id,type:'tf',html:esc(t.replace(TFCUT,'').trim()),ok:!/^(?:غلط|نادرست|غ|✗|×|F|false)/i.test(b.ans.trim())};
  if(ty=='blank'){const n=(t.match(R_DOTS())||[]).length,an=b.ans?b.ans.split(/[،;؛]|\s+-\s+/).map(x=>x.trim()):[];return{id,type:'blank',html:esc(t),blanks:Array.from({length:n},(_,i)=>an[i]||'')}}
@@ -741,7 +744,7 @@ const pinfo=b=>{const t=b.type;if(t=='mc'){const k=mcOk(b);return fa(b.opts.leng
 function drawPB(){const el=$('#pv2');if(!el)return;el.innerHTML=PB.length?`<h3 style="margin-top:12px">${fa(PB.length)} سؤال تشخیص داده شد</h3><small>نوع هر سؤال را اگر لازم بود عوض کن و تیک سؤال‌های نخواسته را بردار.</small>`+
  PB.map((b,i)=>`<div class="it" style="display:block"><div class="r" style="margin:0;align-items:center"><label><input type="checkbox" data-pi="${i}" ${b.on?'checked':''}> <b>${fa(i+1)}</b></label><select data-pt="${i}">${Object.entries(TN).map(([k,v])=>`<option value="${k}" ${b.type==k?'selected':''}>${v}</option>`).join('')}</select><small>${pinfo(b)}</small></div><div style="color:var(--mu);margin-top:4px">${esc(b.stem.join(' ').slice(0,140))}</div></div>`).join('')+
  '<div class="ft"><button class="p" data-x="padd">＋ افزودن به آزمون</button><button data-x="pbk">📥 ذخیره در بانک</button></div>':'<div class="em">سؤالی پیدا نشد.</div>'}
-function openPaste(){PB=[];showM(`<h3>چسباندن چند سؤال</h3><small>سؤال‌ها را از Word یا هر جای دیگر کپی و اینجا بچسبان؛ شماره‌دار یا جدا شده با خط خالی. گزینه‌ها را با ۱) ۲) ۳) ۴) یا الف) ب) ج) د) بنویس. پاسخ را (اختیاری) در خطی مثل «پاسخ: ب» زیر سؤال بگذار. نوع هر سؤال خودکار تشخیص داده می‌شود.</small>
+function openPaste(){PB=[];showM(`<h3>چسباندن چند سؤال</h3><small>سؤال‌ها را از Word یا هر جای دیگر کپی و اینجا بچسبان؛ اگر زیر سؤال خطی مثل «بارم: ۰٫۲۵» بنویسی، بارم هم ثبت می‌شود؛ شماره‌دار یا جدا شده با خط خالی. گزینه‌ها را با ۱) ۲) ۳) ۴) یا الف) ب) ج) د) بنویس. پاسخ را (اختیاری) در خطی مثل «پاسخ: ب» زیر سؤال بگذار. نوع هر سؤال خودکار تشخیص داده می‌شود.</small>
  <textarea id="pt" rows="8" style="width:100%;background:var(--bg);color:inherit;border:1px solid var(--ln);border-radius:10px;padding:8px;font:inherit" placeholder="۱. کدام یک میوه است؟&#10;۱) سیب ۲) کاهو ۳) هویج ۴) گوجه&#10;پاسخ: ۱&#10;۲. زمین به دور ....... می‌چرخد.&#10;پاسخ: خورشید"></textarea><div class="r"><button class="p" data-x="pdet">🔍 تشخیص سؤال‌ها</button><label class="b" style="border-color:var(--ac)">📄 وارد کردن از فایل Word<input type="file" id="pt_file" accept=".docx,.txt" hidden></label><button data-x="cl">بستن</button></div><div id="pv2"></div>`)}
 $('#md').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const x=b.dataset.x;
  if(x=='ppst')openPaste();
