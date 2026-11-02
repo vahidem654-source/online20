@@ -281,7 +281,7 @@ const loadDocx=async()=>{if(window.docx)return window.docx;for(const u of['lib/d
 async function mkDocx(a){toast('در حال ساخت Word…');const d=await loadDocx();if(!d)return toast('کتابخانه‌ی Word لود نشد؛ اینترنت را بررسی کن و دوباره بزن');
  try{const PF=ex.pf||'B Nazanin',FN={ascii:PF,cs:PF,hAnsi:PF,eastAsia:PF},RED=ex.ar===false?undefined:'D00000',MGW=mgv(),W=11906-tw(MGW.l)-tw(MGW.r),GW=(()=>{const X=window.__LSDOC&&window.__LSDOC.__x;if(!X)return 7500;const pw=X.land?X.h:X.w,tw_=pw-Math.round((X.m.l+X.m.r)*56.69);return Math.max(2000,Math.floor(X.cols==2?(tw_-450)/2:tw_)-200)})();
  const R=(t,o={})=>new d.TextRun({text:hzw(t),font:(o.f&&o.f!=PF)?{ascii:o.f,cs:o.f,hAnsi:o.f,eastAsia:o.f}:FN,size:Math.round((o.z||FS())*2),sizeComplexScript:Math.round((o.z||FS())*2),rightToLeft:!o.ltr,bold:!!(o.b||ex.fb),boldComplexScript:!!(o.b||ex.fb),italics:!!o.i,italicsComplexScript:!!o.i,underline:o.u?{}:undefined,superScript:!!o.sup,subScript:!!o.sub,color:o.col,shading:o.hl?{type:d.ShadingType.CLEAR,fill:o.hl,color:'auto'}:undefined});
- const Pg=(r,ind)=>new d.Paragraph({children:r,alignment:(r.ltr?{left:d.AlignmentType.START,right:d.AlignmentType.END,center:d.AlignmentType.CENTER,justify:d.AlignmentType.BOTH}:{right:d.AlignmentType.START,left:d.AlignmentType.END,center:d.AlignmentType.CENTER,justify:d.AlignmentType.BOTH})[r.al],bidirectional:!r.ltr,indent:ind?{start:ind}:undefined,border:r.bx?{top:{style:d.BorderStyle.SINGLE,size:8,color:r.bx.c,space:4},bottom:{style:d.BorderStyle.SINGLE,size:8,color:r.bx.c,space:4},left:{style:d.BorderStyle.SINGLE,size:8,color:r.bx.c,space:6},right:{style:d.BorderStyle.SINGLE,size:8,color:r.bx.c,space:6}}:undefined,shading:(r.bx&&r.bx.bg)?{type:d.ShadingType.CLEAR,fill:r.bx.bg,color:'auto'}:undefined,spacing:{after:80,line:Math.round(240*LSV())}});
+ const Pg=(r,ind)=>new d.Paragraph({children:r,alignment:(r.ltr?{left:d.AlignmentType.START,right:d.AlignmentType.END,center:d.AlignmentType.CENTER,justify:d.AlignmentType.BOTH}:{right:d.AlignmentType.START,left:d.AlignmentType.END,center:d.AlignmentType.CENTER,justify:d.AlignmentType.BOTH})[r.al],bidirectional:!r.ltr,indent:ind?{start:ind}:undefined,border:r.bx?{top:{style:d.BorderStyle.SINGLE,size:8,color:r.bx.c,space:4},bottom:{style:d.BorderStyle.SINGLE,size:8,color:r.bx.c,space:4},left:{style:d.BorderStyle.SINGLE,size:8,color:r.bx.c,space:6},right:{style:d.BorderStyle.SINGLE,size:8,color:r.bx.c,space:6}}:(r.dv&&!r.dv.o?{bottom:{style:d.BorderStyle[r.dv.s],size:r.dv.w,color:r.dv.c,space:1}}:undefined),shading:(r.bx&&r.bx.bg)?{type:d.ShadingType.CLEAR,fill:r.bx.bg,color:'auto'}:undefined,spacing:{after:80,line:Math.round(240*LSV())}});
  const img=c=>{const w0=+c.dataset.w||200,h0=+c.dataset.h||150,s=Math.min(1,340/w0),b=atob(c.getAttribute('src').split(',')[1]),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return new d.ImageRun({data:u,type:'jpg',transformation:{width:Math.round(w0*s),height:Math.round(h0*s)}})};
  const frac=(x,y)=>{try{return new d.Math({children:[new d.MathFraction({numerator:[new d.MathRun(x)],denominator:[new d.MathRun(y)]})]})}catch{return R(x+'/'+y)}};
  const inl=(n,st,out)=>{n.childNodes.forEach(c=>{if(c.nodeType==3){if(c.textContent)out.push(...numRuns(c.textContent,(x,l)=>R(x,l==1?{...st,ltr:1}:st)))}else if(c.nodeType==1){const g=c.tagName,s={...st};
@@ -290,7 +290,7 @@ async function mkDocx(a){toast('در حال ساخت Word…');const d=await loa
   else if(c.classList.contains('bl'))out.push(R(c.textContent,c.classList.contains('a')?{...st,b:1,u:1,col:RED}:st));
   else if(c.classList.contains('fr'))out.push(frac(c.children[0]?.textContent||'',c.children[1]?.textContent||''));else inl(c,s,out)}})};
  const blocks=(html,st0={})=>{const root=document.createElement('div');root.innerHTML=html;const res=[];let cur=[];const fl=()=>{if(cur.length){res.push(cur);cur=[]}};
-  (function walk(n,st){n.childNodes.forEach(c=>{const g=c.tagName;if(g=='TABLE'){fl();res.push(tbl(c))}else if(/^(DIV|P|LI|UL|OL)$/.test(g)){fl();const s0=res.length,lt=c.getAttribute('dir')=='ltr',bxo=(c.classList&&c.classList.contains('lsbox'))?{c:(c.dataset.bc||'000000').replace('#',''),bg:(c.dataset.bg||'').replace('#','')}:null;walk(c,lt?{...st,ltr:1}:st);fl();const al=c.style&&c.style.textAlign;for(let i=s0;i<res.length;i++)if(Array.isArray(res[i])){if(al&&!res[i].al)res[i].al=al;if(lt)res[i].ltr=1;if(bxo&&!res[i].bx)res[i].bx=bxo}}else inl({childNodes:[c]},st,cur)})})(root,st0);fl();return res};
+  (function walk(n,st){n.childNodes.forEach(c=>{const g=c.tagName;if(g=='TABLE'){fl();res.push(tbl(c))}else if(g=='DIV'&&c.classList.contains('lsdv')){fl();const o=c.dataset.ds=='orn',a=o?[R(c.textContent.trim()||'✦ ✦ ✦',{col:(c.dataset.dc||'#888888').replace('#','')})]:[];a.dv={o,s:({dashed:'DASHED',dotted:'DOTTED',double:'DOUBLE'})[c.dataset.ds]||'SINGLE',w:c.dataset.ds=='thick'?24:c.dataset.ds=='double'?6:10,c:(c.dataset.dc||'#888888').replace('#','')};if(o)a.al='center';res.push(a)}else if(/^(DIV|P|LI|UL|OL)$/.test(g)){fl();const s0=res.length,lt=c.getAttribute('dir')=='ltr',bxo=(c.classList&&c.classList.contains('lsbox'))?{c:(c.dataset.bc||'000000').replace('#',''),bg:(c.dataset.bg||'').replace('#','')}:null;walk(c,lt?{...st,ltr:1}:st);fl();const al=c.style&&c.style.textAlign;for(let i=s0;i<res.length;i++)if(Array.isArray(res[i])){if(al&&!res[i].al)res[i].al=al;if(lt)res[i].ltr=1;if(bxo&&!res[i].bx)res[i].bx=bxo}}else inl({childNodes:[c]},st,cur)})})(root,st0);fl();return res};
  const kids=h=>{const b=blocks(h);return(b.length?b:[[]]).map(x=>Array.isArray(x)?Pg(x):x).concat(blocks(h).at(-1)instanceof d.Table?[Pg([])]:[])};
  const tbl=el=>{const rows=[...el.querySelectorAll('tr')],pct=parseFloat(el.style.width)||100,W0=Math.round(GW*Math.min(100,pct)/100),nC=Math.max(1,...rows.map(r=>[...r.children].reduce((a,c)=>a+(c.colSpan||1),0)));let cw=Array(nC).fill(0),pos=0;
   if(rows[0])[...rows[0].children].forEach(c=>{const sp=c.colSpan||1,w=parseFloat(c.style.width);for(let k=0;k<sp;k++)cw[pos+k]=isNaN(w)?0:w/sp;pos+=sp});
@@ -1505,10 +1505,13 @@ function lsOpen(id){const L=LSN.find(x=>x.id==id);if(!L)return;LSC=L;$('#md').cl
  <div class="r" style="align-items:center"><label>کادر زیر نشانگر:</label><label>خط <input type="color" id="ls_bxl" value="#1E9E78"></label><label>زمینه <input type="color" id="ls_bxb" value="#E9F7F1"></label></div>
  <div class="r" style="align-items:center"><label>سربرگ:</label><select id="ls_h2"><option value="">بدون سربرگ</option>${hl.map(x=>`<option value="${x.id}" ${L.hdid==x.id?'selected':''}>${esc(x.name)}</option>`).join('')}</select></div>
 </details>
+${lsThemeUI()}
 ${TBAR('lesson')}${clrBar()}
 
  <div class="r"><label class="b" style="border-color:var(--ac)">📄 وارد کردن از فایل Word<input type="file" id="ls_file" accept=".docx" hidden></label><small style="color:var(--mu)">جدول‌ها، رنگ‌ها، کادرها و بولد حفظ می‌شود.</small></div>
  <div class="tb" style="margin:6px 0"><b style="align-self:center">کادر دور متن:</b><button data-ls="bx:note">▭ نکته</button><button data-ls="bx:know">▭ بدانید</button><button data-ls="bx:warn">▭ هشدار</button><button data-ls="bx:exm">▭ مثال</button><button data-ls="bx:plain">▭ ساده</button><button data-ls="bxdel">✕ حذف کادر</button></div>
+ <div class="tb" style="margin:6px 0"><b style="align-self:center">➖ خط جداکننده:</b><button data-ls="dv:solid">━ ساده</button><button data-ls="dv:thick">▬ ضخیم</button><button data-ls="dv:dashed">┅ خط‌چین</button><button data-ls="dv:dotted">⋯ نقطه‌چین</button><button data-ls="dv:double">═ دوخطی</button><button data-ls="dv:orn">✦ تزئینی</button><input type="color" id="ls_dvc" value="#888888" title="رنگ خط"><button data-ls="dvdel">✕ حذف خط</button></div>
+ <small style="color:var(--mu)">خط را همان‌جا که مکان‌نمای متن است می‌گذارد (بین دو مطلب). برای حذف روی خط کلیک کن و «حذف خط» را بزن.</small>
  <small style="color:var(--mu)">متن را انتخاب کن و نوع کادر را بزن؛ اگر چیزی انتخاب نباشد یک کادر خالی ساخته می‌شود. داخل یک کادر که باشی، با زدن نوع دیگر رنگش عوض می‌شود.</small>
  ${rte('ls_h',L.html,'متن درسنامه را اینجا بنویس…').replace('<div class="ed"','<div style="display:none" id="ls_bgstyle"></div><div class="ed" style="background:'+(L.bg||'')+'"')}
  <div class="r"><button class="p" data-ls="save">💾 ذخیره</button><button data-ls="pdf:cur">PDF</button><button data-ls="doc:cur">Word</button></div>`)}
@@ -1528,6 +1531,8 @@ document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.c
  else if(k=='close'){await lsSave(true);hideM();render()}
  else if(k=='save'){await lsSave(true);toast('ذخیره شد')}
  else if(k=='bx')lsBox(id)
+ else if(k=='dv')lsDv(id)
+ else if(k=='dvdel')lsDvDel()
  else if(k=='bxdel')lsBoxDel()
  else if(k=='bg'){LSC.bg=id=='none'?'':id;const e=$('#ls_h');if(e)e.style.background=LSC.bg;$$('button[data-ls^="bg:"]').forEach(x=>x.style.outline='');b.style.outline='3px solid var(--ac)';lsSave()}
  else if(k=='dup'){const o=LSN.find(x=>x.id==id);if(!o)return;const c=clone(o);c.id=uid();c.title=(o.title||'')+' (کپی)';c.t=Date.now();await put('lessons',c);LSN.push(c);render()}
@@ -1972,7 +1977,7 @@ document.addEventListener('change',e=>{if(!LSC)return;const t=e.target,id=t&&t.i
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button[data-lsm]');if(!b||!LSC)return;delete LSC.mg;['t','r','b','l'].forEach(k=>{const i=$('#ls_m'+k);if(i)i.value=15});lsSave()});
 
 // ---- v76: برگردان (و جلورفتن) تغییرهای درسنامه، شامل چسباندن و وارد کردن Word و تنظیمات صفحه
-const LSMETA=['ps','ori','mg','cols','lh','jus','fw','fc','pf','fs','pfr','showt','pn','bg','hdid','title'];
+const LSMETA=['ps','ori','mg','cols','lh','jus','fw','fc','pf','fs','pfr','showt','pn','bg','hdid','title','th0'];
 var LSHI={id:null,a:[],i:-1,t:0};
 const lsState=()=>{const e=$('#ls_h');if(!e||!LSC)return null;const m={};LSMETA.forEach(k=>{if(LSC[k]!==undefined)m[k]=LSC[k]});const t=$('#ls_t');if(t)m.title=t.value;return JSON.stringify({h:e.innerHTML,m})};
 function lsSnap(){if(!LSC||LSHI.id!=LSC.id)return;const s=lsState();if(!s||s===LSHI.a[LSHI.i])return;{const nz=x=>String(x||'').replace(/[\u0654\u0674]/g,'').replace(/\u06C0/g,'ه');if(nz(s)===nz(LSHI.a[LSHI.i])){LSHI.a[LSHI.i]=s;return}}LSHI.a.length=LSHI.i+1;LSHI.a.push(s);if(LSHI.a.length>60)LSHI.a.shift();LSHI.i=LSHI.a.length-1;lsBtn()}
@@ -1987,4 +1992,74 @@ function lsGo(d){clearTimeout(LSHI.t);lsSnap();const n=LSHI.i+d;if(n<0||n>=LSHI.
 {const _i=lsIns;lsIns=function(h){clearTimeout(LSHI.t);lsSnap();return _i(h)}}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button[data-lsu]');if(!b||!LSC)return;e.preventDefault();lsGo(+b.dataset.lsu)});
 document.addEventListener('keydown',e=>{if(!LSC||!(e.ctrlKey||e.metaKey)||!$('#ls_h'))return;const k=e.key.toLowerCase();if(k=='z'&&!e.shiftKey){e.preventDefault();lsGo(-1)}else if(k=='y'||(k=='z'&&e.shiftKey)){e.preventDefault();lsGo(1)}},true);
+
+// ---- v80: دکمه‌های رفتن به اول/آخر صفحه در درسنامه
+(function(){const st=document.createElement('style');st.textContent='#ljmp{position:fixed;left:10px;bottom:calc(24px + env(safe-area-inset-bottom));z-index:30;display:flex;flex-direction:column;gap:6px}#ljmp button{background:var(--cd);width:42px;height:42px;justify-content:center;opacity:.92;box-shadow:0 1px 6px #0004}';document.head.appendChild(st);
+ const o=lsOpen;lsOpen=function(id){o.apply(this,arguments);const m=$('#md');if(m&&m.classList.contains('ls')&&!$('#ljmp')){const d=document.createElement('div');d.id='ljmp';d.innerHTML='<button type="button" data-lj="up" title="رفتن به اول صفحه">⤒</button><button type="button" data-lj="dn" title="رفتن به آخر صفحه">⤓</button>';m.appendChild(d)}};
+ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#ljmp button');if(!b)return;e.preventDefault();const bx=$('#md .box');if(bx)bx.scrollTo({top:b.dataset.lj=='up'?0:bx.scrollHeight,behavior:'auto'})},true)})();
+
+// ---- v81: قالب‌های آماده برای درسنامه (یک‌کلیکی؛ با ↶ برمی‌گردد)
+const LSTH={
+ blue:{n:'اقیانوس',p:'#1F5FA8',pd:'#123E75',m:'#8DB6E8',t:'#E6F0FC',g:'#FFD479',bd:'#A9C4E6',bg:'',hs:'pill',fr:0},
+ green:{n:'جنگل',p:'#2E7D4F',pd:'#1B4D30',m:'#9FD3B3',t:'#E8F5EC',g:'#F3E3A4',bd:'#B7D9C3',bg:'',hs:'line',fr:1},
+ orange:{n:'غروب',p:'#D9731A',pd:'#9A4B0A',m:'#F2BE8A',t:'#FDF0E1',g:'#FFF0B8',bd:'#EBCBA6',bg:'',hs:'side',fr:0},
+ purple:{n:'بنفشه',p:'#6B3FA0',pd:'#44236E',m:'#BFA2E3',t:'#EFE7F8',g:'#FFD9A0',bd:'#CDB9E6',bg:'#FBF8FF',hs:'pill',fr:0},
+ red:{n:'انار',p:'#B3303F',pd:'#7C1A27',m:'#E8A0A8',t:'#FBE9EB',g:'#FFE0A3',bd:'#E6B5BB',bg:'',hs:'line',fr:1},
+ brown:{n:'خاکی کلاسیک',p:'#8A5A2B',pd:'#5B3A1A',m:'#D9B48A',t:'#F7EBDD',g:'#FFE2A8',bd:'#D8C0A0',bg:'#FFFBF3',hs:'side',fr:1},
+ pink:{n:'صورتی شاد',p:'#D8457F',pd:'#9B2457',m:'#F2A9C8',t:'#FDEBF3',g:'#FFE6A8',bd:'#EDBBD0',bg:'',hs:'pill',fr:0},
+ teal:{n:'فیروزه‌ای',p:'#2F7A74',pd:'#1B4D4A',m:'#8FCBC5',t:'#EAF3F1',g:'#F3D9A4',bd:'#C9D3D0',bg:'',hs:'side',fr:0},
+ gold:{n:'رسمی طلایی',p:'#3A3A3A',pd:'#161616',m:'#C9B07A',t:'#F3EEE2',g:'#E8C877',bd:'#BDB39A',bg:'#FFFEFA',hs:'line',fr:1}};
+function lsThemeUI(){return `<details class="sc" style="margin:6px 0" open><summary><b>🎨 قالب‌های آماده (طراحی خودکار درسنامه)</b></summary><div class="tb" style="margin:6px 0">${Object.entries(LSTH).map(([k,t])=>`<button type="button" data-th="${k}" style="border:2px solid ${t.p};display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 10px"><span>${t.n}</span><span style="display:flex;gap:2px"><i style="width:16px;height:10px;background:${t.pd}"></i><i style="width:16px;height:10px;background:${t.p}"></i><i style="width:16px;height:10px;background:${t.m}"></i><i style="width:16px;height:10px;background:${t.t};border:1px solid #ccc"></i></span></button>`).join('')}<button type="button" data-th="orig">↺ ظاهر اصلی</button></div><small style="color:var(--mu)">رنگ جدول‌ها و کادرها، تیترها، بولدها، ردیف‌های یکی‌درمیان، رنگ زمینه و کادر صفحه عوض می‌شود. متن‌ها دست‌نخورده می‌مانند. اگر خوشت نیامد با ↶ یا «ظاهر اصلی» برگرد.</small></details>`}
+function lsTheme(key){const ed=$('#ls_h');if(!ed||!LSC)return;clearTimeout(LSHI.t);lsSnap();
+ // 1) برگرداندن تغییرات قالب قبلی
+ ed.querySelectorAll('[data-tho]').forEach(e=>{const o=e.getAttribute('data-tho');if(o==='\u0001')e.removeAttribute('style');else e.setAttribute('style',o);e.removeAttribute('data-tho');if(e.dataset.thdc!==undefined){e.dataset.dc=e.dataset.thdc;delete e.dataset.thdc}if(e.dataset.thbc!==undefined){e.dataset.bc=e.dataset.thbc;e.dataset.bg=e.dataset.thbg;delete e.dataset.thbc;delete e.dataset.thbg}});
+ if(!LSC.th0)LSC.th0={bg:LSC.bg||'',pfr:LSC.pfr||0,fc:LSC.fc||'',fw:LSC.fw||0};
+ const T=LSTH[key];
+ if(T){
+  const rgb=v=>{const m=/rgba?\(\s*(\d+)[, ]+(\d+)[, ]+(\d+)/.exec(v||'');return m?[+m[1],+m[2],+m[3]]:null},L=c=>(.299*c[0]+.587*c[1]+.114*c[2])/255,S=c=>(Math.max(...c)-Math.min(...c))/255;
+  const sv=e=>{if(!e.hasAttribute('data-tho'))e.setAttribute('data-tho',e.hasAttribute('style')?e.getAttribute('style'):'\u0001')};
+  const bgM=c=>{if(!c)return null;const l=L(c),s=S(c);if(l>.96&&s<.05)return null;if(s<(l>=.8?.02:.1)&&l>=.45)return null;if(s>.8&&l>.7)return null;return l<.28?T.pd:l<.5?T.p:l<.8?T.m:T.t};
+  const dk=e=>{const a=e.closest('[style*="background"]');const c=a&&rgb(a.style.backgroundColor);return !!c&&L(c)<.5};
+  const txM=(c,e)=>{if(!c)return null;const s=S(c),l=L(c);if(s<.15)return null;if(c[0]>c[1]+80&&c[0]>c[2]+80)return null;if(dk(e)&&l>.7)return T.g;return l<.5?T.pd:T.p};
+  const all=[...ed.querySelectorAll('*')];
+  all.forEach(e=>{if(!e.hasAttribute('style'))return;const bg=rgb(e.style.backgroundColor),col=rgb(e.style.color),bc=rgb(e.style.borderTopColor||e.style.borderColor);let ch=[];
+   const nb=bgM(bg);if(nb)ch.push(['background-color',nb]);
+   const nc=txM(col,e);if(nc)ch.push(['color',nc]);
+   if(bc&&e.tagName!='TABLE'||bc&&e.tagName=='TABLE'){const l=L(bc),s=S(bc);if(s>.1||l>.5)ch.push(['border-color',(l<.45&&s>.1)?T.p:T.bd])}
+   if(ch.length){sv(e);ch.forEach(([p,v])=>e.style.setProperty(p,v))}});
+  ed.querySelectorAll('.lsbox').forEach(b=>{sv(b);b.dataset.thbc=b.dataset.bc||'';b.dataset.thbg=b.dataset.bg||'';b.style.borderColor=T.p;b.style.background=T.t;b.dataset.bc=T.p;b.dataset.bg=T.t});
+  ed.querySelectorAll('.lsdv').forEach(x=>{sv(x);x.dataset.thdc=x.dataset.thdc||x.dataset.dc||'';x.dataset.dc=T.p;x.style.borderTopColor=T.p;x.style.color=T.p});
+  // 2) تیترها (پاراگراف کوتاهِ کاملاً بولد، بیرون از جدول)
+  const isB=e=>{const tx=e.textContent.trim();if(!tx||tx.length>90)return false;let bt='';e.querySelectorAll('b,strong,[style*="700"],[style*="bold"]').forEach(x=>{if(!x.parentElement.closest('b,strong,[style*="700"],[style*="bold"]')||x.parentElement===e)bt+=x.textContent});return bt.replace(/\s/g,'').length>=tx.replace(/\s/g,'').length&&!e.querySelector('table,div,p,ul,ol')};
+  const heads=[...ed.querySelectorAll('div,p')].filter(e=>!e.closest('table')&&!e.classList.contains('lsbox')&&e.id!='ls_h'&&isB(e));
+  heads.forEach(h=>{sv(h);const o=h.style;const inner=[...h.querySelectorAll('[style*="color"]')];
+   if(T.hs=='pill'){o.background=T.p;o.color='#fff';o.borderRadius='10px';o.padding='4px 12px';o.margin='10px 0 6px';inner.forEach(x=>{sv(x);x.style.color='#fff'})}
+   else if(T.hs=='side'){o.background=T.t;o.color=T.pd;o.borderRight='5px solid '+T.p;o.borderRadius='6px';o.padding='4px 10px';o.margin='10px 0 6px';inner.forEach(x=>{sv(x);x.style.color=T.pd})}
+   else{o.color=T.pd;o.borderBottom='2px solid '+T.p;o.padding='0 0 3px';o.margin='10px 0 6px';inner.forEach(x=>{sv(x);x.style.color=T.pd})}});
+  // 3) بولدهای داخل متن
+  ed.querySelectorAll('b,strong').forEach(b=>{if(b.closest('table[style]')&&dk(b))return;if(heads.some(h=>h.contains(b)))return;if(b.closest('.lsbox')&&dk(b))return;if(b.querySelector('[style*="color"]')||b.closest('[style*="color"]'))return;sv(b);b.style.color=T.pd});
+  // 4) جدول‌ها: سرستون برای جدول ساده + ردیف‌های یکی‌درمیان
+  ed.querySelectorAll('table').forEach(t=>{const rows=[...t.rows];if(rows.length<2)return;const hasBg=r=>[...r.cells].some(c=>c.style.backgroundColor&&bgM(rgb(c.style.backgroundColor))!==null||c.style.backgroundColor&&!/^rgb\(255, 255, 255\)$/.test(c.style.backgroundColor));
+   const bordered=rows[0].cells[0]&&/border/.test(rows[0].cells[0].getAttribute('style')||'');if(!bordered)return;
+   const plain=!rows.some(hasBg);
+   if(plain&&rows.length>=3){[...rows[0].cells].forEach(c=>{sv(c);c.style.backgroundColor=T.p;c.style.borderColor=T.p;c.style.color='#fff';c.querySelectorAll('span,b').forEach(x=>{sv(x);x.style.color='#fff'})})}
+   rows.forEach((r,i)=>{if(i==0&&plain)return;if(i%2==0&&!hasBg(r)){[...r.cells].forEach(c=>{sv(c);c.style.backgroundColor=T.t})}})});
+  // 5) صفحه
+  LSC.bg=T.bg;ed.style.background=T.bg;LSC.pfr=T.fr?1:0;if(T.fr){LSC.fc=T.p;LSC.fw=2}
+ }else{const o=LSC.th0;if(o){LSC.bg=o.bg;ed.style.background=o.bg;LSC.pfr=o.pfr;if(o.fc)LSC.fc=o.fc;if(o.fw)LSC.fw=o.fw}delete LSC.th0}
+ const set=(id,v)=>{const x=$('#'+id);if(x)x.value=v},chk=(id,v)=>{const x=$('#'+id);if(x)x.checked=!!v};chk('ls_pf',LSC.pfr);set('ls_fc',LSC.fc||'#000000');set('ls_fw',LSC.fw||2);set('ls_bgc',LSC.bg||'#ffffff');
+ lsSave(true);toast(T?'قالب «'+T.n+'» اعمال شد':'ظاهر اصلی برگردانده شد')}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button[data-th]');if(!b||!LSC)return;e.preventDefault();lsTheme(b.dataset.th)});
+
+// ---- v82: خط جداکننده بین مطالب درسنامه
+var lastDv=null;{const st=document.createElement('style');st.textContent='.dvsel{outline:2px dashed #e33}';document.head.appendChild(st);const _s=lsSave;lsSave=function(){const x=lastDv;if(x)x.classList.remove('dvsel');const r=_s.apply(this,arguments);if(x&&x.isConnected)x.classList.add('dvsel');return r}}
+function lsDvCss(k,c){const b={solid:'2px solid',thick:'5px solid',dashed:'2px dashed',dotted:'3px dotted',double:'5px double'}[k];return k=='orn'?`text-align:center;color:${c};letter-spacing:10px;margin:12px 0;font-size:1.1em`:`border-top:${b} ${c};height:0;padding:5px 0;margin:8px 0`}
+function lsDv(k){const ed=$('#ls_h');if(!ed)return;ed.focus();const sel=getSelection();if(lastR&&ed.contains(lastR.startContainer)&&sel.isCollapsed){sel.removeAllRanges();sel.addRange(lastR)}
+ if(!sel.rangeCount||!ed.contains(sel.anchorNode)){const r=document.createRange();r.selectNodeContents(ed);r.collapse(false);sel.removeAllRanges();sel.addRange(r)}
+ const c=($('#ls_dvc')||{}).value||'#888888';lsIns(`<div class="lsdv" data-ds="${k}" data-dc="${c}" style="${lsDvCss(k,c)}">${k=='orn'?'✦ ✦ ✦':''}</div><div><br></div>`);lsSave(true);toast('خط جداکننده گذاشته شد')}
+function lsDvDel(){const ed=$('#ls_h');if(!ed)return;let t=lastDv&&ed.contains(lastDv)?lastDv:null;
+ if(!t){const sel=getSelection();let n=sel.anchorNode;if(n&&ed.contains(n)){const all=[...ed.querySelectorAll('.lsdv')].filter(x=>x.compareDocumentPosition(n)&Node.DOCUMENT_POSITION_FOLLOWING);t=all.pop()}}
+ if(!t)return toast('روی خط کلیک کن و دوباره «حذف خط» را بزن');t.remove();lastDv=null;lsSave(true);toast('خط حذف شد')}
+document.addEventListener('click',e=>{const d=e.target.closest&&e.target.closest('#ls_h .lsdv');const ed=$('#ls_h');if(ed)ed.querySelectorAll('.lsdv').forEach(x=>x.classList.remove('dvsel'));if(d){lastDv=d;d.classList.add('dvsel')}else if(e.target.closest&&e.target.closest('#ls_h'))lastDv=null},true);
+document.addEventListener('change',e=>{if(e.target.id!='ls_dvc'||!lastDv)return;const d=lastDv,c=e.target.value;d.dataset.dc=c;d.setAttribute('style',lsDvCss(d.dataset.ds,c));lsSave(true)});
 </script></body></html>
