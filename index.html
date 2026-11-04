@@ -73,7 +73,7 @@ nav button{flex:1;border:0;border-radius:0;justify-content:center;min-height:50p
 </style></head><body>
 <div id="cr" class="ui">تهیه‌کننده: وحیده محجوب</div>
 <div class="ui" id="app">
-<div id="top"><header><button id="mnu">☰</button><input id="ttl" placeholder="عنوان آزمون"><button id="ub" style="display:none" title="برگردان آخرین حذف یا تغییر">↶</button><button id="rb" style="display:none" title="جلو (برگرداندن برگشت)">↷</button><button id="th">◐</button></header><div id="tabs"></div><div id="vrs">نسخه‌ی برنامه: ۸۸</div></div>
+<div id="top"><header><button id="mnu">☰</button><input id="ttl" placeholder="عنوان آزمون"><button id="ub" style="display:none" title="برگردان آخرین حذف یا تغییر">↶</button><button id="rb" style="display:none" title="جلو (برگرداندن برگشت)">↷</button><button id="th">◐</button></header><div id="tabs"></div><div id="vrs">نسخه‌ی برنامه: ۹۰</div></div>
 <main id="v"></main>
 <div id="jmp"><button id="up" title="اول صفحه">⤒</button><button id="dn" title="آخر صفحه">⤓</button></div>
 <button class="p fab" id="add">＋ سؤال</button>
@@ -132,7 +132,7 @@ function find(id){for(let ri=0;ri<ex.rows.length;ri++){const r=ex.rows[ri],ii=r.
 function render(){snapB(1);tabsDraw();$('#ttl').value=ex.title;$$('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t==T));$('#add').style.display=T=='ex'?'':'none';
  $('#v').innerHTML=(T=='ex'?bkBanner():'')+(T=='ex'?vEx():T=='bk'?vBk():T=='ol'?vOl():T=='rs'?vRs():T=='ls'?vLs():vOut());if(T=='bk'){bkChips();bkList()}if(T=='out')fitPv();if(T=='rs')rsDraw()}
 function vEx(){if(!ex.rows.length)return'<div class="em">هنوز سؤالی نیست.<br>دکمه‌ی «＋ سؤال» را بزن.</div>';
- return `<div class="sum" id="sum"><span id="sumv">جمع بارم: ${sf(total())}</span> <button data-a="chk" style="margin-inline-start:10px">🔎 بررسی</button><button data-a="allbk" style="margin-inline-start:6px" title="ذخیره‌ی همه‌ی سؤال‌های این آزمون در بانک">📥 همه در بانک</button></div>`+ex.rows.map((r,ri)=>`<section class="card" id="r_${r.id}"><div class="rh"><b>سوال ${fa(ri+1)}</b><input class="rtl" data-r="${r.id}" value="${esc(r.title)}" placeholder="دستور سؤال (اختیاری) مثلاً: جاهای خالی را پر کنید">
+ return `<div class="sum" id="sum"><span id="sumv">جمع بارم: ${sf(total())}</span> <button data-a="chk" style="margin-inline-start:10px">🔎 بررسی</button><button data-a="allbk" style="margin-inline-start:6px" title="ذخیره‌ی همه‌ی سؤال‌های این آزمون در بانک">📥 همه در بانک</button></div>`+ex.rows.map((r,ri)=>`<section class="card" id="r_${r.id}"><div class="rh"><b>سوال ${fa(ri+1)}</b><input class="rtl" data-r="${r.id}" value="${esc(r.title)}" placeholder="دستور سؤال (اختیاری) مثلاً: جاهای خالی را پر کنید">${rpUI(r)}
  <span class="tg" style="background:var(--ac2);color:#2b1a00">جمع بارم: ${sf(rowTotal(r))}</span>${rhIn(r)}<span class="acts"><button data-a="rup" data-r="${r.id}">↑</button><button data-a="rdn" data-r="${r.id}">↓</button>${ri?`<button data-a="mrg" data-r="${r.id}" title="ادغام با ردیف قبل">⇡ ادغام</button>`:''}<button data-a="rdup" data-r="${r.id}" title="تکثیر این سؤال در همین آزمون">⊕</button><button data-a="rcp" data-r="${r.id}" title="کپی این سؤال به آزمون دیگر">⧉</button><button data-a="rdel" data-r="${r.id}">🗑</button></span></div>
  ${r.items.map((it,ii)=>`<div class="it" id="i_${it.id}"><span class="tg">${r.items.length>1?lt(ii)+') ':''}${TN[it.type]}</span>${it.score?`<span class="tg" style="background:var(--ac2);color:#2b1a00">بارم ${sf(it.score)}</span>`:''}<span class="pv">${esc(strip(it.html).slice(0,90))||'(بدون متن)'}</span>
  <span class="acts"><button data-a="ied" data-i="${it.id}">✎</button><button data-a="iup" data-i="${it.id}">↑</button><button data-a="idn" data-i="${it.id}">↓</button>${r.items.length>1?`<button data-a="iout" data-i="${it.id}" title="خروج از ردیف">⤴ خروج</button>`:''}<button data-a="ibk" data-i="${it.id}" title="ذخیره در بانک">📥</button><button data-a="idel" data-i="${it.id}">🗑</button></span></div>`).join('')}
@@ -923,14 +923,14 @@ function gSel(){const sel=$$('.gs:checked').map(x=>x.value);return bank.filter(b
 function gAvail(){const l=gSel();$$('.ga').forEach(e=>{e.textContent=' از '+fa(l.filter(b=>b.item.type==e.dataset.t).length)+' موجود'})}
 function mGen(){if(!bank.length)return toast('بانک سؤال خالی است');const subs=subjects(),has=bank.some(b=>!b.subj);
  showM(`<h3>ساخت آزمون از بانک سؤال</h3><small>سؤال‌ها تصادفی انتخاب می‌شوند؛ سؤال‌هایی که کمتر در آزمون‌ها استفاده شده‌اند اولویت دارند.</small>
- <label>از کدام درس‌ها؟</label><div class="r">${subs.map(s=>`<label><input type="checkbox" class="gs" value="${esc(s)}" checked> ${esc(s)}</label>`).join('')}${has?'<label><input type="checkbox" class="gs" value="" checked> بدون درس</label>':''}</div>
+ <label>از کدام درس‌ها؟</label><div class="r">${subs.map(s=>`<label><input type="checkbox" class="gs" value="${esc(s)}"> ${esc(s)}</label>`).join('')}${has?'<label><input type="checkbox" class="gs" value=""> بدون درس</label>':''}</div>
  <label>چند سؤال از هر نوع؟</label>${TORD.map(t=>`<div class="orow"><span style="min-width:150px">${TN[t]}</span><input type="number" min="0" class="gn" data-t="${t}" value="0" style="width:80px"><small class="ga" data-t="${t}"></small></div>`).join('')}
  <div class="r"><label><input type="radio" name="gd" value="new" checked> ساخت آزمون جدید</label><label><input type="radio" name="gd" value="add"> افزودن به آزمون فعلی</label></div>
  <div class="r" style="align-items:center"><label><input type="checkbox" id="gb"> بارم‌ها را از نو بین سؤال‌ها مساوی تقسیم کن (در غیر این صورت بارم‌هایی که در بانک گذاشته‌ای حفظ می‌شود). جمع بارم:</label><input type="number" id="gbt" value="20" min="1" step="0.25" style="width:80px"></div>
  <div class="ft"><button class="p" data-x="bgo">🎲 ساخت</button><button data-x="cl">بستن</button></div>`);gAvail()}
 function genGo(){const l=gSel(),picked=[];let short=0;
  for(const t of TORD){const want=+($('.gn[data-t='+t+']').value)||0;if(!want)continue;const pool=shufA(l.filter(b=>b.item.type==t)).sort((a,b)=>(a.u||0)-(b.u||0));if(want>pool.length)short+=want-pool.length;picked.push(...pool.slice(0,want))}
- if(!picked.length)return toast('تعداد سؤال‌ها را مشخص کن');
+ if(!l.length)return toast('اول یک یا چند درس را تیک بزن');if(!picked.length)return toast('تعداد سؤال‌ها را مشخص کن');
  const rows=picked.map(b=>{b.u=(b.u||0)+1;put('bank',b);const it=clone(b.item);it.id=uid();it.bk=b.id;return{id:uid(),title:'',score:0,items:[it]}});
  if(document.querySelector('input[name=gd]:checked').value=='new'){ex={id:uid(),title:'آزمون تصادفی',rows,t:Date.now()};exams.push(ex);localStorage.ao_cur=ex.id;put('exams',ex)}else ex.rows.push(...rows);
  if($('#gb').checked)autoBarem(ex,+$('#gbt').value||20,'item');
@@ -2101,4 +2101,12 @@ document.addEventListener('change',e=>{if(e.target.id!='ls_dvc'||!lastDv)return;
   else if(k=='newin'){hideM();newExam();setFd(ex,n)}
  },true);
 })();
+
+// ---- saved instructions inside the whole-exam view (v90)
+function rpTy(r){return(r.items[0]&&r.items[0].type)||'tf'}
+function rpUI(r){const t=rpTy(r);return `<div class="r" style="align-items:center;margin-top:4px"><select class="rp_sel" data-r="${r.id}" style="flex:1;min-width:140px">${preOpts(t)}</select><button data-rp="sv" data-r="${r.id}">💾 ذخیره‌ی این دستور</button><button data-rp="dl" data-r="${r.id}" title="حذف دستور انتخاب‌شده">🗑</button></div>`}
+$('#v').addEventListener('change',e=>{const t=e.target;if(!t.classList||!t.classList.contains('rp_sel')||!t.value)return;const r=ex.rows.find(x=>x.id==t.dataset.r);if(!r)return;r.title=t.value;const i=t.closest('section').querySelector('input.rtl[data-r]');if(i)i.value=t.value;persist();t.selectedIndex=0});
+$('#v').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!b.dataset.rp)return;const r=ex.rows.find(x=>x.id==b.dataset.r);if(!r)return;const sec=b.closest('section'),sel=sec.querySelector('.rp_sel'),inp=sec.querySelector('input.rtl[data-r]'),t=rpTy(r);
+ if(b.dataset.rp=='sv'){const v=((inp&&inp.value)||'').trim();if(!v)return toast('اول دستور را در کادر بنویس');const P=PRES();P[t]=P[t]||[];if(!P[t].includes(v))P[t].push(v);preSave(P);$$('.rp_sel').forEach(x=>{const rr=ex.rows.find(q=>q.id==x.dataset.r);x.innerHTML=preOpts(rr?rpTy(rr):t)});toast('دستور ذخیره شد')}
+ else{const v=sel&&sel.value;if(!v)return toast('اول یک دستور ذخیره‌شده را از لیست انتخاب کن');const P=PRES();Object.keys(P).forEach(k=>P[k]=P[k].filter(y=>y!=v));preSave(P);$$('.rp_sel').forEach(x=>{const rr=ex.rows.find(q=>q.id==x.dataset.r);x.innerHTML=preOpts(rr?rpTy(rr):t)});toast('حذف شد')}});
 </script></body></html>
