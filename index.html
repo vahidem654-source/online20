@@ -69,11 +69,11 @@ nav button{flex:1;border:0;border-radius:0;justify-content:center;min-height:50p
 #pv .msel{outline:3px solid #e0a100;outline-offset:-3px;background:#fff7dc}#pv [data-mk]{cursor:pointer}
 .hdp{width:auto!important;padding:6px!important;margin:8px 0;border-radius:10px}.hdp td{cursor:pointer}.hdp td.sel{outline:3px solid var(--ac2);outline-offset:-3px;background:#fff7dc}.hdp .ht:not(.hb) td{border:1px dashed #aaa}
 .rhl{display:inline-flex;align-items:center;gap:4px;color:var(--mu);font-size:12px}
-#cr{position:fixed;right:1px;top:50%;transform:translateY(-50%);writing-mode:vertical-rl;font-size:11px;color:var(--tx);opacity:.45;pointer-events:none;user-select:none;-webkit-user-select:none;z-index:1;white-space:nowrap;font-family:Vazirmatn,Tahoma,sans-serif}
+#vrs{font-size:11px;color:var(--mu);text-align:center;padding:2px 0;opacity:.8}#cr{position:fixed;right:1px;top:50%;transform:translateY(-50%);writing-mode:vertical-rl;font-size:11px;color:var(--tx);opacity:.45;pointer-events:none;user-select:none;-webkit-user-select:none;z-index:1;white-space:nowrap;font-family:Vazirmatn,Tahoma,sans-serif}
 </style></head><body>
 <div id="cr" class="ui">تهیه‌کننده: وحیده محجوب</div>
 <div class="ui" id="app">
-<div id="top"><header><button id="mnu">☰</button><input id="ttl" placeholder="عنوان آزمون"><button id="ub" style="display:none" title="برگردان آخرین حذف یا تغییر">↶</button><button id="rb" style="display:none" title="جلو (برگرداندن برگشت)">↷</button><button id="th">◐</button></header><div id="tabs"></div></div>
+<div id="top"><header><button id="mnu">☰</button><input id="ttl" placeholder="عنوان آزمون"><button id="ub" style="display:none" title="برگردان آخرین حذف یا تغییر">↶</button><button id="rb" style="display:none" title="جلو (برگرداندن برگشت)">↷</button><button id="th">◐</button></header><div id="tabs"></div><div id="vrs">نسخه‌ی برنامه: ۸۸</div></div>
 <main id="v"></main>
 <div id="jmp"><button id="up" title="اول صفحه">⤒</button><button id="dn" title="آخر صفحه">⤓</button></div>
 <button class="p fab" id="add">＋ سؤال</button>
@@ -275,7 +275,7 @@ $('#fim').onchange=e=>{addImgs([...e.target.files]);e.target.value=''};
 function mExams(){showM(`<h3>آزمون‌ها</h3>${[...exams].sort((a,b)=>b.t-a.t).map(k=>`<div class="it"><span class="pv"><b>${esc(k.title)}</b> · ${fa(k.rows.length)} سؤال</span><button data-x="xo" data-n="${k.id}">باز کردن</button><button data-x="xd" data-n="${k.id}">کپی</button><button data-x="xx" data-n="${k.id}">🗑</button></div>`).join('')}
  <div class="r"><button class="p" data-x="xn">＋ آزمون جدید</button><button data-x="xj">ذخیره JSON این آزمون</button><button data-x="xb">پشتیبان کامل (همه + بانک + نتایج)</button><button data-x="bkc">☁️ پشتیبان در Drive / ایمیل</button><button data-x="pi">📲 نصب برنامه</button><label class="b">بازیابی از JSON<input type="file" accept=".json,.txt,application/json,text/plain" hidden id="fj"></label></div><div class="r"><label>اندازه‌ی نوشته‌های برنامه:</label><select id="uiz">${[['0.9','۹۰٪'],['1','۱۰۰٪'],['1.15','۱۱۵٪'],['1.3','۱۳۰٪']].map(([v,t])=>`<option value="${v}" ${(localStorage.ao_uiz||'1')==v?'selected':''}>${t}</option>`).join('')}</select></div><small id="us"></small><button data-x="cl">بستن</button>`);
  navigator.storage?.estimate?.().then(s=>{const u=$('#us');if(u)u.textContent=`فضای مصرفی: ${fa((s.usage/1048576).toFixed(1))} مگابایت از ${fa((s.quota/1073741824).toFixed(1))} گیگابایت`})}
-$('#mnu').onclick=mExams;
+$('#mnu').onclick=()=>mExams();
 // ---------- Word export (mirrors the PDF layout)
 const loadDocx=async()=>{if(window.docx)return window.docx;for(const u of['lib/docx.js','https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js','https://unpkg.com/docx@8.5.0/build/index.umd.js','https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.min.js']){try{await new Promise((ok,no)=>{const x=document.createElement('script');x.src=u;x.onload=ok;x.onerror=no;document.head.appendChild(x)});if(window.docx)return window.docx}catch{}}return null};
 async function mkDocx(a){toast('در حال ساخت Word…');const d=await loadDocx();if(!d)return toast('کتابخانه‌ی Word لود نشد؛ اینترنت را بررسی کن و دوباره بزن');
