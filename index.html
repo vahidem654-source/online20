@@ -69,11 +69,11 @@ nav button{flex:1;border:0;border-radius:0;justify-content:center;min-height:50p
 #pv .msel{outline:3px solid #e0a100;outline-offset:-3px;background:#fff7dc}#pv [data-mk]{cursor:pointer}
 .hdp{width:auto!important;padding:6px!important;margin:8px 0;border-radius:10px}.hdp td{cursor:pointer}.hdp td.sel{outline:3px solid var(--ac2);outline-offset:-3px;background:#fff7dc}.hdp .ht:not(.hb) td{border:1px dashed #aaa}
 .rhl{display:inline-flex;align-items:center;gap:4px;color:var(--mu);font-size:12px}
-#cr{position:fixed;right:1px;top:50%;transform:translateY(-50%);writing-mode:vertical-rl;font-size:11px;color:var(--tx);opacity:.45;pointer-events:none;user-select:none;-webkit-user-select:none;z-index:1;white-space:nowrap;font-family:Vazirmatn,Tahoma,sans-serif}
+#vrs{font-size:11px;color:var(--mu);text-align:center;padding:2px 0;opacity:.8}#cr{position:fixed;right:1px;top:50%;transform:translateY(-50%);writing-mode:vertical-rl;font-size:11px;color:var(--tx);opacity:.45;pointer-events:none;user-select:none;-webkit-user-select:none;z-index:1;white-space:nowrap;font-family:Vazirmatn,Tahoma,sans-serif}
 </style></head><body>
 <div id="cr" class="ui">تهیه‌کننده: وحیده محجوب</div>
 <div class="ui" id="app">
-<div id="top"><header><button id="mnu">☰</button><input id="ttl" placeholder="عنوان آزمون"><button id="ub" style="display:none" title="برگردان آخرین حذف یا تغییر">↶</button><button id="rb" style="display:none" title="جلو (برگرداندن برگشت)">↷</button><button id="th">◐</button></header><div id="tabs"></div></div>
+<div id="top"><header><button id="mnu">☰</button><input id="ttl" placeholder="عنوان آزمون"><button id="ub" style="display:none" title="برگردان آخرین حذف یا تغییر">↶</button><button id="rb" style="display:none" title="جلو (برگرداندن برگشت)">↷</button><button id="th">◐</button></header><div id="tabs"></div><div id="vrs">نسخه‌ی برنامه: ۸۷</div></div>
 <main id="v"></main>
 <div id="jmp"><button id="up" title="اول صفحه">⤒</button><button id="dn" title="آخر صفحه">⤓</button></div>
 <button class="p fab" id="add">＋ سؤال</button>
@@ -1506,7 +1506,7 @@ function lsOpen(id){const L=LSN.find(x=>x.id==id);if(!L)return;LSC=L;$('#md').cl
  <div class="r" style="align-items:center"><label>سربرگ:</label><select id="ls_h2"><option value="">بدون سربرگ</option>${hl.map(x=>`<option value="${x.id}" ${L.hdid==x.id?'selected':''}>${esc(x.name)}</option>`).join('')}</select></div>
 </details>
 ${lsThemeUI()}
-${TBAR('lesson')}${clrBar()}
+<div id="lstk">${TBAR('lesson')}${clrBar()}</div>
 
  <div class="r"><label class="b" style="border-color:var(--ac)">📄 وارد کردن از فایل Word<input type="file" id="ls_file" accept=".docx" hidden></label><small style="color:var(--mu)">جدول‌ها، رنگ‌ها، کادرها و بولد حفظ می‌شود.</small></div>
  <div class="tb" style="margin:6px 0"><b style="align-self:center">کادر دور متن:</b><button data-ls="bx:note">▭ نکته</button><button data-ls="bx:know">▭ بدانید</button><button data-ls="bx:warn">▭ هشدار</button><button data-ls="bx:exm">▭ مثال</button><button data-ls="bx:plain">▭ ساده</button><button data-ls="bxdel">✕ حذف کادر</button></div>
@@ -1995,9 +1995,11 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
 document.addEventListener('keydown',e=>{if(!LSC||!(e.ctrlKey||e.metaKey)||!$('#ls_h'))return;const k=e.key.toLowerCase();if(k=='z'&&!e.shiftKey){e.preventDefault();lsGo(-1)}else if(k=='y'||(k=='z'&&e.shiftKey)){e.preventDefault();lsGo(1)}},true);
 
 // ---- v80: دکمه‌های رفتن به اول/آخر صفحه در درسنامه
-(function(){const st=document.createElement('style');st.textContent='#ljmp{position:fixed;left:10px;bottom:calc(24px + env(safe-area-inset-bottom));z-index:30;display:flex;flex-direction:column;gap:6px}#ljmp button{background:var(--cd);width:42px;height:42px;justify-content:center;opacity:.92;box-shadow:0 1px 6px #0004}';document.head.appendChild(st);
- const o=lsOpen;lsOpen=function(id){o.apply(this,arguments);const m=$('#md');if(m&&m.classList.contains('ls')&&!$('#ljmp')){const d=document.createElement('div');d.id='ljmp';d.innerHTML='<button type="button" data-lj="up" title="رفتن به اول صفحه">⤒</button><button type="button" data-lj="dn" title="رفتن به آخر صفحه">⤓</button><button type="button" data-lj="back" title="برگشت به جایی که بودی" style="display:none;background:var(--ac);color:#fff">↩</button>';m.appendChild(d);LJ=null}};
+(function(){const st=document.createElement('style');st.textContent='#md.ls .tb{position:static}#md.ls #lstk{position:sticky;top:-14px;z-index:6;background:var(--cd);border-bottom:1px solid var(--ln);padding-top:4px}#md.ls #lstk .tb{flex-wrap:nowrap;overflow-x:auto;padding:3px 0;margin:0!important;scrollbar-width:thin}#md.ls #lstk .tb>*{flex:none;white-space:nowrap}#md.ls #lstk .sym{max-height:32vh;overflow:auto}#md.ls.lsfree #lstk{position:static}@media(min-width:760px){#md.ls #lstk .tb{flex-wrap:wrap;overflow:visible}}#ljmp{position:fixed;left:10px;bottom:calc(24px + env(safe-area-inset-bottom));z-index:30;display:flex;flex-direction:column;gap:6px}#ljmp button{background:var(--cd);width:42px;height:42px;justify-content:center;opacity:.92;box-shadow:0 1px 6px #0004}';document.head.appendChild(st);
+ const o=lsOpen;lsOpen=function(id){o.apply(this,arguments);const m=$('#md');if(m&&m.classList.contains('ls')&&!$('#ljmp')){const d=document.createElement('div');d.id='ljmp';d.innerHTML='<button type="button" data-lj="up" title="رفتن به اول صفحه">⤒</button><button type="button" data-lj="dn" title="رفتن به آخر صفحه">⤓</button><button type="button" data-lj="back" title="برگشت به جایی که بودی" style="display:none;background:var(--ac);color:#fff">↩</button><button type="button" data-lj="pin" title="ثابت / آزاد بودن نوار ابزار بالای صفحه">📌</button>';m.appendChild(d);LJ=null}
+  if(m)m.classList.toggle('lsfree',(()=>{try{return localStorage.ao_lspin==='0'}catch(e){return false}})())};
  document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#ljmp button');if(!b)return;e.preventDefault();const bx=$('#md .box');if(!bx)return;const k=b.dataset.lj,bk=$('#ljmp [data-lj=back]'),ed=$('#ls_h');
+ if(k=='pin'){const m=$('#md'),fr=!m.classList.contains('lsfree');m.classList.toggle('lsfree',fr);try{localStorage.ao_lspin=fr?'0':'1'}catch(x){}toast(fr?'نوار ابزار آزاد شد (با اسکرول می‌رود)':'نوار ابزار بالای صفحه ثابت شد');return}
  if(k=='back'){if(!LJ)return;bx.scrollTo({top:LJ.top,behavior:'auto'});try{if(ed&&LJ.r&&ed.contains(LJ.r.startContainer)){ed.focus({preventScroll:true});const sel=getSelection();sel.removeAllRanges();sel.addRange(LJ.r);bx.scrollTo({top:LJ.top,behavior:'auto'})}}catch(x){}LJ=null;if(bk)bk.style.display='none';return}
  const to=k=='up'?0:bx.scrollHeight;if(Math.abs(bx.scrollTop-to)>80||!LJ){if(Math.abs(bx.scrollTop-to)>80){let r=null;try{const sel=getSelection();if(sel.rangeCount&&ed&&ed.contains(sel.anchorNode))r=sel.getRangeAt(0).cloneRange();else if(typeof lastR!='undefined'&&lastR&&ed&&ed.contains(lastR.startContainer))r=lastR.cloneRange()}catch(x){}LJ={top:bx.scrollTop,r}}}
  if(LJ&&bk)bk.style.display='';bx.scrollTo({top:to,behavior:'auto'})},true)})();var LJ=null;
@@ -2066,4 +2068,37 @@ function lsDvDel(){const ed=$('#ls_h');if(!ed)return;let t=lastDv&&ed.contains(l
  if(!t)return toast('روی خط کلیک کن و دوباره «حذف خط» را بزن');t.remove();lastDv=null;lsSave(true);toast('خط حذف شد')}
 document.addEventListener('click',e=>{const d=e.target.closest&&e.target.closest('#ls_h .lsdv');const ed=$('#ls_h');if(ed)ed.querySelectorAll('.lsdv').forEach(x=>x.classList.remove('dvsel'));if(d){lastDv=d;d.classList.add('dvsel')}else if(e.target.closest&&e.target.closest('#ls_h'))lastDv=null},true);
 document.addEventListener('change',e=>{if(e.target.id!='ls_dvc'||!lastDv)return;const d=lastDv,c=e.target.value;d.dataset.dc=c;d.setAttribute('style',lsDvCss(d.dataset.ds,c));lsSave(true)});
+
+// ---- v85: پوشه برای آزمون‌ها (هر درس یک پوشه)
+(function(){
+ const FK='ao_fds',OK='ao_fdopen';
+ const rd=(k,d)=>{try{return JSON.parse(localStorage[k]||'')||d}catch(e){return d}},wr=(k,v)=>{try{localStorage[k]=JSON.stringify(v)}catch(e){}};
+ const folders=()=>{const a=rd(FK,[]);exams.forEach(e=>{if(e.fd&&!a.includes(e.fd))a.push(e.fd)});return a};
+ const setFd=(e,n)=>{if(n)e.fd=n;else delete e.fd;e.t=Date.now();put('exams',e);syncSoon()};
+ const st=document.createElement('style');st.textContent='.fdb{margin:8px 0;border:1.5px solid var(--ln);border-radius:12px;overflow:hidden}.fdb>summary{cursor:pointer;padding:9px 12px;background:var(--cd);font-weight:700;display:flex;gap:6px;align-items:center;flex-wrap:wrap}.fdb>summary .fdn{flex:1;min-width:90px}.fdb>summary button{padding:3px 8px;font-size:.85em}.fdb .it{margin:4px 8px}.fdb .fdm{max-width:130px;font-size:.85em}.fdsr{width:100%;margin:6px 0}';document.head.appendChild(st);
+ function build(){const m=$('#md .box');if(!m||!m.querySelector('h3')||m.querySelector('.fdb'))return;const its=[...m.querySelectorAll('.it')].filter(x=>x.querySelector('[data-x=xo]'));if(!its.length&&!folders().length)return;
+  const byId={};exams.forEach(e=>byId[e.id]=e);const fl=folders(),op=rd(OK,{}),cur=ex&&ex.fd;
+  const anchor=[...m.querySelectorAll('.r')].find(r=>r.querySelector('[data-x=xn]'))||m.querySelector('.r');const wrap=document.createElement('div');wrap.id='fdw';
+  wrap.innerHTML=`<div class="r"><button class="p" data-fd="new">📁 پوشه‌ی جدید</button><input class="fdsr" id="fdsr" placeholder="🔎 جست‌وجوی آزمون…"></div>`;
+  const groups={};its.forEach(it=>{const id=it.querySelector('[data-x=xo]').dataset.n,e=byId[id],g=(e&&e.fd)||'';(groups[g]=groups[g]||[]).push(it);
+   const sel=document.createElement('select');sel.className='fdm';sel.dataset.fdmv=id;sel.title='انتقال به پوشه';sel.innerHTML=`<option value="">📂 انتقال به…</option><option value="\u0001">بدون پوشه</option>${fl.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('')}<option value="\u0002">＋ پوشه‌ی جدید…</option>`;it.insertBefore(sel,it.querySelector('[data-x=xx]'))});
+  const mk=(name,label)=>{const arr=groups[name]||[],d=document.createElement('details');d.className='fdb';d.dataset.fn=name;const isOpen=name in op?op[name]:(name===(cur||'')||!fl.length);d.open=!!isOpen;
+   d.innerHTML=`<summary><span class="fdn">${name?'📁 ':'🗂 '}${esc(label)} (${fa(arr.length)})</span>${name?`<button data-fd="newin" data-n="${esc(name)}" title="آزمون جدید در این پوشه">＋ آزمون</button><button data-fd="ren" data-n="${esc(name)}" title="تغییر نام">✎</button><button data-fd="del" data-n="${esc(name)}" title="حذف پوشه (آزمون‌ها می‌مانند)">🗑</button>`:''}</summary>`;arr.forEach(x=>d.appendChild(x));if(!arr.length){const p=document.createElement('small');p.style.cssText='display:block;padding:6px 12px;color:var(--mu)';p.textContent='خالی است';d.appendChild(p)}return d};
+  fl.forEach(n=>wrap.appendChild(mk(n,n)));if((groups['']||[]).length||!fl.length)wrap.appendChild(mk('','بدون پوشه'));
+  anchor.parentNode.insertBefore(wrap,anchor);}
+ const _m=mExams;mExams=function(){_m.apply(this,arguments);try{build()}catch(e){console.error(e)}};
+ document.addEventListener('toggle',e=>{const d=e.target;if(d&&d.classList&&d.classList.contains('fdb')&&!$('#fdsr').value){const o=rd(OK,{});o[d.dataset.fn]=d.open;wr(OK,o)}},true);
+ document.addEventListener('input',e=>{if(e.target.id!='fdsr')return;const q=e.target.value.trim();$$('#fdw .fdb').forEach(d=>{let any=0;d.querySelectorAll('.it').forEach(it=>{const t=(it.querySelector('.pv')||it).textContent,ok=!q||t.includes(q);it.style.display=ok?'':'none';if(ok)any=1});if(q){d.open=!!any;d.style.display=any?'':'none'}else{d.style.display='';const o=rd(OK,{});d.open=d.dataset.fn in o?o[d.dataset.fn]:d.open}})});
+ const ask=(t,v)=>{const n=(prompt(t,v||'')||'').trim();return n};
+ document.addEventListener('change',e=>{const s=e.target;if(!s.dataset||s.dataset.fdmv===undefined)return;const id=s.dataset.fdmv,x=exams.find(k=>k.id==id);if(!x)return;let v=s.value;
+  if(v==='\u0002'){v=ask('نام پوشه (مثلاً نام درس):');if(!v){s.value='';return}const a=rd(FK,[]);if(!a.includes(v)){a.push(v);wr(FK,a)}}
+  else if(v==='\u0001')v='';else if(!v)return;
+  setFd(x,v);toast(v?'به پوشه‌ی «'+v+'» منتقل شد':'از پوشه بیرون آمد');const o=rd(OK,{});if(v){o[v]=true;wr(OK,o)}mExams()},true);
+ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button[data-fd]');if(!b)return;e.preventDefault();e.stopPropagation();const k=b.dataset.fd,n=b.dataset.n;
+  if(k=='new'){const v=ask('نام پوشه (مثلاً نام درس):');if(!v)return;const a=rd(FK,[]);if(folders().includes(v))return toast('این پوشه از قبل هست');a.push(v);wr(FK,a);const o=rd(OK,{});o[v]=true;wr(OK,o);mExams()}
+  else if(k=='ren'){const v=ask('نام جدید پوشه:',n);if(!v||v==n)return;if(folders().includes(v))return toast('پوشه‌ای با این نام هست');exams.filter(x=>x.fd==n).forEach(x=>setFd(x,v));wr(FK,rd(FK,[]).map(a=>a==n?v:a));const o=rd(OK,{});if(n in o){o[v]=o[n];delete o[n];wr(OK,o)}mExams()}
+  else if(k=='del'){if(!confirm('پوشه‌ی «'+n+'» حذف شود؟ آزمون‌های داخلش پاک نمی‌شوند و به «بدون پوشه» می‌روند.'))return;exams.filter(x=>x.fd==n).forEach(x=>setFd(x,''));wr(FK,rd(FK,[]).filter(a=>a!=n));mExams()}
+  else if(k=='newin'){hideM();newExam();setFd(ex,n)}
+ },true);
+})();
 </script></body></html>
