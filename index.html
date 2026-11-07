@@ -189,7 +189,7 @@ $('#add').onclick=()=>pick(null);addEventListener('resize',()=>T=='out'&&fitPv()
 const showM=h=>{$('#md').hidden=false;$('#md').innerHTML=`<div class="box">${h}</div>`},hideM=()=>{$('#md').hidden=true;$('#md').innerHTML='';$('#md').classList.remove('ls');ED=null};
 const pick=row=>{ED={row};showM(`<h3>نوع سؤال</h3><div class="r">${Object.entries(TN).map(([k,v])=>`<button class="p" data-x="ty" data-n="${k}">${v}</button>`).join('')}</div><div class="r"><button data-x="ppst" style="border-color:var(--ac)">📋 چسباندن چند سؤال با تشخیص خودکار</button></div><button data-x="cl">بستن</button>`)};
 const rte=(id,h,ph)=>`<div class="ed" id="${id}" contenteditable="true" spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="off" data-ph="${ph||''}">${h||''}</div>`;
-const TBAR=ty=>`<div class="tb">${[['b','<b>B</b> بولد'],['i','<i>I</i>'],['u','<u>U</u>'],['sup','x²'],['sub','x₂'],['fr','کسر'],['tbl','جدول'],['tr','＋سطر'],['tc','＋ستون'],['dr','－سطر'],['dc','－ستون'],['dt','✕جدول'],['tp','📐 اندازه و ادغام جدول'],['img','🖼 تصویر'],['rmimg','✕تصویر'],['sym','Ω علامت'],['jr','راست‌چین'],['jc','وسط‌چین'],['jl','چپ‌چین'],['ltr','فرمول: چپ‌به‌راست'],['rtl','متن: راست‌به‌چپ'],['fnt','🔤 فونت'],['fclean','🧹 یکدست‌کردن فونت']].map(([c,l])=>`<button data-c="${c}">${l}</button>`).join('')}${ty=='blank'?'<button class="p" data-c="bl">نقطه‌چین</button>':''}${ty=='paren'?'<button class="p" data-c="pr">( ) پرانتز گزینه‌ها</button>':''}</div><div class="sym" hidden>${SYM.map(s=>`<button data-s="${s}">${s}</button>`).join('')}</div><div class="sym fnl" hidden>${FONTS.map(f=>`<button data-f="${f}" style="font-family:'${f}'">${f}</button>`).join('')}</div>`;
+const TBAR=ty=>`<div class="tb">${ty=='lesson'?'<button type="button" data-lsq="open">❓ درج سؤال</button>':''}${[['b','<b>B</b> بولد'],['i','<i>I</i>'],['u','<u>U</u>'],['sup','x²'],['sub','x₂'],['fr','کسر'],['tbl','جدول'],['tr','＋سطر'],['tc','＋ستون'],['dr','－سطر'],['dc','－ستون'],['dt','✕جدول'],['tp','📐 اندازه و ادغام جدول'],['img','🖼 تصویر'],['rmimg','✕تصویر'],['sym','Ω علامت'],['jr','راست‌چین'],['jc','وسط‌چین'],['jl','چپ‌چین'],['ltr','فرمول: چپ‌به‌راست'],['rtl','متن: راست‌به‌چپ'],['fnt','🔤 فونت'],['fclean','🧹 یکدست‌کردن فونت']].map(([c,l])=>`<button data-c="${c}">${l}</button>`).join('')}${ty=='blank'?'<button class="p" data-c="bl">نقطه‌چین</button>':''}${ty=='paren'?'<button class="p" data-c="pr">( ) پرانتز گزینه‌ها</button>':''}</div><div class="sym" hidden>${SYM.map(s=>`<button data-s="${s}">${s}</button>`).join('')}</div><div class="sym fnl" hidden>${FONTS.map(f=>`<button data-f="${f}" style="font-family:'${f}'">${f}</button>`).join('')}</div>`;
 const optRows=(d,ok)=>d.opts.map((o,i)=>`<div class="orow">${ok?`<input type="radio" name="ok" value="${i}" ${i==d.ok?'checked':''}>`:''}<span>${fa(i+1)})</span><input class="oi" value="${esc(o)}"><button data-x="mv" data-t="o" data-n="${i}" data-d="-1" title="بالا">↑</button><button data-x="mv" data-t="o" data-n="${i}" data-d="1" title="پایین">↓</button><button data-x="ro" data-n="${i}">✕</button></div>`).join('');
 const matchRows=d=>`<b>ستون راست (شماره‌دار؛ گزینه‌ی صحیح هر مورد را از لیست انتخاب کن)</b>${d.A.map((a,i)=>`<div class="orow"><span>${fa(i+1)}</span><input class="ia" value="${esc(a)}"><select class="im" title="پاسخ">${d.B.map((_,j)=>`<option value="${j}" ${d.map[i]==j?'selected':''}>${lt(j)}</option>`).join('')}</select><button data-x="mv" data-t="A" data-n="${i}" data-d="-1" title="بالا">↑</button><button data-x="mv" data-t="A" data-n="${i}" data-d="1" title="پایین">↓</button><button data-x="rA" data-n="${i}">✕</button></div>`).join('')}<button data-x="aA">＋ آیتم راست</button><br><b>ستون چپ (جلوی هر مورد یک پرانتز می‌آید)</b>${d.B.map((b,j)=>`<div class="orow"><span>${lt(j)}</span><input class="ib" value="${esc(b)}"><button data-x="mv" data-t="B" data-n="${j}" data-d="-1" title="بالا">↑</button><button data-x="mv" data-t="B" data-n="${j}" data-d="1" title="پایین">↓</button><button data-x="rB" data-n="${j}">✕</button></div>`).join('')}<button data-x="aB">＋ آیتم چپ</button>`;
 const secSt=()=>{try{return JSON.parse(localStorage.ao_sec||'{}')}catch(e){return{}}};
@@ -745,7 +745,7 @@ function drawPB(){const el=$('#pv2');if(!el)return;el.innerHTML=PB.length?`<h3 s
  PB.map((b,i)=>`<div class="it" style="display:block"><div class="r" style="margin:0;align-items:center"><label><input type="checkbox" data-pi="${i}" ${b.on?'checked':''}> <b>${fa(i+1)}</b></label><select data-pt="${i}">${Object.entries(TN).map(([k,v])=>`<option value="${k}" ${b.type==k?'selected':''}>${v}</option>`).join('')}</select><small>${pinfo(b)}</small></div><div style="color:var(--mu);margin-top:4px">${esc(b.stem.join(' ').slice(0,140))}</div></div>`).join('')+
  '<div class="ft"><button class="p" data-x="padd">＋ افزودن به آزمون</button><button data-x="pbk">📥 ذخیره در بانک</button></div>':'<div class="em">سؤالی پیدا نشد.</div>'}
 function openPaste(){PB=[];showM(`<h3>چسباندن چند سؤال</h3><small>سؤال‌ها را از Word یا هر جای دیگر کپی و اینجا بچسبان؛ اگر زیر سؤال خطی مثل «بارم: ۰٫۲۵» بنویسی، بارم هم ثبت می‌شود؛ شماره‌دار یا جدا شده با خط خالی. گزینه‌ها را با ۱) ۲) ۳) ۴) یا الف) ب) ج) د) بنویس. پاسخ را (اختیاری) در خطی مثل «پاسخ: ب» زیر سؤال بگذار. نوع هر سؤال خودکار تشخیص داده می‌شود.</small>
- <textarea id="pt" rows="8" style="width:100%;background:var(--bg);color:inherit;border:1px solid var(--ln);border-radius:10px;padding:8px;font:inherit" placeholder="۱. کدام یک میوه است؟&#10;۱) سیب ۲) کاهو ۳) هویج ۴) گوجه&#10;پاسخ: ۱&#10;۲. زمین به دور ....... می‌چرخد.&#10;پاسخ: خورشید"></textarea><div class="r"><button class="p" data-x="pdet">🔍 تشخیص سؤال‌ها</button><label class="b" style="border-color:var(--ac)">📄 وارد کردن از فایل Word<input type="file" id="pt_file" accept=".docx,.txt" hidden></label><button data-x="cl">بستن</button></div><div id="pv2"></div>`)}
+ <textarea id="pt" rows="8" style="width:100%;background:var(--bg);color:inherit;border:1px solid var(--ln);border-radius:10px;padding:8px;font:inherit" placeholder="۱. کدام یک میوه است؟&#10;۱) سیب ۲) کاهو ۳) هویج ۴) گوجه&#10;پاسخ: ۱&#10;۲. زمین به دور ....... می‌چرخد.&#10;پاسخ: خورشید"></textarea><div class="r"><button class="p" data-x="pdet">🔍 تشخیص سؤال‌ها</button><label class="b" style="border-color:var(--ac)">📄 وارد کردن از فایل (Word، PDF، پاورپوینت)<input type="file" id="pt_file" accept=".docx,.pdf,.pptx,.txt" hidden></label><button data-x="cl">بستن</button></div><div id="pv2"></div>`)}
 $('#md').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const x=b.dataset.x;
  if(x=='ppst')openPaste();
  else if(x=='pdet'){const r=parseBlocks($('#pt').value);PRE=r.pre;PB=r.blocks.map(q=>({...q,type:ident(q),on:true}));drawPB()}
@@ -1508,7 +1508,7 @@ function lsOpen(id){const L=LSN.find(x=>x.id==id);if(!L)return;LSC=L;$('#md').cl
 ${lsThemeUI()}
 <div id="lstk">${TBAR('lesson')}${clrBar()}</div>
 
- <div class="r"><label class="b" style="border-color:var(--ac)">📄 وارد کردن از فایل Word<input type="file" id="ls_file" accept=".docx" hidden></label><small style="color:var(--mu)">جدول‌ها، رنگ‌ها، کادرها و بولد حفظ می‌شود.</small></div>
+ <div class="r"><label class="b" style="border-color:var(--ac)">📄 وارد کردن از فایل Word یا پاورپوینت<input type="file" id="ls_file" accept=".docx,.pptx" hidden></label><small style="color:var(--mu)">جدول‌ها، رنگ‌ها، کادرها و بولد حفظ می‌شود.</small></div>
  <div class="tb" style="margin:6px 0"><b style="align-self:center">کادر دور متن:</b><button data-ls="bx:note">▭ نکته</button><button data-ls="bx:know">▭ بدانید</button><button data-ls="bx:warn">▭ هشدار</button><button data-ls="bx:exm">▭ مثال</button><button data-ls="bx:plain">▭ ساده</button><button data-ls="bxdel">✕ حذف کادر</button></div>
  <div class="tb" style="margin:6px 0"><b style="align-self:center">➖ خط جداکننده:</b><button data-ls="dv:solid">━ ساده</button><button data-ls="dv:thick">▬ ضخیم</button><button data-ls="dv:dashed">┅ خط‌چین</button><button data-ls="dv:dotted">⋯ نقطه‌چین</button><button data-ls="dv:double">═ دوخطی</button><button data-ls="dv:orn">✦ تزئینی</button><input type="color" id="ls_dvc" value="#888888" title="رنگ خط"><button data-ls="dvdel">✕ حذف خط</button></div>
  <small style="color:var(--mu)">خط را همان‌جا که مکان‌نمای متن است می‌گذارد (بین دو مطلب). برای حذف روی خط کلیک کن و «حذف خط» را بزن.</small>
@@ -1721,8 +1721,8 @@ async function docxLines(file){const buf=new Uint8Array(await file.arrayBuffer()
  const top=n=>[...n.childNodes].forEach(c=>{const t=c.localName;if(t=='p')para(c);else if(t=='tbl')tbl(c);else if(t=='sdt'||t=='sdtContent'||t=='customXml')top(c)});top(body);
  return out.join('\n').replace(/\n{3,}/g,'\n\n').trim()}
 document.addEventListener('change',async e=>{const t=e.target;if(!t||t.id!='pt_file'||!t.files[0])return;const f=t.files[0],n=f.name.toLowerCase();t.value='';
- try{if(n.endsWith('.doc'))return toast('فرمت قدیمی .doc پشتیبانی نمی‌شود؛ در Word «ذخیره به‌صورت .docx» بزن');let txt;toast('در حال خواندن فایل…');if(n.endsWith('.docx'))txt=await docxLines(f);else txt=await f.text();
-  txt=stripEz(txt);const ta=$('#pt');if(!ta)return;ta.value=txt;if(!txt.trim())return toast('متنی در فایل پیدا نشد');const b=document.querySelector('#md button[data-x="pdet"]');if(b)b.click();toast('فایل خوانده شد؛ سؤال‌ها را بررسی کن و «افزودن به آزمون» را بزن')}catch(err){console.error(err);toast('فایل خوانده نشد؛ مطمئن شو .docx است یا متن را کپی و بچسبان')}});
+ try{if(n.endsWith('.doc')||n.endsWith('.ppt'))return toast('فرمت قدیمی .doc/.ppt پشتیبانی نمی‌شود؛ با «ذخیره به‌صورت» به .docx یا .pptx تبدیل کن');let txt;toast('در حال خواندن فایل…');if(n.endsWith('.docx'))txt=await docxLines(f);else if(n.endsWith('.pptx'))txt=pptxPlain(await pptxSlides(f));else if(n.endsWith('.pdf')){txt=await pdfText(f);if(!txt.replace(/\s/g,''))return toast('این PDF متن قابل خواندن ندارد (اسکن یا عکس است)')}else txt=await f.text();
+  txt=stripEz(txt);const ta=$('#pt');if(!ta)return;ta.value=txt;if(!txt.trim())return toast('متنی در فایل پیدا نشد');const b=document.querySelector('#md button[data-x="pdet"]');if(b)b.click();toast('فایل خوانده شد؛ سؤال‌ها را بررسی کن و «افزودن به آزمون» را بزن')}catch(err){console.error(err);toast('فایل خوانده نشد؛ مطمئن شو docx، pdf یا pptx سالم است یا متن را کپی و بچسبان')}});
 
 // ---- v62: بخش‌های کشویی در پنجره‌ی طراحی سؤال
 document.addEventListener('toggle',e=>{const d=e.target;if(!d.classList||!d.classList.contains('sc'))return;const st=secSt();st[d.dataset.sk]=d.open?1:0;try{localStorage.ao_sec=JSON.stringify(st)}catch(x){}},true);
@@ -1959,10 +1959,10 @@ async function lsDocxHtml(file){const buf=new Uint8Array(await file.arrayBuffer(
    const url=URL.createObjectURL(new Blob([by])),img=await new Promise((ok,no)=>{const x=new Image();x.onload=()=>ok(x);x.onerror=no;x.src=url}),sc=Math.min(1,900/img.naturalWidth),cv=document.createElement('canvas');cv.width=Math.round(img.naturalWidth*sc);cv.height=Math.round(img.naturalHeight*sc);const g=cv.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,cv.width,cv.height);g.drawImage(img,0,0,cv.width,cv.height);URL.revokeObjectURL(url);
    const w=Math.min(+im.dataset.w||cv.width,600),h=Math.round(w*(+im.dataset.h||cv.height)/(+im.dataset.w||cv.width));im.src=cv.toDataURL('image/jpeg',.85);im.dataset.w=w;im.dataset.h=h;im.removeAttribute('data-rid')}catch{im.remove()}}
  return box.innerHTML}
-document.addEventListener('change',async e=>{const f=e.target;if(!f||f.id!='ls_file')return;const file=f.files&&f.files[0];f.value='';if(!file)return;if(!/\.docx$/i.test(file.name))return toast('فقط فایل Word با پسوند docx پشتیبانی می‌شود');
- try{toast('در حال خواندن فایل Word…');const h=await lsDocxHtml(file),ed=$('#ls_h');if(!ed||!h)return toast('متنی در فایل پیدا نشد');
+document.addEventListener('change',async e=>{const f=e.target;if(!f||f.id!='ls_file')return;const file=f.files&&f.files[0];f.value='';if(!file)return;if(!/\.(docx|pptx)$/i.test(file.name))return toast('فقط فایل Word (docx) یا پاورپوینت (pptx) پشتیبانی می‌شود');
+ try{toast('در حال خواندن فایل…');const h=/\.pptx$/i.test(file.name)?await pptxHtml(file):await lsDocxHtml(file),ed=$('#ls_h');if(!ed||!h)return toast('متنی در فایل پیدا نشد');
   const empty=!ed.textContent.trim()&&!ed.querySelector('img,table');if(empty){ed.innerHTML=h}else{ed.focus();const sel=getSelection();if(lastR&&ed.contains(lastR.startContainer)){sel.removeAllRanges();sel.addRange(lastR)}else{const r=document.createRange();r.selectNodeContents(ed);r.collapse(false);sel.removeAllRanges();sel.addRange(r)}lsIns(h)}
-  lsFixW(ed);const t=$('#ls_t');if(t&&!t.value.trim()){t.value=file.name.replace(/\.docx$/i,'')}lsSave(true);toast('فایل Word وارد شد؛ ظاهر و جدول‌ها حفظ شد')}catch(err){console.error(err);toast('فایل خوانده نشد؛ مطمئن شو docx است')}});
+  lsFixW(ed);const t=$('#ls_t');if(t&&!t.value.trim()){t.value=file.name.replace(/\.(docx|pptx)$/i,'')}lsSave(true);toast('فایل وارد شد؛ ظاهر و جدول‌ها حفظ شد')}catch(err){console.error(err);toast('فایل خوانده نشد؛ مطمئن شو docx یا pptx سالم است')}});
 
 // ---- v75: تنظیمات صفحه‌ی درسنامه (اندازه، جهت، حاشیه، ستون، فاصله‌ی خطوط، تراز، کادر صفحه)
 const LSPS={A4:['A4 (۲۱۰×۲۹۷)',11906,16838,'A4'],A5:['A5 (۱۴۸×۲۱۰)',8391,11906,'A5'],A3:['A3 (۲۹۷×۴۲۰)',16838,23811,'A3'],Letter:['Letter (۲۱٫۶×۲۷٫۹ سانتی)',12240,15840,'letter']};
@@ -2110,6 +2110,72 @@ $('#v').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!
  if(b.dataset.rp=='sv'){const v=((inp&&inp.value)||'').trim();if(!v)return toast('اول دستور را در کادر بنویس');const P=PRES();P[t]=P[t]||[];if(!P[t].includes(v))P[t].push(v);preSave(P);$$('.rp_sel').forEach(x=>{const rr=ex.rows.find(q=>q.id==x.dataset.r);x.innerHTML=preOpts(rr?rpTy(rr):t)});toast('دستور ذخیره شد')}
  else{const v=sel&&sel.value;if(!v)return toast('اول یک دستور ذخیره‌شده را از لیست انتخاب کن');const P=PRES();Object.keys(P).forEach(k=>P[k]=P[k].filter(y=>y!=v));preSave(P);$$('.rp_sel').forEach(x=>{const rr=ex.rows.find(q=>q.id==x.dataset.r);x.innerHTML=preOpts(rr?rpTy(rr):t)});toast('حذف شد')}});
 
-// ---- v91: all lesson tools visible in the fixed bar (wrap, compact, own scroll if tall)
-(function(){const st=document.createElement('style');st.textContent='#md.ls #lstk .tb{flex-wrap:wrap!important;overflow:visible!important;gap:3px;padding:2px 0}#md.ls #lstk .tb>*{flex:none}#md.ls #lstk button,#md.ls #lstk select{padding:3px 7px;font-size:.82em;min-height:0}#md.ls #lstk{max-height:40vh;overflow-y:auto;overscroll-behavior:contain}#md.ls #lstk .sw,#md.ls #lstk .cb{width:22px;height:22px}';document.head.appendChild(st)})();
+// ---- v91: PowerPoint (.pptx) + PDF import, and inserting questions into the lesson
+async function zipMap(buf){const dv=new DataView(buf.buffer,buf.byteOffset,buf.byteLength);let e=-1;for(let i=buf.length-22;i>=0;i--){if(dv.getUint32(i,true)==0x06054b50){e=i;break}}if(e<0)throw new Error('zip');
+ const n=dv.getUint16(e+10,true);let p=dv.getUint32(e+16,true);const ent={};
+ for(let k=0;k<n;k++){if(dv.getUint32(p,true)!=0x02014b50)break;const m=dv.getUint16(p+10,true),cs=dv.getUint32(p+20,true),nl=dv.getUint16(p+28,true),xl=dv.getUint16(p+30,true),cl=dv.getUint16(p+32,true),lo=dv.getUint32(p+42,true),name=new TextDecoder().decode(buf.slice(p+46,p+46+nl));ent[name]={m,cs,lo};p+=46+nl+xl+cl}
+ const get=async name=>{const x=ent[name];if(!x)return null;const st=x.lo+30+dv.getUint16(x.lo+26,true)+dv.getUint16(x.lo+28,true);let d=buf.slice(st,st+x.cs);if(x.m==8){const ds=new DecompressionStream('deflate-raw'),w=ds.writable.getWriter(),rp=new Response(ds.readable).arrayBuffer();w.write(d);w.close();d=new Uint8Array(await rp)}return d};
+ return{ent,get}}
+async function pptxSlides(file){const buf=new Uint8Array(await file.arrayBuffer()),Z=await zipMap(buf),td=new TextDecoder(),P=new DOMParser();
+ const txt=async n=>{const d=await Z.get(n);return d?td.decode(d):null},xml=s=>P.parseFromString(s,'application/xml');
+ let order=Object.keys(Z.ent).filter(n=>/^ppt\/slides\/slide\d+\.xml$/.test(n)).sort((a,b)=>+a.match(/\d+/)[0]-+b.match(/\d+/)[0]);
+ if(!order.length)throw new Error('nopptx');
+ try{const pr=await txt('ppt/presentation.xml'),rl=await txt('ppt/_rels/presentation.xml.rels');if(pr&&rl){const R={};[...xml(rl).getElementsByTagName('Relationship')].forEach(r=>R[r.getAttribute('Id')]=r.getAttribute('Target'));
+  const o=[...xml(pr).getElementsByTagName('p:sldId')].map(s=>R[s.getAttribute('r:id')]).filter(Boolean).map(t=>t.startsWith('/')?t.slice(1):'ppt/'+t).filter(n=>Z.ent[n]);if(o.length)order=o}}catch(e){}
+ const MIME={png:'image/png',jpg:'image/jpeg',jpeg:'image/jpeg',gif:'image/gif',webp:'image/webp',svg:'image/svg+xml'},out=[];
+ const para=p=>{let t='';const w=n=>{for(const c of n.childNodes){if(c.nodeType!=1)continue;const l=c.localName;if(l=='t')t+=c.textContent;else if(l=='br')t+='\n';else if(l=='r'||l=='fld')w(c)}};w(p);return t.replace(/\u000b/g,'\n')};
+ for(const nm of order){const sx=await txt(nm);if(!sx)continue;const x=xml(sx),rx=await txt(nm.replace('slides/','slides/_rels/')+'.rels'),rel={};
+  if(rx)[...xml(rx).getElementsByTagName('Relationship')].forEach(r=>rel[r.getAttribute('Id')]=r.getAttribute('Target'));
+  const S={title:'',items:[]};
+  const walk=async el=>{for(const c of [...el.childNodes]){if(c.nodeType!=1)continue;const l=c.localName;
+   if(l=='sp'){const ph=c.getElementsByTagName('p:ph')[0],pt=ph?(ph.getAttribute('type')||''):null;if(pt=='sldNum'||pt=='dt'||pt=='ftr')continue;const isT=pt=='title'||pt=='ctrTitle';const tb=[...c.childNodes].find(q=>q.localName=='txBody');if(!tb)continue;
+    const lines=[...tb.childNodes].filter(q=>q.localName=='p').map(p=>{const pp=[...p.childNodes].find(q=>q.localName=='pPr');const bu=!!pp&&([...pp.childNodes].some(q=>q.localName=='buChar'||q.localName=='buAutoNum')||+(pp.getAttribute('lvl')||0)>0);return{t:para(p).trim(),b:bu||(pt!==null&&!isT&&pt!='subTitle')}}).filter(q=>q.t);
+    if(isT&&!S.title)S.title=lines.map(q=>q.t).join(' ');else lines.forEach(q=>S.items.push({k:'p',t:q.t,b:q.b}))}
+   else if(l=='graphicFrame'){const tbl=c.getElementsByTagName('a:tbl')[0];if(tbl){S.items.push({k:'tbl',rows:[...tbl.getElementsByTagName('a:tr')].map(r=>[...r.childNodes].filter(q=>q.localName=='tc').map(tc=>[...tc.getElementsByTagName('a:p')].map(para).join('\n').trim()))})}}
+   else if(l=='pic'){const bl=c.getElementsByTagName('a:blip')[0],id=bl&&bl.getAttribute('r:embed'),tg=id&&rel[id];if(tg){const rp=tg.startsWith('/')?tg.slice(1):'ppt/'+tg.replace(/^\.\.\//,''),mt=MIME[(rp.split('.').pop()||'').toLowerCase()];if(mt){const d=await Z.get(rp);if(d&&d.length<3e6){const src=await new Promise(r=>{const f=new FileReader();f.onload=()=>r(f.result);f.readAsDataURL(new Blob([d],{type:mt}))});S.items.push({k:'img',src})}}}}
+   else if(l=='grpSp')await walk(c)}};
+  await walk(x.getElementsByTagName('p:spTree')[0]||x.documentElement);out.push(S)}
+ return out}
+const pptxPlain=S=>S.map(s=>[s.title,...s.items.flatMap(i=>i.k=='p'?i.t.split('\n'):i.k=='tbl'?i.rows.map(r=>r.join(' ')):[])].filter(q=>q&&q.trim()).join('\n')).join('\n\n');
+async function pptxHtml(file){const S=await pptxSlides(file);let h='';
+ S.forEach((s,i)=>{h+=`<h3>${esc(stripEz(s.title||('اسلاید '+fa(i+1))))}</h3>`;let ul=false;const cl=()=>{if(ul){h+='</ul>';ul=false}};
+  for(const it of s.items){if(it.k=='p'){const t=esc(stripEz(it.t)).replace(/\n/g,'<br>');if(it.b){if(!ul){h+='<ul>';ul=true}h+=`<li>${t}</li>`}else{cl();h+=`<p>${t}</p>`}}
+   else{cl();if(it.k=='tbl')h+='<table style="border-collapse:collapse;width:100%">'+it.rows.map(r=>'<tr>'+r.map(c=>`<td style="border:1px solid #888;padding:4px">${esc(stripEz(c)).replace(/\n/g,'<br>')}</td>`).join('')+'</tr>').join('')+'</table><p><br></p>';else if(it.k=='img')h+=`<p><img src="${it.src}" style="max-width:100%"></p>`}}
+  cl()});return h}
+
+// ---- v91: insert questions (bank / current exam) into the lesson
+const LSQ={src:'bank',sel:new Set()};
+function lsqList(){const q=($('#lsq_q')||{value:''}).value.trim(),ty=($('#lsq_t')||{value:''}).value,sj=($('#lsq_s')||{value:''}).value;let L=LSQ.src=='bank'?bank.filter(b=>!sj||(b.subj||'')==(sj=='_none'?'':sj)).map(b=>({id:b.id,it:b.item})):flatItems(ex).map(x=>({id:x.it.id,it:x.it}));
+ L=L.filter(o=>(!ty||o.it.type==ty)&&(!q||strip(o.it.html||'').includes(q)||(o.it.opts||[]).some(z=>String(z).includes(q))));LSQ.L=L;
+ $('#lsq_l').innerHTML=(L.length?L.slice(0,200).map(o=>`<label class="it" style="display:flex;gap:8px;align-items:flex-start"><input type="checkbox" data-id="${o.id}" ${LSQ.sel.has(o.id)?'checked':''}><span><small style="color:var(--mu)">${esc(TN[o.it.type]||'')}</small><br>${esc(strip(o.it.html||'').slice(0,110)||'(بدون متن)')}</span></label>`).join(''):'<small style="color:var(--mu)">سؤالی پیدا نشد.</small>')+(L.length>200?'<small style="color:var(--mu)">فقط ۲۰۰ مورد اول نشان داده شد؛ جست‌وجو کن.</small>':'');
+ $('#lsq_go').textContent='درج در درسنامه ('+fa(LSQ.sel.size)+')'}
+function lsqOpen(){const ed=$('#ls_h');if(!ed)return;try{const s=getSelection();if(s.rangeCount&&ed.contains(s.anchorNode))lastR=s.getRangeAt(0).cloneRange()}catch(e){}
+ LSQ.sel=new Set();const old=$('#lsq');if(old)old.remove();const d=document.createElement('div');d.id='lsq';d.className='ui';d.style.cssText='position:fixed;inset:0;z-index:60;background:#000a;display:flex;align-items:flex-end;justify-content:center';
+ const subs=subjects();d.innerHTML=`<div style="background:var(--cd);color:inherit;width:100%;max-width:640px;max-height:92vh;overflow:auto;border-radius:14px 14px 0 0;padding:12px"><h3 style="margin:0 0 6px">❓ درج سؤال در درسنامه</h3>
+ <div class="r" style="align-items:center"><label><input type="radio" name="lsq_src" value="bank" checked> از بانک سؤال</label><label><input type="radio" name="lsq_src" value="ex"> از آزمون فعلی</label></div>
+ <div class="r" style="align-items:center"><select id="lsq_s"><option value="">همه‌ی درس‌ها</option>${subs.map(s=>`<option>${esc(s)}</option>`).join('')}<option value="_none">بدون درس</option></select><select id="lsq_t"><option value="">همه‌ی نوع‌ها</option>${Object.keys(TN).map(k=>`<option value="${k}">${TN[k]}</option>`).join('')}</select><input id="lsq_q" placeholder="جست‌وجو در متن سؤال" style="flex:1;min-width:120px"></div>
+ <div class="r"><button type="button" data-lsq="all">✔ همه‌ی نمایش‌داده‌شده</button><button type="button" data-lsq="none">✕ هیچ‌کدام</button><label><input type="checkbox" id="lsq_a"> پاسخ هم نوشته شود (قرمز)</label></div>
+ <div id="lsq_l" style="max-height:46vh;overflow:auto;margin:6px 0"></div>
+ <div class="ft"><button class="p" id="lsq_go" type="button" data-lsq="go">درج در درسنامه (۰)</button><button type="button" data-lsq="x">بستن</button></div></div>`;
+ document.body.appendChild(d);lsqList()}
+function lsqHtml(it0,a,n){const it=clone(it0);if(it.type=='desc')it.lines=0;const w=document.createElement('div');w.innerHTML=itemHtml(it,a);
+ w.querySelectorAll('.rd').forEach(e=>{e.classList.remove('rd');e.style.color='#C00000'});w.querySelectorAll('.an').forEach(e=>{const p=document.createElement('p');p.innerHTML=e.innerHTML;p.style.color='#C00000';e.replaceWith(p)});
+ w.querySelectorAll('table.ot,table.mt').forEach(t=>{t.removeAttribute('class');t.style.cssText='width:100%;border-collapse:collapse';t.querySelectorAll('td').forEach(c=>c.style.padding='2px 6px')});w.querySelectorAll('.ln').forEach(e=>e.remove());
+ return `<div><b>${fa(n)}.</b> ${w.innerHTML}</div>`}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-lsq]');if(!b)return;const k=b.dataset.lsq;
+ if(k=='open'){e.preventDefault();return lsqOpen()}if(!$('#lsq'))return;
+ if(k=='x')return $('#lsq').remove();
+ if(k=='all'){(LSQ.L||[]).slice(0,200).forEach(o=>LSQ.sel.add(o.id));return lsqList()}
+ if(k=='none'){LSQ.sel.clear();return lsqList()}
+ if(k=='go'){const all=LSQ.src=='bank'?bank.map(x=>({id:x.id,it:x.item})):flatItems(ex).map(x=>({id:x.it.id,it:x.it})),pick=[];
+  const ord=[...($('#lsq_l').querySelectorAll('input[data-id]'))].map(i=>i.dataset.id);const ids=[...LSQ.sel].sort((p,q)=>{const a=ord.indexOf(p),c=ord.indexOf(q);return(a<0?1e9:a)-(c<0?1e9:c)});
+  ids.forEach(id=>{const o=all.find(x=>x.id==id);if(o)pick.push(o)});if(!pick.length)return toast('اول چند سؤال را تیک بزن');
+  const a=$('#lsq_a').checked,h=pick.map((o,i)=>lsqHtml(o.it,a,i+1)).join('<p><br></p>')+'<p><br></p>',ed=$('#ls_h');$('#lsq').remove();if(!ed)return;
+  ed.focus();const sel=getSelection();if(lastR&&ed.contains(lastR.startContainer)){sel.removeAllRanges();sel.addRange(lastR)}else{const r=document.createRange();r.selectNodeContents(ed);r.collapse(false);sel.removeAllRanges();sel.addRange(r)}
+  lsIns(h);ed.dispatchEvent(new Event('input',{bubbles:true}));lsSave(true);toast(fa(pick.length)+' سؤال در درسنامه درج شد')}},true);
+document.addEventListener('change',e=>{const t=e.target;if(!t||!$('#lsq')||!$('#lsq').contains(t))return;
+ if(t.name=='lsq_src'){LSQ.src=t.value;LSQ.sel.clear();$('#lsq_s').style.display=LSQ.src=='bank'?'':'none';lsqList()}
+ else if(t.dataset&&t.dataset.id){t.checked?LSQ.sel.add(t.dataset.id):LSQ.sel.delete(t.dataset.id);$('#lsq_go').textContent='درج در درسنامه ('+fa(LSQ.sel.size)+')'}
+ else lsqList()});
+document.addEventListener('input',e=>{if(e.target&&e.target.id=='lsq_q')lsqList()});
 </script></body></html>
