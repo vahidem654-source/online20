@@ -73,7 +73,7 @@ nav button{flex:1;border:0;border-radius:0;justify-content:center;min-height:50p
 </style></head><body>
 <div id="cr" class="ui">تهیه‌کننده: وحیده محجوب</div>
 <div class="ui" id="app">
-<div id="top"><header><button id="mnu">☰</button><input id="ttl" placeholder="عنوان آزمون"><button id="ub" style="display:none" title="برگردان آخرین حذف یا تغییر">↶</button><button id="rb" style="display:none" title="جلو (برگرداندن برگشت)">↷</button><button id="th">◐</button></header><div id="tabs"></div><div id="vrs">نسخه‌ی برنامه: ۹۳</div></div>
+<div id="top"><header><button id="mnu">☰</button><input id="ttl" placeholder="عنوان آزمون"><button id="ub" style="display:none" title="برگردان آخرین حذف یا تغییر">↶</button><button id="rb" style="display:none" title="جلو (برگرداندن برگشت)">↷</button><button id="th">◐</button></header><div id="tabs"></div><div id="vrs">نسخه‌ی برنامه: ۹۴</div></div>
 <main id="v"></main>
 <div id="jmp"><button id="up" title="اول صفحه">⤒</button><button id="dn" title="آخر صفحه">⤓</button></div>
 <button class="p fab" id="add">＋ سؤال</button>
@@ -2194,5 +2194,6 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
 // ---- v93: ⤒/⤓ buttons inside the exam-list dialog (☰ آزمون‌ها)
 (function(){const st=document.createElement('style');st.textContent='#xjmp{position:fixed;left:10px;bottom:calc(24px + env(safe-area-inset-bottom));z-index:70;display:flex;flex-direction:column;gap:6px}#xjmp button{width:42px;height:42px;border-radius:50%;border:1px solid var(--ln);background:var(--cd);color:inherit;font-size:18px;line-height:1;padding:0;opacity:.92;box-shadow:0 1px 6px #0004}';document.head.appendChild(st);
  const o=mExams;mExams=function(){const r=o.apply(this,arguments);const m=$('#md');if(m&&!m.hidden&&!$('#xjmp')){const d=document.createElement('div');d.id='xjmp';d.innerHTML='<button type="button" data-xj="up" title="رفتن به اول لیست">⤒</button><button type="button" data-xj="dn" title="رفتن به آخر لیست">⤓</button>';m.appendChild(d)}return r};
+ {const md=$('#md');const fix=()=>{if(!md||md.hidden||md.classList.contains('ls')||$('#xjmp'))return;const d=document.createElement('div');d.id='xjmp';d.innerHTML='<button type="button" data-xj="up" title="رفتن به اول صفحه">⤒</button><button type="button" data-xj="dn" title="رفتن به آخر صفحه">⤓</button>';md.appendChild(d)};if(md){new MutationObserver(fix).observe(md,{childList:true,attributes:true,attributeFilter:['hidden','class']});fix()}}
  document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#xjmp button');if(!b)return;e.preventDefault();const bx=$('#md .box')||$('#md');bx.scrollTo({top:b.dataset.xj=='up'?0:bx.scrollHeight,behavior:'smooth'})})})();
 </script></body></html>
