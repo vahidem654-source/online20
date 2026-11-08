@@ -73,7 +73,7 @@ nav button{flex:1;border:0;border-radius:0;justify-content:center;min-height:50p
 </style></head><body>
 <div id="cr" class="ui">تهیه‌کننده: وحیده محجوب</div>
 <div class="ui" id="app">
-<div id="top"><header><button id="mnu">☰</button><input id="ttl" placeholder="عنوان آزمون"><button id="ub" style="display:none" title="برگردان آخرین حذف یا تغییر">↶</button><button id="rb" style="display:none" title="جلو (برگرداندن برگشت)">↷</button><button id="th">◐</button></header><div id="tabs"></div><div id="vrs">نسخه‌ی برنامه: ۹۱</div></div>
+<div id="top"><header><button id="mnu">☰</button><input id="ttl" placeholder="عنوان آزمون"><button id="ub" style="display:none" title="برگردان آخرین حذف یا تغییر">↶</button><button id="rb" style="display:none" title="جلو (برگرداندن برگشت)">↷</button><button id="th">◐</button></header><div id="tabs"></div><div id="vrs">نسخه‌ی برنامه: ۹۳</div></div>
 <main id="v"></main>
 <div id="jmp"><button id="up" title="اول صفحه">⤒</button><button id="dn" title="آخر صفحه">⤓</button></div>
 <button class="p fab" id="add">＋ سؤال</button>
@@ -211,7 +211,7 @@ function edBody(d){const t=d.type,sc=(k,ti,bd,df)=>SEC(k,ti,bd,df);
  if(t=='desc'){h+=sc('lines','▭ فضای خالی برای پاسخ',`<label>تعداد خط (خطی کشیده نمی‌شود)</label><input type="number" id="e_ln" min="0" max="30" value="${d.lines||0}">`,0);
   h+=sc('ans','✔ پاسخ (با تصویر)',rte('e_ans',d.ans,'پاسخ تشریحی…'),1)}
  h+=sc('conv','🔄 تبدیل هوشمند این سؤال به نوع دیگر (با هوش مصنوعی)',cvUI(t),0);
- return h+`<div class="ft"><button class="p" data-x="sv">ثبت</button>${ED.edit||ED.bank?'':'<button class="p" data-x="sn">ثبت و سؤال بعدی در همین ردیف</button>'}<button data-x="cl">انصراف</button></div>`}
+ return h+`<div class="ft"><button class="p" data-x="sv">ثبت</button>${ED.edit||ED.bank?'':'<button class="p" data-x="sn">ثبت و سؤال بعدی در همین ردیف</button>'}${ED.bank?'<button class="p" data-x="sbx">➕ ثبت و انتقال به آزمون</button>':''}<button data-x="cl">انصراف</button></div>`}
 function openEd(type,c){ED={...c,type,d:legacy(c.item?clone(c.item):{...NEW[type](),id:uid()}),edit:c.bank?null:c.item};if(c.bank)ED.d.id=ED.d.id||uid();{const ro=c.bank?null:(c.item?find(c.item.id)?.r:(c.row?ex.rows.find(x=>x.id==c.row):null));ED.pre=ro?.title||''}rerenderEd()}
 function rerenderEd(){showM(edBody(ED.d));lastE=$('#e_html');if(ED.d.type=='blank')syncBl(ED.d.blanks)}
 const clean=h=>{const d=document.createElement('div');d.innerHTML=h;d.querySelectorAll('.sel').forEach(x=>x.classList.remove('sel'));return d.innerHTML.replace(/<br>$/,'')};
@@ -929,12 +929,13 @@ function mGen(){if(!bank.length)return toast('بانک سؤال خالی است'
  <div class="r" style="align-items:center"><label><input type="checkbox" id="gb"> بارم‌ها را از نو بین سؤال‌ها مساوی تقسیم کن (در غیر این صورت بارم‌هایی که در بانک گذاشته‌ای حفظ می‌شود). جمع بارم:</label><input type="number" id="gbt" value="20" min="1" step="0.25" style="width:80px"></div>
  <div class="ft"><button class="p" data-x="bgo">🎲 ساخت</button><button data-x="cl">بستن</button></div>`);gAvail()}
 function genGo(){const l=gSel(),picked=[];let short=0;
- for(const t of TORD){const want=+($('.gn[data-t='+t+']').value)||0;if(!want)continue;const pool=shufA(l.filter(b=>b.item.type==t)).sort((a,b)=>(a.u||0)-(b.u||0));if(want>pool.length)short+=want-pool.length;picked.push(...pool.slice(0,want))}
+ const dd=$('#gdd')&&$('#gdd').checked,SM=dd?simMaker():null;if(dd&&document.querySelector('input[name=gd]:checked').value=='add')ex.rows.forEach(r=>r.items.forEach(it=>SM.add(it)));
+ for(const t of TORD){const want=+($('.gn[data-t='+t+']').value)||0;if(!want)continue;const pool=shufA(l.filter(b=>b.item.type==t)).sort((a,b)=>(a.u||0)-(b.u||0));let got=0;for(const b of pool){if(got>=want)break;if(dd&&SM.sim(b.item))continue;picked.push(b);got++;if(dd)SM.add(b.item)}if(got<want)short+=want-got}
  if(!l.length)return toast('اول یک یا چند درس را تیک بزن');if(!picked.length)return toast('تعداد سؤال‌ها را مشخص کن');
  const rows=picked.map(b=>{b.u=(b.u||0)+1;put('bank',b);const it=clone(b.item);it.id=uid();it.bk=b.id;return{id:uid(),title:'',score:0,items:[it]}});
  if(document.querySelector('input[name=gd]:checked').value=='new'){ex={id:uid(),title:'آزمون تصادفی',rows,t:Date.now()};exams.push(ex);localStorage.ao_cur=ex.id;put('exams',ex)}else ex.rows.push(...rows);
  if($('#gb').checked)autoBarem(ex,+$('#gbt').value||20,'item');
- persist();hideM();T='ex';render();toast(fa(rows.length)+' سؤال اضافه شد'+(short?' ('+fa(short)+' سؤال کمتر از درخواست، چون در بانک نبود)':''))}
+ persist();hideM();T='ex';render();toast(fa(rows.length)+' سؤال اضافه شد'+(short?' ('+fa(short)+' سؤال کمتر از درخواست، چون سؤال غیرتکراری کافی در بانک نبود)':''))}
 // ---- answer key and student bubble sheet
 function keyAns(it){if(it.type=='tf')return it.ok?'صحیح':'غلط';if(it.type=='mc')return fa((it.ok||0)+1);if(it.type=='blank')return(it.blanks||[]).filter(Boolean).join('، ')||'—';if(it.type=='paren')return it.ans||'—';
  if(it.type=='match')return(it.B||[]).map((_,j)=>{const i=(it.map||[]).indexOf(j);return i>=0?fa(i+1):'—'}).join('، ');return'تشریحی'}
@@ -2178,4 +2179,20 @@ document.addEventListener('change',e=>{const t=e.target;if(!t||!$('#lsq')||!$('#
  else if(t.dataset&&t.dataset.id){t.checked?LSQ.sel.add(t.dataset.id):LSQ.sel.delete(t.dataset.id);$('#lsq_go').textContent='درج در درسنامه ('+fa(LSQ.sel.size)+')'}
  else lsqList()});
 document.addEventListener('input',e=>{if(e.target&&e.target.id=='lsq_q')lsqList()});
+
+// ---- v92: similar-question guard in "ساخت آزمون از بانک" + "ثبت و انتقال به آزمون" inside bank edit
+const SIMSW=new Set('از در به که را با این آن است و یا برای هر بر تا یک ها های هم شده شود می بود دارد کدام کدامیک زیر صحیح غلط جمله گزینه هستند باشد کرد کند کنند شد شوند نیز اما یا بین روی بعد قبل همه بیشتر کمتر چه چند چیست کدامند نام ببرید بنویسید مورد دو سه چهار نمی'.split(' '));
+function simTok(it){legacy(it);let t=strip(it.html||'');if(it.type=='blank')t+=' '+(it.blanks||[]).join(' ');if(it.type=='paren')t+=' '+(it.ans||'');if(it.type=='mc')t+=' '+((it.opts||[])[it.ok||0]||'');if(it.type=='match')t+=' '+(it.A||[]).concat(it.B||[]).join(' ');if(it.type=='desc')t+=' '+strip(it.ans||'');
+ return[...new Set(t.normalize('NFKC').replace(/[يى]/g,'ی').replace(/ك/g,'ک').replace(/‌/g,' ').replace(/[ً-ٟ]/g,'').split(/[^ء-غف-يپچژکگیa-zA-Z0-9۰-۹]+/).filter(w=>w&&!/[0-9۰-۹]/.test(w)).map(w=>w.length>4?w.replace(/(ها|های|ات|ان)$/,''):w).filter(w=>w.length>=3&&!SIMSW.has(w)))]}
+function simMaker(){const df={},N=bank.length||1;bank.forEach(b=>simTok(b.item).forEach(w=>df[w]=(df[w]||0)+1));const idf=w=>Math.max(.1,Math.log((N+1)/((df[w]||0)+.5))),S=[];
+ const wsum=a=>a.reduce((s,w)=>s+idf(w),0);
+ return{add:it=>{const a=simTok(it);if(a.length)S.push({a,w:wsum(a)})},sim:it=>{const a=simTok(it);if(a.length<2)return false;const w=wsum(a);for(const s of S){const set=new Set(s.a),c=a.filter(x=>set.has(x));if(c.length<2)continue;if(wsum(c)/Math.min(w,s.w)>=.6)return true}return false}}}
+{const _g=mGen;mGen=function(){_g();const f=$('#md .ft');if(f&&!$('#gdd')){const d=document.createElement('div');d.className='r';d.innerHTML='<label><input type="checkbox" id="gdd" checked> 🔎 از انتخاب سؤال‌های تکراری و هم‌موضوع جلوگیری کن (مثلاً یک مطلب هم در صحیح/غلط و هم در جای‌خالی نیاید)</label>';f.parentNode.insertBefore(d,f)}}}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button[data-x="sbx"]');if(!b)return;e.stopPropagation();e.preventDefault();if(!ED||!ED.bank)return;const x=bank.find(k=>k.id==ED.bank);if(!x)return;const before=x.item;sv(0);if(x.item===before)return;
+ if(!ex)return;if(bkUsed(x,bkUsage())[ex.id]&&!confirm('این سؤال قبلاً در همین آزمون هست. دوباره اضافه شود؟'))return;x.u=(x.u||0)+1;put('bank',x);ex.rows.push({id:uid(),title:'',items:[{...clone(x.item),id:uid(),bk:x.id}]});persist();toast('ثبت شد و به آخر آزمون اضافه شد')},true);
+
+// ---- v93: ⤒/⤓ buttons inside the exam-list dialog (☰ آزمون‌ها)
+(function(){const st=document.createElement('style');st.textContent='#xjmp{position:fixed;left:10px;bottom:calc(24px + env(safe-area-inset-bottom));z-index:70;display:flex;flex-direction:column;gap:6px}#xjmp button{width:42px;height:42px;border-radius:50%;border:1px solid var(--ln);background:var(--cd);color:inherit;font-size:18px;line-height:1;padding:0;opacity:.92;box-shadow:0 1px 6px #0004}';document.head.appendChild(st);
+ const o=mExams;mExams=function(){const r=o.apply(this,arguments);const m=$('#md');if(m&&!m.hidden&&!$('#xjmp')){const d=document.createElement('div');d.id='xjmp';d.innerHTML='<button type="button" data-xj="up" title="رفتن به اول لیست">⤒</button><button type="button" data-xj="dn" title="رفتن به آخر لیست">⤓</button>';m.appendChild(d)}return r};
+ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#xjmp button');if(!b)return;e.preventDefault();const bx=$('#md .box')||$('#md');bx.scrollTo({top:b.dataset.xj=='up'?0:bx.scrollHeight,behavior:'smooth'})})})();
 </script></body></html>
