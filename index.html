@@ -73,7 +73,7 @@ nav button{flex:1;border:0;border-radius:0;justify-content:center;min-height:50p
 </style></head><body>
 <div id="cr" class="ui">تهیه‌کننده: وحیده محجوب</div>
 <div class="ui" id="app">
-<div id="top"><header><button id="mnu">☰</button><input id="ttl" placeholder="عنوان آزمون"><button id="ub" style="display:none" title="برگردان آخرین حذف یا تغییر">↶</button><button id="rb" style="display:none" title="جلو (برگرداندن برگشت)">↷</button><button id="th">◐</button></header><div id="tabs"></div><div id="vrs">نسخه‌ی برنامه: ۹۶</div></div>
+<div id="top"><header><button id="mnu">☰</button><input id="ttl" placeholder="عنوان آزمون"><button id="ub" style="display:none" title="برگردان آخرین حذف یا تغییر">↶</button><button id="rb" style="display:none" title="جلو (برگرداندن برگشت)">↷</button><button id="th">◐</button></header><div id="tabs"></div><div id="vrs">نسخه‌ی برنامه: ۹۷</div></div>
 <main id="v"></main>
 <div id="jmp"><button id="up" title="اول صفحه">⤒</button><button id="dn" title="آخر صفحه">⤓</button></div>
 <button class="p fab" id="add">＋ سؤال</button>
@@ -115,7 +115,7 @@ function lead(it,a){legacy(it);
  if(it.type=='blank')return fillB(it,a);
  if(it.type=='paren')return a?markParen(it.html,it.ans):(it.html||'');
  const t=it.html||'';
- if(it.type=='tf')return t+` <span class="nb">(${a&&it.ok?'<span class="rd">☒</span>':'☐'} صحیح &nbsp; ${a&&!it.ok?'<span class="rd">☒</span>':'☐'} غلط)</span>`;
+ if(it.type=='tf')return t+` <span class="nb">(صحیح ${a&&it.ok?'<span class="rd">☒</span>':'☐'} &nbsp; غلط ${a&&!it.ok?'<span class="rd">☒</span>':'☐'})</span>`;
  return t}
 const optCell=(it,k,a)=>{const o=it.opts[k];return o==null?'':(a&&k==it.ok?`<span class="rd">${AB()?'<b>':''}${AU()?'<u>':''}${fa(k+1)}) ${esc(o)}${AU()?'</u>':''}${AB()?'</b>':''}</span>`:`${fa(k+1)}) ${esc(o)}`)};
 function itemHtml(it,a){let h=lead(it,a);
