@@ -73,7 +73,7 @@ nav button{flex:1;border:0;border-radius:0;justify-content:center;min-height:50p
 </style></head><body>
 <div id="cr" class="ui">تهیه‌کننده: وحیده محجوب</div>
 <div class="ui" id="app">
-<div id="top"><header><button id="mnu">☰</button><input id="ttl" placeholder="عنوان آزمون"><button id="ub" style="display:none" title="برگردان آخرین حذف یا تغییر">↶</button><button id="rb" style="display:none" title="جلو (برگرداندن برگشت)">↷</button><button id="th">◐</button></header><div id="tabs"></div><div id="vrs">نسخه‌ی برنامه: ۹۷</div></div>
+<div id="top"><header><button id="mnu">☰</button><input id="ttl" placeholder="عنوان آزمون"><button id="ub" style="display:none" title="برگردان آخرین حذف یا تغییر">↶</button><button id="rb" style="display:none" title="جلو (برگرداندن برگشت)">↷</button><button id="th">◐</button></header><div id="tabs"></div><div id="vrs">نسخه‌ی برنامه: ۹۸</div></div>
 <main id="v"></main>
 <div id="jmp"><button id="up" title="اول صفحه">⤒</button><button id="dn" title="آخر صفحه">⤓</button></div>
 <button class="p fab" id="add">＋ سؤال</button>
@@ -2199,4 +2199,25 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
 
 function xjPlace(){const d=$('#xjmp'),bx=$('#md .box');if(!d||!bx)return;const r=bx.getBoundingClientRect();d.style.left=Math.max(8,Math.round(r.left)+8)+'px';d.style.bottom=Math.max(12,Math.round(innerHeight-Math.min(r.bottom,innerHeight))+12)+'px'}
 addEventListener('resize',xjPlace);setInterval(xjPlace,700);
+
+// ---- v98: app color palettes (🎨 next to the dark-mode button)
+const PALS=[
+ {id:'',n:'سبز (پیش‌فرض)'},
+ {id:'blue',n:'آبی اقیانوسی',g:['#2B6FD6','#1A4FA3'],l:{bg:'#EEF5FB',cd:'#FAFCFF',tx:'#1F2A37',mu:'#6B7A8C',ac:'#2B6FD6',ac2:'#E0A93B',ln:'#D6E2F0'},d:{bg:'#0B1622',cd:'#12233A',tx:'#E8F0FA',mu:'#93A6BE',ac:'#5B9BEF',ac2:'#E8B960',ln:'#213652'}},
+ {id:'purple',n:'بنفش',g:['#8E4DB5','#5E2C82'],l:{bg:'#F6F0FA',cd:'#FFFBFF',tx:'#2C2433',mu:'#86798F',ac:'#7B3FA0',ac2:'#E0A93B',ln:'#E4D6EE'},d:{bg:'#17101D',cd:'#221830',tx:'#F1E8F8',mu:'#AE9CBB',ac:'#B075DB',ac2:'#E8B960',ln:'#3A2A4A'}},
+ {id:'pink',n:'گلبهی',g:['#E0577B','#B02B4E'],l:{bg:'#FDF0F2',cd:'#FFFAFB',tx:'#3A262B',mu:'#967B82',ac:'#D6456B',ac2:'#E6A23C',ln:'#F3D9DF'},d:{bg:'#1E1116',cd:'#2B1A21',tx:'#F8E8EC',mu:'#BA9AA3',ac:'#F06C90',ac2:'#EBB05A',ln:'#47272F'}},
+ {id:'orange',n:'نارنجی گرم',g:['#EC8B2C','#B85E0C'],l:{bg:'#FFF3E6',cd:'#FFFBF5',tx:'#34261A',mu:'#947E6A',ac:'#E07B1E',ac2:'#3C9D8B',ln:'#F1DDC4'},d:{bg:'#1C130B',cd:'#2A1D12',tx:'#F7EBDD',mu:'#B9A28C',ac:'#F59A45',ac2:'#5EC0AC',ln:'#473220'}},
+ {id:'teal',n:'فیروزه‌ای',g:['#12AAB8','#0A727B'],l:{bg:'#EAF7F7',cd:'#F8FEFE',tx:'#1D2E30',mu:'#6F8A8C',ac:'#0E9AA7',ac2:'#E3A33A',ln:'#CDE6E7'},d:{bg:'#0A1819',cd:'#112628',tx:'#E5F4F4',mu:'#90B0B2',ac:'#35C6D3',ac2:'#E8B960',ln:'#1F3D40'}},
+ {id:'red',n:'عنابی',g:['#C0392B','#8A1F1A'],l:{bg:'#FAF0EE',cd:'#FFFBFA',tx:'#321F1D',mu:'#8E7370',ac:'#B3342D',ac2:'#D8A63F',ln:'#EBD5D1'},d:{bg:'#1B0F0E',cd:'#281716',tx:'#F6E7E5',mu:'#B79A97',ac:'#E0564D',ac2:'#E3B25A',ln:'#45251F'}},
+ {id:'gray',n:'خاکستری ساده',g:['#5B6B80','#334155'],l:{bg:'#F2F3F5',cd:'#FFFFFF',tx:'#20242A',mu:'#7A808A',ac:'#475569',ac2:'#D4A22E',ln:'#DADDE3'},d:{bg:'#101215',cd:'#1A1D22',tx:'#ECEEF1',mu:'#9AA1AD',ac:'#8FA3BD',ac2:'#E3BE62',ln:'#2B3038'}}];
+function palGet(){try{return localStorage.ao_pal||''}catch(e){return''}}
+function palApply(){const P=PALS.find(x=>x.id==palGet()),old=$('#palst');if(old)old.remove();const dark=document.documentElement.classList.contains('n');
+ if(P&&P.id){const v=o=>Object.keys(o).map(k=>`--${k}:${o[k]}`).join(';'),st=document.createElement('style');st.id='palst';st.textContent=`:root{${v(P.l)}}:root.n{${v(P.d)}}.p{background:linear-gradient(135deg,${P.g[0]},${P.g[1]})}`;document.head.appendChild(st)}
+ const m=$('meta[name=theme-color]');if(m)m.content=P&&P.id?(dark?P.d.bg:P.l.bg):(dark?'#0E1815':'#FBF5E6')}
+function palOpen(){const cur=palGet(),dark=document.documentElement.classList.contains('n');
+ showM(`<h3 style="margin:0 0 8px">🎨 رنگ برنامه</h3><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px">${PALS.map(P=>{const c=P.id?(dark?P.d:P.l):(dark?{bg:'#0E1815',cd:'#15241F',ac:'#2FBF8C',ac2:'#E3C16F',tx:'#F4ECD8',ln:'#243A32'}:{bg:'#FBF5E6',cd:'#FFFDF6',ac:'#1E9E78',ac2:'#D8B25A',tx:'#23302B',ln:'#EADFC6'});
+  return `<button type="button" data-pal="${P.id}" style="flex-direction:column;align-items:stretch;gap:6px;padding:8px;background:${c.bg};color:${c.tx};border:2px solid ${P.id==cur?c.ac:c.ln}"><span style="display:flex;gap:4px"><i style="flex:1;height:22px;border-radius:6px;background:${c.ac}"></i><i style="flex:1;height:22px;border-radius:6px;background:${c.ac2}"></i><i style="flex:1;height:22px;border-radius:6px;background:${c.cd};border:1px solid ${c.ln}"></i></span><b style="font-size:.9em">${P.id==cur?'✓ ':''}${P.n}</b></button>`}).join('')}</div><p style="color:var(--mu);font-size:.85em">رنگ با دکمه‌ی حالت شب هم هماهنگ می‌شود و فقط روی همین دستگاه ذخیره می‌شود.</p><div class="ft"><button type="button" data-pal="__x">بستن</button></div>`)}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-pal]');if(!b)return;e.preventDefault();const v=b.dataset.pal;if(v=='__x')return hideM();try{localStorage.ao_pal=v}catch(x){}palApply();palOpen()},true);
+{const th=$('#th');if(th&&!$('#palb')){const b=document.createElement('button');b.id='palb';b.type='button';b.title='رنگ برنامه';b.textContent='🎨';b.onclick=palOpen;th.after(b);th.addEventListener('click',()=>setTimeout(palApply,0))}}
+palApply();
 </script></body></html>
