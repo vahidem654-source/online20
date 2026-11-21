@@ -74,7 +74,7 @@ html,body{overflow-x:clip;max-width:100%}nav{width:100%;max-width:100vw;transfor
 </style></head><body>
 <div id="cr" class="ui">تهیه‌کننده: وحیده محجوب</div>
 <div class="ui" id="app">
-<div id="top"><header><button id="mnu">☰</button><input id="ttl" placeholder="عنوان آزمون"><button id="ub" style="display:none" title="برگردان آخرین حذف یا تغییر">↶</button><button id="rb" style="display:none" title="جلو (برگرداندن برگشت)">↷</button><button id="th">◐</button></header><div id="tabs"></div><div id="vrs">نسخه‌ی برنامه: ۱۰۱</div></div>
+<div id="top"><header><button id="mnu">☰</button><input id="ttl" placeholder="عنوان آزمون"><button id="ub" style="display:none" title="برگردان آخرین حذف یا تغییر">↶</button><button id="rb" style="display:none" title="جلو (برگرداندن برگشت)">↷</button><button id="th">◐</button></header><div id="tabs"></div><div id="vrs">نسخه‌ی برنامه: ۱۰۲</div></div>
 <main id="v"></main>
 <div id="jmp"><button id="up" title="اول صفحه">⤒</button><button id="dn" title="آخر صفحه">⤓</button></div>
 <button class="p fab" id="add">＋ سؤال</button>
@@ -130,7 +130,7 @@ function cellHtml(r,a){const s=r.items,t=r.title?`<div>${esc(r.title)}</div>`:''
 function paperHtml(a){return(ex.vl?`<div style="text-align:center;font-weight:700;margin-bottom:6px">نسخه‌ی ${ex.vl}</div>`:'')+`<table class="et${ex.hdr===false?' nr':''}${ex.nb?' nbd':''}${ex.th===false?' nth':''}"><thead><tr><th>ردیف</th><th>سوالات</th><th>بارم</th></tr></thead><tbody>${ex.rows.map((r,i)=>`<tr><td>${fa(i+1)}</td><td data-q style="padding:4px ${CPV()}mm">${cellHtml(r,a)}</td><td>${rowTotal(r)?sf(rowTotal(r)):''}</td></tr>`).join('')}</tbody></table>`}
 // ---------- main views
 function find(id){for(let ri=0;ri<ex.rows.length;ri++){const r=ex.rows[ri],ii=r.items.findIndex(x=>x.id==id);if(ii>=0)return{r,ri,ii,it:r.items[ii]}}}
-function render(){snapB(1);tabsDraw();$('#ttl').value=ex.title;$$('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t==T));$('#add').style.display=T=='ex'?'':'none';
+function render(){if(window.ibHide)ibHide();snapB(1);tabsDraw();$('#ttl').value=ex.title;$$('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t==T));$('#add').style.display=T=='ex'?'':'none';
  $('#v').innerHTML=(T=='ex'?bkBanner():'')+(T=='ex'?vEx():T=='bk'?vBk():T=='ol'?vOl():T=='rs'?vRs():T=='ls'?vLs():vOut());if(T=='bk'){bkChips();bkList()}if(T=='out')fitPv();if(T=='rs')rsDraw()}
 function vEx(){if(!ex.rows.length)return'<div class="em">هنوز سؤالی نیست.<br>دکمه‌ی «＋ سؤال» را بزن.</div>';
  return `<div class="sum" id="sum"><span id="sumv">جمع بارم: ${sf(total())}</span> <button data-a="chk" style="margin-inline-start:10px">🔎 بررسی</button><button data-a="allbk" style="margin-inline-start:6px" title="ذخیره‌ی همه‌ی سؤال‌های این آزمون در بانک">📥 همه در بانک</button></div>`+ex.rows.map((r,ri)=>`<section class="card" id="r_${r.id}"><div class="rh"><b>سوال ${fa(ri+1)}</b><input class="rtl" data-r="${r.id}" value="${esc(r.title)}" placeholder="دستور سؤال (اختیاری) مثلاً: جاهای خالی را پر کنید">${rpUI(r)}
@@ -2229,4 +2229,30 @@ function palOpen(){const cur=palGet(),dark=document.documentElement.classList.co
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-pal]');if(!b)return;e.preventDefault();const v=b.dataset.pal;if(v=='__x')return hideM();try{localStorage.ao_pal=v}catch(x){}palApply();palOpen()},true);
 {const th=$('#th');if(th&&!$('#palb')){const b=document.createElement('button');b.id='palb';b.type='button';b.title='رنگ برنامه';b.textContent='🎨';b.onclick=palOpen;th.after(b);th.addEventListener('click',()=>setTimeout(palApply,0))}}
 palApply();
-</script></body></html>
+</script><script>
+(function(){
+const st=document.createElement('style');st.textContent='#imgbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(62px + env(safe-area-inset-bottom));z-index:95;background:var(--cd);color:var(--tx,inherit);border:2px solid var(--ac2);border-radius:14px;padding:8px 10px;display:none;gap:8px;align-items:center;box-shadow:0 4px 18px #0005;max-width:96vw;font-size:15px}#imgbar.on{display:flex}#imgbar.ed{bottom:calc(80px + env(safe-area-inset-bottom))}#imgbar.out{bottom:auto;top:108px}#imgbar input[type=range]{width:min(34vw,220px)}#imgbar b{min-width:54px;text-align:center}#imgbar button{padding:6px 11px}#pv img.isel{outline:3px solid var(--ac2);outline-offset:2px}#pv img{cursor:pointer}';document.head.appendChild(st);
+const bar=document.createElement('div');bar.id='imgbar';bar.dir='rtl';
+bar.innerHTML='<span>🖼 اندازه:</span><button type="button" data-i="m">➖</button><input type="range" min="60" max="700" step="5"><button type="button" data-i="p">➕</button><b></b><button type="button" data-i="r" title="اندازه‌ی اولیه">↺</button><button type="button" data-i="x">✕</button>';
+document.body.appendChild(bar);
+let T=null,mode='',fpT=0;const rg=bar.querySelector('input'),lb=bar.querySelector('b');
+const cw=im=>Math.round(im.offsetWidth||+im.getAttribute('width')||+im.dataset.w||200);
+window.ibHide=()=>{bar.classList.remove('on');if(T)T.classList.remove('isel');T=null};
+const upd=()=>{if(!T)return;const w=cw(T);rg.value=w;lb.textContent=w+' px'};
+const show=(im,m)=>{if(T&&T!==im)T.classList.remove('isel');T=im;mode=m;bar.classList.toggle('ed',m=='ed');bar.classList.toggle('out',m=='out');if(m=='out')im.classList.add('isel');bar.classList.add('on');upd()};
+const outSave=(src,w,h)=>{const fix=s=>{let i=0,o=s,p;while((p=o.indexOf(src,i))>=0){const a=o.lastIndexOf('<img',p),b=o.indexOf('>',p+src.length);if(a<0||b<0)break;const tag=`<img src="${src}" data-w="${w}" data-h="${h}"${w?'':''}${window.__ibW?` width="${window.__ibW}"`:''}>`;o=o.slice(0,a)+tag+o.slice(b+1);i=a+tag.length}return o};
+ const walk=o=>{for(const k in o){const v=o[k];if(typeof v=='string'){if(v.includes(src)&&v.includes('<img'))o[k]=fix(v)}else if(v&&typeof v=='object')walk(v)}};walk(ex);persist();
+ clearTimeout(fpT);fpT=setTimeout(()=>{if(window.fitPv)fitPv();const p=$('#pv');if(p&&mode=='out'){const n=[...p.querySelectorAll('img')].find(i=>i.getAttribute('src')==src);if(n){T=n;n.classList.add('isel');upd()}}},350)};
+const apply=w=>{if(!T)return;const src=T.getAttribute('src'),ar=(T.naturalHeight||1)/(T.naturalWidth||1);
+ if(w==null){const dw=Math.min(T.naturalWidth||300,450),dh=Math.round(dw*ar);T.removeAttribute('width');T.style.height='';T.dataset.w=dw;T.dataset.h=dh;window.__ibW=0;if(mode=='out')outSave(src,dw,dh)}
+ else{w=Math.max(40,Math.min(700,Math.round(w)));const h=Math.round(w*ar);T.setAttribute('width',w);T.dataset.w=w;T.dataset.h=h;T.style.height='auto';window.__ibW=w;if(mode=='out')outSave(src,w,h)}
+ upd();if(mode=='ed')T.scrollIntoView({block:'nearest'})};
+bar.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!T)return;const k=b.dataset.i;if(k=='x')return ibHide();if(k=='r')return apply(null);apply(cw(T)*(k=='p'?1.15:1/1.15))});
+rg.addEventListener('input',()=>apply(+rg.value));
+document.addEventListener('click',e=>{const t=e.target;if(bar.contains(t))return;
+ if(t.tagName=='IMG'){if(t.closest('#md .ed')&&!t.closest('#md.ls')){setTimeout(()=>{t.classList.contains('sel')?show(t,'ed'):ibHide()},0);return}
+  if(t.closest('#pv')){show(t,'out');return}}
+ ibHide()});
+})();
+</script>
+</body></html>
