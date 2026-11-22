@@ -75,10 +75,40 @@ nav button{flex:1;border:0;border-radius:0;justify-content:center;min-height:50p
 #bstk{position:sticky;top:var(--toph,96px);z-index:4;background:var(--bg);padding:4px 0;border-bottom:1px solid var(--ln)}#bstk #bc{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin}#bstk #bc>*{flex:none;white-space:nowrap}#bstk .r:nth-child(2){flex-wrap:nowrap}#bstk input{min-width:0}#bstk select{max-width:36%}
 #top{background:var(--bg)}
 html,body{overflow-x:clip;max-width:100%}nav{width:100%;max-width:100vw;transform:translateZ(0);-webkit-transform:translateZ(0)}#v,#md{max-width:100%}:where(#v,#md) img{max-width:100%;height:auto}
+</style><style id="v105css">
+/* v105: compact editors */
+.qw{display:flex;align-items:flex-start;gap:8px}
+.qmain{flex:1;min-width:0}
+.qside{position:sticky;top:-6px;z-index:7;flex:none;width:54px;display:flex;flex-direction:column;flex-wrap:nowrap;gap:4px;max-height:calc(94vh - 92px);overflow-y:auto;overflow-x:hidden;padding:2px 0;margin:0;scrollbar-width:none;background:var(--cd)}
+.qside::-webkit-scrollbar{display:none}
+.qside button{width:100%;min-height:38px;padding:2px 0;justify-content:center;font-size:13px;line-height:1.15;text-align:center;white-space:normal;flex:none}
+.qside .qmore{display:flex;flex-direction:column;gap:4px;border-top:1px dashed var(--ln);border-bottom:1px dashed var(--ln);padding:4px 0}
+.qside .qmore[hidden]{display:none}
+.qside .qsep{height:1px;flex:none}
+.qw>.sym{position:fixed;left:66px;bottom:calc(82px + env(safe-area-inset-bottom));width:min(300px,calc(100vw - 78px));max-height:34vh;overflow:auto;z-index:40;background:var(--cd);box-shadow:0 4px 18px #0007;padding:6px;margin:0}
+#md:has(.qw) #xjmp{display:none!important}
+.pk1{display:none}#md.peek .pk1{display:inline}#md.peek .pk0{display:none}
+#md.peek{background:transparent!important;pointer-events:none}
+#md.peek .box{pointer-events:auto;max-height:none;overflow:hidden;padding:6px 10px;box-shadow:0 -4px 18px #0007}
+#md.peek .qmain>:not(:first-child),#md.peek .qside,#md.peek .sym,#md.peek .qmain>.r>b,#md.peek #e_ty,#md.peek [data-x=gdo],#md.peek [data-x=secall]{display:none!important}
+#md.peek .qmain>.r:first-child{margin:0}#md.peek .qmain>.r:first-child>span{margin:0;width:100%}#md.peek [data-qpk]{width:100%;justify-content:center}
+#mtc{max-height:42vh;padding:6px 8px}#mtc button,#mtc select{min-height:34px;padding:3px 8px;font-size:13px}#mtc textarea{height:44px;min-height:0;padding:5px 8px!important}#mtc label{font-size:12px}
+#mtc .mth{display:flex;align-items:center;gap:6px;flex-wrap:nowrap;margin-bottom:2px}
+#mtc .mth b{white-space:nowrap}
+#mtc .mti{flex:1;min-width:0;font-size:12px;color:var(--mu);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#mtc .mth button{min-height:32px;padding:2px 10px;flex:none}
+#mtc .r{margin:4px 0;gap:5px}
+#mtc label{margin:4px 0 2px}
+#mtc small.hp{display:none}#mtc.hlp small.hp{display:block}
+#mtc.min{max-height:none;overflow:hidden}#mtc.min>*:not(.mth){display:none}
+body.mtopen #tabs,body.mtopen #vrs,body.mtopen #ostk{display:none}
+body.mtopen #v{padding-bottom:44vh}
+body.mtopen:has(#mtc.min) #v{padding-bottom:90px}
+#pv [data-mk]{scroll-margin-top:62px}
 </style></head><body>
 <div id="cr" class="ui">تهیه‌کننده: وحیده محجوب</div>
 <div class="ui" id="app">
-<div id="top"><header><button id="mnu">☰</button><input id="ttl" placeholder="عنوان آزمون"><button id="ub" style="display:none" title="برگردان آخرین حذف یا تغییر">↶</button><button id="rb" style="display:none" title="جلو (برگرداندن برگشت)">↷</button><button id="th">◐</button></header><div id="tabs"></div><div id="vrs">نسخه‌ی برنامه: ۱۰۴</div></div>
+<div id="top"><header><button id="mnu">☰</button><input id="ttl" placeholder="عنوان آزمون"><button id="ub" style="display:none" title="برگردان آخرین حذف یا تغییر">↶</button><button id="rb" style="display:none" title="جلو (برگرداندن برگشت)">↷</button><button id="th">◐</button></header><div id="tabs"></div><div id="vrs">نسخه‌ی برنامه: ۱۰۵</div></div>
 <main id="v"></main>
 <div id="jmp"><button id="up" title="اول صفحه">⤒</button><button id="dn" title="آخر صفحه">⤓</button></div>
 <button class="p fab" id="add">＋ سؤال</button>
@@ -193,18 +223,23 @@ $('#th').onclick=()=>{const n=document.documentElement.classList.toggle('n');loc
 if(localStorage.ao_n!=null?localStorage.ao_n:matchMedia('(prefers-color-scheme:dark)').matches)document.documentElement.classList.add('n');
 $('#add').onclick=()=>pick(null);addEventListener('resize',()=>T=='out'&&fitPv());
 // ---------- modal + editor
-const showM=h=>{$('#md').hidden=false;$('#md').innerHTML=`<div class="box">${h}</div>`},hideM=()=>{$('#md').hidden=true;$('#md').innerHTML='';$('#md').classList.remove('ls');ED=null};
+const showM=h=>{$('#md').classList.remove('peek');$('#md').hidden=false;$('#md').innerHTML=`<div class="box">${h}</div>`},hideM=()=>{$('#md').classList.remove('peek');$('#md').hidden=true;$('#md').innerHTML='';$('#md').classList.remove('ls');ED=null};
 const pick=row=>{ED={row};showM(`<h3>نوع سؤال</h3><div class="r">${Object.entries(TN).map(([k,v])=>`<button class="p" data-x="ty" data-n="${k}">${v}</button>`).join('')}</div><div class="r"><button data-x="ppst" style="border-color:var(--ac)">📋 چسباندن چند سؤال با تشخیص خودکار</button></div><button data-x="cl">بستن</button>`)};
 const rte=(id,h,ph)=>`<div class="ed" id="${id}" contenteditable="true" spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="off" data-ph="${ph||''}">${h||''}</div>`;
 const TBAR=ty=>`<div class="tb">${ty=='lesson'?'<button type="button" data-lsq="open">❓ درج سؤال</button>':''}${[['b','<b>B</b> بولد'],['i','<i>I</i>'],['u','<u>U</u>'],['sup','x²'],['sub','x₂'],['fr','کسر'],['tbl','جدول'],['tr','＋سطر'],['tc','＋ستون'],['dr','－سطر'],['dc','－ستون'],['dt','✕جدول'],['tp','📐 اندازه و ادغام جدول'],['img','🖼 تصویر'],['rmimg','✕تصویر'],...(ty=='lesson'?[]:[['imgm','🖼− کوچک‌تر'],['imgp','🖼+ بزرگ‌تر']]),['sym','Ω علامت'],['jr','راست‌چین'],['jc','وسط‌چین'],['jl','چپ‌چین'],['ltr','فرمول: چپ‌به‌راست'],['rtl','متن: راست‌به‌چپ'],['fnt','🔤 فونت'],['fclean','🧹 یکدست‌کردن فونت']].map(([c,l])=>`<button data-c="${c}">${l}</button>`).join('')}${ty=='blank'?'<button class="p" data-c="bl">نقطه‌چین</button>':''}${ty=='paren'?'<button class="p" data-c="pr">( ) پرانتز گزینه‌ها</button>':''}</div><div class="sym" hidden>${SYM.map(s=>`<button data-s="${s}">${s}</button>`).join('')}</div><div class="sym fnl" hidden>${FONTS.map(f=>`<button data-f="${f}" style="font-family:'${f}'">${f}</button>`).join('')}</div>`;
+const QPRI=[['b','<b>B</b>','بولد'],['i','<i>I</i>','کج (ایتالیک)'],['u','<u>U</u>','زیرخط'],['sup','x²','توان'],['sub','x₂','اندیس'],['fr','کسر','کسر'],['tbl','▦','جدول'],['img','🖼','تصویر'],['sym','Ω','علامت‌ها']];
+const QEXT=[['tr','＋سطر','افزودن سطر به جدول'],['tc','＋ستون','افزودن ستون به جدول'],['dr','－سطر','حذف سطر'],['dc','－ستون','حذف ستون'],['dt','✕جدول','حذف جدول'],['tp','📐','اندازه و ادغام جدول'],['rmimg','✕🖼','حذف تصویر'],['imgm','🖼−','تصویر کوچک‌تر'],['imgp','🖼+','تصویر بزرگ‌تر'],['jr','راست','راست‌چین'],['jc','وسط','وسط‌چین'],['jl','چپ','چپ‌چین'],['ltr','LTR','فرمول: چپ‌به‌راست'],['rtl','RTL','متن: راست‌به‌چپ'],['fnt','🔤','فونت'],['fclean','🧹','یکدست‌کردن فونت']];
+const qb=a=>a.map(([c,l,t])=>`<button type="button" data-c="${c}" title="${t}">${l}</button>`).join('');
+function qwrap(t,main){const sp=t=='blank'?'<button type="button" class="p" data-c="bl" title="نقطه‌چین">نقطه‌ چین</button>':t=='paren'?'<button type="button" class="p" data-c="pr" title="پرانتز گزینه‌ها">( )</button>':'';
+ return `<div class="qw"><div class="qmain">${main}</div><div class="qside tb">${sp}${qb(QPRI)}<button type="button" data-qm="1" title="ابزارهای بیشتر (جدول، تصویر، تراز، فونت…)">⋯</button><div class="qmore" hidden>${qb(QEXT)}</div><span class="qsep"></span><button type="button" data-qj="up" title="اول صفحه">⤒</button><button type="button" data-qj="dn" title="آخر صفحه">⤓</button></div><div class="sym" hidden>${SYM.map(x=>`<button data-s="${x}">${x}</button>`).join('')}</div></div>`}
 const optRows=(d,ok)=>d.opts.map((o,i)=>`<div class="orow">${ok?`<input type="radio" name="ok" value="${i}" ${i==d.ok?'checked':''}>`:''}<span>${fa(i+1)})</span><input class="oi" value="${esc(o)}"><button data-x="mv" data-t="o" data-n="${i}" data-d="-1" title="بالا">↑</button><button data-x="mv" data-t="o" data-n="${i}" data-d="1" title="پایین">↓</button><button data-x="ro" data-n="${i}">✕</button></div>`).join('');
 const matchRows=d=>`<b>ستون راست (شماره‌دار؛ گزینه‌ی صحیح هر مورد را از لیست انتخاب کن)</b>${d.A.map((a,i)=>`<div class="orow"><span>${fa(i+1)}</span><input class="ia" value="${esc(a)}"><select class="im" title="پاسخ">${d.B.map((_,j)=>`<option value="${j}" ${d.map[i]==j?'selected':''}>${lt(j)}</option>`).join('')}</select><button data-x="mv" data-t="A" data-n="${i}" data-d="-1" title="بالا">↑</button><button data-x="mv" data-t="A" data-n="${i}" data-d="1" title="پایین">↓</button><button data-x="rA" data-n="${i}">✕</button></div>`).join('')}<button data-x="aA">＋ آیتم راست</button><br><b>ستون چپ (جلوی هر مورد یک پرانتز می‌آید)</b>${d.B.map((b,j)=>`<div class="orow"><span>${lt(j)}</span><input class="ib" value="${esc(b)}"><button data-x="mv" data-t="B" data-n="${j}" data-d="-1" title="بالا">↑</button><button data-x="mv" data-t="B" data-n="${j}" data-d="1" title="پایین">↓</button><button data-x="rB" data-n="${j}">✕</button></div>`).join('')}<button data-x="aB">＋ آیتم چپ</button>`;
 const secSt=()=>{try{return JSON.parse(localStorage.ao_sec||'{}')}catch(e){return{}}};
 const SEC=(k,title,body,def)=>{const st=secSt(),o=k in st?st[k]:def;return `<details class="sc" data-sk="${k}" ${o?'open':''}><summary>${title}</summary><div class="scb">${body}</div></details>`};
 function edBody(d){const t=d.type,sc=(k,ti,bd,df)=>SEC(k,ti,bd,df);
- let h=`<div class="r" style="align-items:center"><b>نوع سؤال:</b><select id="e_ty">${Object.entries(TN).map(([k,v])=>`<option value="${k}" ${k==t?'selected':''}>${v}</option>`).join('')}</select><button data-x="gdo" title="راهنمای ساختار این نوع سؤال">🧭</button><span style="margin-inline-start:auto"><button data-x="secall" data-o="1" title="باز کردن همه‌ی بخش‌ها">▾ باز</button><button data-x="secall" data-o="0" title="بستن همه‌ی بخش‌ها">▴ بستن</button></span></div>`;
+ let h=`<div class="r" style="align-items:center"><b>نوع سؤال:</b><select id="e_ty">${Object.entries(TN).map(([k,v])=>`<option value="${k}" ${k==t?'selected':''}>${v}</option>`).join('')}</select><button data-x="gdo" title="راهنمای ساختار این نوع سؤال">🧭</button><span style="margin-inline-start:auto"><button data-x="secall" data-o="1" title="باز کردن همه‌ی بخش‌ها">▾ باز</button><button data-x="secall" data-o="0" title="بستن همه‌ی بخش‌ها">▴ بستن</button><button type="button" data-qpk="1" title="پنجره را کوچک کن تا آزمون پشتش دیده شود"><span class="pk0">👁 دیدن آزمون</span><span class="pk1">✎ ادامه‌ی ویرایش</span></button></span></div>`;
  h+=tgBox(d,t);
- h+=`<div id="qstk">${TBAR(t)}</div>`;
+ 
  h+=sc('tools','🛠 تنظیمات نوشتن',hzBox()+'<small>نوار ابزار (بولد، کسر، جدول، تصویر، علامت…) بالای پنجره ثابت است و با اسکرول همراهت می‌آید.</small>',0);
  h+=sc('color','🎨 رنگ نوشته و کادر دور متن',clrBar()+boxBar(),0);
  h+=sc('set','⚙ دستور کلی و بارم',(ED.bank?'':`<label>دستور کلی سؤال (اختیاری؛ بالای سؤال می‌آید، مثلاً «گزینه‌ی مناسب را انتخاب کنید»)</label><input id="e_pre" style="width:100%" placeholder="مثلاً: در بین گزینه‌های زیر، گزینه‌ی مناسب را انتخاب کنید" value="${esc(ED.pre||'')}">${preUI(t)}`)+`<label>بارم این سؤال (در برگه، جمع بارم‌های هر ردیف می‌آید)</label><select id="e_sc">${scO(d.score)}</select>`,0);
@@ -219,7 +254,7 @@ function edBody(d){const t=d.type,sc=(k,ti,bd,df)=>SEC(k,ti,bd,df);
  if(t=='desc'){h+=sc('lines','▭ فضای خالی برای پاسخ',`<label>تعداد خط (خطی کشیده نمی‌شود)</label><input type="number" id="e_ln" min="0" max="30" value="${d.lines||0}">`,0);
   h+=sc('ans','✔ پاسخ (با تصویر)',rte('e_ans',d.ans,'پاسخ تشریحی…'),1)}
  h+=sc('conv','🔄 تبدیل هوشمند این سؤال به نوع دیگر (با هوش مصنوعی)',cvUI(t),0);
- return h+`<div class="ft"><button class="p" data-x="sv">ثبت</button>${ED.edit||ED.bank?'':'<button class="p" data-x="sn">ثبت و سؤال بعدی در همین ردیف</button>'}${ED.bank?'<button class="p" data-x="sbx">➕ ثبت و انتقال به آزمون</button>':''}<button data-x="cl">انصراف</button></div>`}
+ return qwrap(t,h+`<div class="ft"><button class="p" data-x="sv">ثبت</button>${ED.edit||ED.bank?'':'<button class="p" data-x="sn">ثبت و سؤال بعدی در همین ردیف</button>'}${ED.bank?'<button class="p" data-x="sbx">➕ ثبت و انتقال به آزمون</button>':''}<button data-x="cl">انصراف</button></div>`)}
 function openEd(type,c){ED={...c,type,d:legacy(c.item?clone(c.item):{...NEW[type](),id:uid()}),edit:c.bank?null:c.item};if(c.bank)ED.d.id=ED.d.id||uid();{const ro=c.bank?null:(c.item?find(c.item.id)?.r:(c.row?ex.rows.find(x=>x.id==c.row):null));ED.pre=ro?.title||''}rerenderEd()}
 function rerenderEd(){showM(edBody(ED.d));lastE=$('#e_html');if(ED.d.type=='blank')syncBl(ED.d.blanks)}
 const clean=h=>{const d=document.createElement('div');d.innerHTML=h;d.querySelectorAll('.sel').forEach(x=>x.classList.remove('sel'));return d.innerHTML.replace(/<br>$/,'')};
@@ -262,6 +297,10 @@ async function addImgs(fs){if(!lastE)return toast('اول داخل کادر مت
 document.addEventListener('selectionchange',()=>{const s=getSelection();if(s.rangeCount&&lastE&&lastE.contains(s.anchorNode))lastR=s.getRangeAt(0).cloneRange()});
 $('#md').addEventListener('focusin',e=>{if(e.target.classList?.contains('ed'))lastE=e.target;lastF=e.target});
 $('#md').addEventListener('pointerdown',e=>{if(e.target.closest('.tb,.sym'))e.preventDefault()});
+$('#md').addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-qm],[data-qj],[data-qpk]');if(!b)return;
+ if(b.dataset.qm){const m=$('#md .qmore');if(m){m.hidden=!m.hidden;b.classList.toggle('p',!m.hidden)}}
+ else if(b.dataset.qj){const bx=$('#md .box');if(bx)bx.scrollTo({top:b.dataset.qj=='up'?0:bx.scrollHeight,behavior:'smooth'})}
+ else if(b.dataset.qpk){$('#md').classList.toggle('peek')}});
 $('#md').addEventListener('click',e=>{const t=e.target;if(t.tagName=='IMG'&&t.closest('.ed')){t.classList.toggle('sel');return}
  const b=t.closest('button');if(!b)return;const x=b.dataset.x,n=b.dataset.n;
  if(b.dataset.c)return cmd(b.dataset.c);
@@ -1237,14 +1276,14 @@ function mkSel(){$$('#pv .msel').forEach(x=>x.classList.remove('msel'));if(!MTK)
 const refPv=()=>{const p=$('#pv');if(p){p.innerHTML=withV(()=>paperHtml(AN));pgPaginate(p);p.style.zoom=Math.min(1,($('#v').clientWidth-4)/794);mkSel()}};
 function mtInner(){const L=LYT(),B=mtBoxes(L),m=ex.mt||{};let info='روی یک خانه‌ی جدول در پیش‌نمایش برگه بزن تا انتخاب شود.',cur='',f={},tx='',isq=0,bd=0,mg=0,b=(k,l,p)=>`<button data-mt="${k}" class="${p?'p':''}">${l}</button>`;
  if(MTK){const bx=B.boxes.find(x=>x.key==MTK);if(bx){const c=L[bx.j];isq=c.k=='q'&&bx.i&&bx.first;mg=bx.w>B.cs[bx.j]||bx.h>B.rs[bx.i];info=`خانه‌ی انتخاب‌شده: <b>${bx.i?'ردیف '+fa(bx.i):'سطر عنوان'} · ${esc(c.t||'—')}</b>${mg?' (ادغام‌شده)':''}${!bx.first?' (قطعه‌ی تقسیم‌شده)':''}`;cur=mtAl(MTK,B.O.ck[bx.j],(bx.i&&c.k=='q')?'':'c');f=(m.fmt||{})[MTK]||{};bd=mtBold(bx,f);tx=(m.tx||{})[MTK]||''}else MTK=null}
- return `<button data-mt="x" style="float:left">✕ بستن</button><h3>ویرایش خانه‌ی جدول</h3><small style="color:var(--mu)">${info}</small>${MTK?`${isq?'<small style="color:var(--mu)">متن این خانه خودِ سؤال است و از تب «آزمون» ویرایش می‌شود.</small>':`<label>متن خانه (خالی = متن پیش‌فرض)</label><textarea id="mt_tx" rows="2" style="width:100%;background:var(--bg);color:inherit;border:1px solid var(--ln);border-radius:10px;padding:8px">${esc(tx)}</textarea>`}
+ return `<div class="mth"><b>ویرایش خانه</b><span class="mti">${info}</span><button data-mt="hlp" title="راهنما">؟</button><button data-mt="min" title="کوچک / بزرگ کردن این پنل">▾</button><button data-mt="x" title="بستن">✕</button></div>${MTK?`${isq?'<small style="color:var(--mu)">متن این خانه خودِ سؤال است و از تب «آزمون» ویرایش می‌شود.</small>':`<label>متن خانه (خالی = متن پیش‌فرض)</label><textarea id="mt_tx" rows="2" style="width:100%;background:var(--bg);color:inherit;border:1px solid var(--ln);border-radius:10px;padding:8px">${esc(tx)}</textarea>`}
  <div class="r" style="align-items:center"><b>تراز:</b>${b('ar','راست‌چین',cur=='r')}${b('ac','وسط‌چین',cur=='c')}${b('al','چپ‌چین',cur=='l')}${b('fb','<b>B</b> بولد',bd)}<select id="mt_z">${[0,9,10,11,12,13,14,16,18,20].map(v=>`<option value="${v}" ${(f.z||0)==v?'selected':''}>${v?fa(v)+' پوینت':'اندازه‌ی خودکار'}</option>`).join('')}</select><select id="mt_f">${fontOpts(f.f)}</select><label style="margin:0"><input type="checkbox" id="mt_col"> تراز برای کل ستون</label></div>
  <div class="r" style="align-items:center"><b>ادغام با:</b>${b('mr','راست')}${b('ml','چپ')}${b('mu','بالا')}${b('md','پایین')}</div>
- <div class="r" style="align-items:center"><b>تقسیم:</b>${b('sp','جدا کردن ادغام')}${b('sc','＋ ستون')}${b('sr','＋ ردیف')}${b('jn','یکی کردن قطعه‌ها')}</div>`:''}<small style="color:var(--mu)">ستون «سؤال‌ها» عمودی ادغام نمی‌شود و فقط با ستون‌های سمت چپش ادغام می‌شود، تا متن سؤال‌ها گم نشود. «＋ ستون / ＋ ردیف» خانه را به قطعه‌های مساوی تقسیم می‌کند (تا ۴ قطعه).</small>`}
+ <div class="r" style="align-items:center"><b>تقسیم:</b>${b('sp','جدا کردن ادغام')}${b('sc','＋ ستون')}${b('sr','＋ ردیف')}${b('jn','یکی کردن قطعه‌ها')}</div>`:''}<small class="hp" style="color:var(--mu)">ستون «سؤال‌ها» عمودی ادغام نمی‌شود و فقط با ستون‌های سمت چپش ادغام می‌شود، تا متن سؤال‌ها گم نشود. «＋ ستون / ＋ ردیف» خانه را به قطعه‌های مساوی تقسیم می‌کند (تا ۴ قطعه).</small>`}
 const mtDraw=()=>{const c=$('#mtc');if(c){c.innerHTML=mtInner();c.classList.toggle('on',!!MTK)}document.body.classList.toggle('mtopen',!!MTK)};
 const mtCard=()=>`<div class="card${MTK?' on':''}" id="mtc">${mtInner()}</div>`;
-$('#v').addEventListener('click',e=>{const td=e.target.closest&&e.target.closest('#pv [data-mk]');if(td){MTK=td.dataset.mk;mkSel();mtDraw();td.scrollIntoView({block:'start',behavior:'auto'});return}
- const b=e.target.closest('button');if(!b||!b.dataset.mt||!MTK)return;if(b.dataset.mt=='x'){MTK=null;mkSel();mtDraw();return}const k=b.dataset.mt,L=LYT(),O=mtOcc(L);ex.mt=ex.mt||{};const m=ex.mt;['sp','al','cal','cut','fmt','tx'].forEach(z=>m[z]=m[z]||{});
+$('#v').addEventListener('click',e=>{const td=e.target.closest&&e.target.closest('#pv [data-mk]');if(td){MTK=td.dataset.mk;mkSel();{const c=$('#mtc');if(c)c.classList.remove('min')}mtDraw();td.scrollIntoView({block:'start',behavior:'auto'});{const h=($('#top')?.offsetHeight||56)+6,r=td.getBoundingClientRect();window.scrollBy(0,r.top-h)}return}
+ const b=e.target.closest('button');if(!b||!b.dataset.mt||!MTK)return;if(b.dataset.mt=='min'||b.dataset.mt=='hlp'){const c=$('#mtc');if(c)c.classList.toggle(b.dataset.mt=='min'?'min':'hlp');return}if(b.dataset.mt=='x'){MTK=null;mkSel();mtDraw();return}const k=b.dataset.mt,L=LYT(),O=mtOcc(L);ex.mt=ex.mt||{};const m=ex.mt;['sp','al','cal','cut','fmt','tx'].forEach(z=>m[z]=m[z]||{});
  const base=MTK.split('#')[0],[rid,ck]=base.split('|'),i=O.rows.indexOf(rid),j=O.ck.indexOf(ck);if(i<0||j<0||!O.out[i][j])return;const a=O.out[i][j],ky=(x,y)=>O.rows[x]+'|'+O.ck[y],cutd=z=>{const c=m.cut[z];return c&&((c.c||1)>1||(c.r||1)>1)};
  if(k[0]=='a'){const v=k[1];if($('#mt_col')&&$('#mt_col').checked){m.cal[ck]=v;Object.keys(m.al).forEach(z=>{if(z.split('|')[1].split('#')[0]==ck)delete m.al[z]})}else m.al[MTK]=v}
  else if(k=='fb'){const bx=mtBoxes(L).boxes.find(x=>x.key==MTK),f=m.fmt[MTK]=m.fmt[MTK]||{};f.b=!mtBold(bx,f)}
