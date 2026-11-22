@@ -117,10 +117,17 @@ body.mtopen #v,body.mtopen:has(#mtc.min) #v{padding-bottom:0;padding-left:190px}
 #mtc .r button{width:100%;padding:3px 2px;font-size:12px}
 #mtc textarea{height:70px}
 }
+@media(min-width:700px){
+#ostk{position:fixed;left:8px;width:304px;top:calc(var(--toph,96px) + 8px);bottom:calc(62px + env(safe-area-inset-bottom));z-index:12;display:flex;flex-direction:column;background:var(--cd);border:1px solid var(--ln);border-radius:14px;padding:6px;box-shadow:0 0 14px #0004}
+#ostk #osn{display:grid;grid-template-columns:1fr 1fr;gap:4px;overflow:visible;flex:none}
+#ostk #osn>*{white-space:normal;min-height:34px;padding:3px 4px;font-size:13px}
+#ostk #osec{max-height:none;flex:1;overflow-y:auto;margin-top:6px}
+body:not(.mtopen) #v:has(#ostk){padding-left:322px}
+}
 </style></head><body>
 <div id="cr" class="ui">تهیه‌کننده: وحیده محجوب</div>
 <div class="ui" id="app">
-<div id="top"><header><button id="mnu">☰</button><input id="ttl" placeholder="عنوان آزمون"><button id="ub" style="display:none" title="برگردان آخرین حذف یا تغییر">↶</button><button id="rb" style="display:none" title="جلو (برگرداندن برگشت)">↷</button><button id="th">◐</button></header><div id="tabs"></div><div id="vrs">نسخه‌ی برنامه: ۱۰۶</div></div>
+<div id="top"><header><button id="mnu">☰</button><input id="ttl" placeholder="عنوان آزمون"><button id="ub" style="display:none" title="برگردان آخرین حذف یا تغییر">↶</button><button id="rb" style="display:none" title="جلو (برگرداندن برگشت)">↷</button><button id="th">◐</button></header><div id="tabs"></div><div id="vrs">نسخه‌ی برنامه: ۱۰۷</div></div>
 <main id="v"></main>
 <div id="jmp"><button id="up" title="اول صفحه">⤒</button><button id="dn" title="آخر صفحه">⤓</button></div>
 <button class="p fab" id="add">＋ سؤال</button>
@@ -200,7 +207,7 @@ function bkList(){const UM=bkUsage();const l=bank.filter(b=>(!BK.ty||b.item.type
  $('#bl').innerHTML=l.length?l.map(b=>{const us=bkUsed(b,UM),ids=Object.keys(us),cur=ex&&us[ex.id],oth=ids.filter(i=>!ex||i!=ex.id).map(i=>(exams.find(e=>e.id==i)||{}).title||'بدون‌نام'),tick=ids.length?`<span class="tg" style="background:${cur?'#16a34a':'#d97706'};color:#fff" title="${esc((cur?['این آزمون',...oth]:oth).join('، '))}">✓ ${cur?'در این آزمون'+(us[ex.id]>1?' ×'+fa(us[ex.id]):''):'در آزمون: '+esc(oth.slice(0,2).join('، '))+(oth.length>2?' +'+fa(oth.length-2):'')}${cur&&oth.length?' · و '+fa(oth.length)+' آزمون دیگر':''}</span>`:'';return`<div class="it" style="${cur?'border-color:#16a34a;':ids.length?'border-color:#d97706;':''}">${tick}<span class="tg">${TN[b.item.type]}</span>${b.subj?`<span class="tg" style="background:var(--ac2);color:#2b1a00">${esc(b.subj)}</span>`:''}<span class="pv">${esc(strip(b.item.html).slice(0,90))}</span><span class="acts"><button class="p" data-a="bad" data-i="${b.id}">＋ به آزمون</button><button data-a="bsub" data-i="${b.id}" title="تغییر درس">🏷</button><button data-a="bed" data-i="${b.id}">✎</button><button data-a="bdel" data-i="${b.id}">🗑</button></span></div>`}).join(''):`<div class="em">بانک خالی است (${fa(bank.length)} سؤال).<br>در تب آزمون روی 📥 بزن.</div>`}
 const vOut=()=>`<div class="card"><div class="r"><button class="p" data-a="pdf0">PDF بدون پاسخ</button><button class="p" data-a="pdf1">PDF با پاسخ</button><button class="p" data-a="doc0">Word بدون پاسخ</button><button class="p" data-a="doc1">Word با پاسخ</button></div><div class="r" style="align-items:center"><button data-a="pv0" class="${AN?'':'p'}">پیش‌نمایش: بدون پاسخ</button><button data-a="pv1" class="${AN?'p':''}">با پاسخ</button></div><small style="color:var(--mu)">PDF: در پنجره‌ی چاپ «ذخیره به‌صورت PDF» را انتخاب کن. برای تغییر سربرگ، جدول و تنظیمات از دکمه‌های زیر استفاده کن؛ برای ویرایش یک خانه، روی آن در پیش‌نمایش بزن.</small></div><div class="r" style="align-items:center"><label><input type="checkbox" id="pgv_on" ${pgvOn()?'checked':''}> نمای صفحه‌بندی‌شده‌ی A4 در پیش‌نمایش</label><b id="pgn" style="color:var(--ac)"></b></div>${otpCard()}<div id="ostk"><div class="r" id="osn">${osnHtml()}</div><div id="osec">${osecHtml()}</div></div>${mtCard()}<div style="overflow:hidden"><div class="paper${AR()?'':' nored'}" id="pv" style="--ls:${LSV()};line-height:${LSV()};font-size:${FS()}pt;font-family:${pfFam()}${pfW()};padding:${mgv().t}mm ${mgv().r}mm ${mgv().b}mm ${mgv().l}mm;--ml:${mgv().l}mm;--mr:${mgv().r}mm">${withV(()=>paperHtml(AN))}</div></div>`;
 
-const pvZ=()=>Math.min(1,($('#v').clientWidth-4-(document.body.classList.contains('mtopen')&&innerWidth>=700?190:0))/794);
+const pvZ=()=>Math.min(1,($('#v').clientWidth-4-(innerWidth>=700?(document.body.classList.contains('mtopen')?190:($('#ostk')?320:0)):0))/794);
 function fitPv(){const p=$('#pv');if(p){pgPaginate(p);p.style.zoom=pvZ()}}
 function flash(id){const e=$('#'+id);e?.scrollIntoView({block:'center',behavior:'auto'});e?.classList.add('fl');setTimeout(()=>e?.classList.remove('fl'),1800)}
 const mv=(a,i,d)=>{const j=i+d;if(j<0||j>=a.length)return false;[a[i],a[j]]=[a[j],a[i]];return true};
