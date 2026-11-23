@@ -127,7 +127,7 @@ body:not(.mtopen) #v:has(#ostk){padding-left:322px}
 </style></head><body>
 <div id="cr" class="ui">تهیه‌کننده: وحیده محجوب</div>
 <div class="ui" id="app">
-<div id="top"><header><button id="mnu">☰</button><input id="ttl" placeholder="عنوان آزمون"><button id="ub" style="display:none" title="برگردان آخرین حذف یا تغییر">↶</button><button id="rb" style="display:none" title="جلو (برگرداندن برگشت)">↷</button><button id="th">◐</button></header><div id="tabs"></div><div id="vrs">نسخه‌ی برنامه: ۱۰۷</div></div>
+<div id="top"><header><button id="mnu">☰</button><input id="ttl" placeholder="عنوان آزمون"><button id="ub" style="display:none" title="برگردان آخرین حذف یا تغییر">↶</button><button id="rb" style="display:none" title="جلو (برگرداندن برگشت)">↷</button><button id="th">◐</button></header><div id="tabs"></div><div id="vrs">نسخه‌ی برنامه: ۱۱۱</div></div>
 <main id="v"></main>
 <div id="jmp"><button id="up" title="اول صفحه">⤒</button><button id="dn" title="آخر صفحه">⤓</button></div>
 <button class="p fab" id="add">＋ سؤال</button>
@@ -791,11 +791,11 @@ function parseBlocks(txt){
   if(!cur){if(numbered)pre.push(L.trim());else{const q=L.match(QRE);start(q?q[2].trim():L.trim())}return}
   if(cur.opts.length)cur.opts[cur.opts.length-1]+=' '+L.trim();else cur.stem.push(L.trim())});
  return{blocks:blocks.filter(b=>b.stem.join('').trim()||b.opts.length),pre:pre.join(' ')}}
-const hasParen=t=>[...t.matchAll(/\(([^()]{1,80})\)/g)].some(m=>{const p=m[1].split(/\s*[-–—،\/|]\s*|\s+یا\s+/).map(x=>x.trim());return p.length>=2&&p.every(x=>x&&x.length<=30)});
+const hasParen=t=>[...t.matchAll(/\(([^()]{1,80})\)/g)].some(m=>{const p=m[1].split(/\s*[-–—_،\/|]\s*|\s+یا\s+/).map(x=>x.trim());return p.length>=2&&p.every(x=>x&&x.length<=30)});
 function ident(b){const t=b.stem.join(' ');if(b.opts.length>=2)return'mc';if(b.tab.length>=2)return'match';if(TFRE.test(t)||/^(?:صحیح|درست|غلط|نادرست)\s*$/.test(b.ans))return'tf';if(R_DOTS().test(t))return'blank';if(hasParen(t))return'paren';return'desc'}
 const MK=/^\s*[*✓✔√]\s*|\s*[*✓✔√]\s*$/g;
 function mcOk(b){let ok=b.opts.findIndex(o=>MK.test(o));MK.lastIndex=0;if(ok<0&&b.ans){const a=b.ans.trim(),m=a.match(new RegExp('^(?:گزینه\\s*)?\\(?\\s*'+LAB+'\\s*\\)?\\s*$'));if(m){for(let k=0;k<b.opts.length;k++)if(labOk(m[1],k)){ok=k;break}}if(ok<0)ok=b.opts.findIndex(o=>nzb(o.replace(MK,''))==nzb(a))}return ok}
-function matchItem(b,t){const A=[],B=[];b.tab.forEach(c=>{A.push(c[0].replace(/^[0-9۰-۹٠-٩]+\s*[\.\)\-]\s*/,''));if(c.length>1)B.push(c[c.length-1].replace(/^\(\s*\)\s*|^(?:الف|ب|ج|د|ه)\s*[\.\)\-]\s*/,''))});
+function matchItem(b,t){const A=[],B=[];const cl=x=>x.replace(/^[0-9۰-۹٠-٩]+\s*[\.\)\-]\s*/,'');if(b.mA){b.mA.forEach(x=>A.push(cl(x)));b.mB.forEach(x=>B.push(x.replace(/^\(\s*\)\s*|^(?:الف|ب|ج|د|ه)\s*[\.\)\-]\s*/,'')))}else b.tab.forEach(c=>{A.push(c[0].replace(/^[0-9۰-۹٠-٩]+\s*[\.\)\-]\s*/,''));if(c.length>1)B.push(c[c.length-1].replace(/^\(\s*\)\s*|^(?:الف|ب|ج|د|ه)\s*[\.\)\-]\s*/,''))});
  const map=A.map((_,i)=>i);[...(b.ans||'').matchAll(/([0-9۰-۹٠-٩]+)\s*[-–→:]\s*(الف|ب|ج|پ|ت|ث|د|ه|[0-9۰-۹٠-٩]+|[a-fA-F])/g)].forEach(p=>{const i=+dg(p[1])-1;for(let k=0;k<B.length;k++)if(labOk(p[2],k)){map[i]=k;break}});
  return{id:uid(),type:'match',html:imgH(esc(t))||'شماره‌ی مورد مرتبط از ستون راست را در پرانتز جلوی هر مورد ستون چپ بنویسید.',A:A.length?A:['',''],B:B.length?B:['',''],map:A.length?map:[0,1]}}
 const imgH=s=>String(s).replace(/\s*⟦(img\d+)⟧\s*/g,(m,k)=>{const o=window.PIMG&&PIMG[k];return o?`<br><img src="${o.s}" data-w="${o.w}" data-h="${o.h}"><br>`:' '}).replace(/^(<br>)+|(<br>)+$/g,'').trim();
@@ -807,20 +807,78 @@ function mkItem0(b){const t=b.stem.join(' ').trim(),id=uid(),ty=b.type;
  if(ty=='paren')return{id,type:'paren',html:imgH(esc(t)),ans:b.ans.trim()};
  if(ty=='match')return matchItem(b,t);
  return{id,type:'desc',html:imgH(esc(t)+(b.opts.length?'<br>'+b.opts.map(esc).join('<br>'):'')),ans:imgH(esc(b.ans||'')),lines:0}}
+
+// ---- v108: درون‌ریز برگه‌ی امتحانی (جدول ردیف / سؤالات / بارم)
+const EX_NUM=/^[0-9۰-۹٠-٩]{1,3}$/,EX_BAR=/^[\s0-9۰-۹٠-٩.\/٫,،]+$/;
+const exBarem=s=>{s=dg(String(s)).replace(/[٫,،]/g,'.').replace(/\s+/g,'');if(s[0]=='.')s='0'+s;if(/^\d+[\/.]$/.test(s)){const v=s.slice(0,-1);return['5','25','75'].includes(v)?+('0.'+v):+v}if(!/^\d+(?:[.\/]\d+)?$/.test(s))return 0;const p=s.split(/[\/.]/);if(p.length==1)return +p[0];const a=p[0],b=p[1];return ['5','25','75'].includes(a)&&b.length<=2&&+b<=20?+(b+'.'+a):+(a+'.'+b)};
+const exJunk=L=>{const s=L.replace(/[\.…_\-–:\s\(\)]+/g,' ').trim();return/^(?:(?:الف|ب|ج|د|ه|و|ز|ح|[0-9۰-۹]+)\s*)*$/.test(s)},EX_SKIP=/^[«"“\s]*(?:صفحه\s*(?:اول|دوم|سوم|[0-9۰-۹])|سوالات\s+\S+.*نمره|ادامه\s*(?:ی\s*)?(?:سوال|سؤال)|لطفا|موفق|پایان|جمع\s*نمر)/;
+const EX_MT=/ستون|وصل|متصل|ارتباط|مرتبط|جور|تطبیق|مقابل|به\s*هم/;
+const EXMK=/^===\s*سؤال\s*(\d+)\s*\|\s*بارم\s*([\d.]+)\s*(?:\|\s*([\d.,]+)\s*)?===$/;
+const SUBL=/^\s*(?:(\*+)\s*\)|\(?\s*(الف|ب|پ|ج|د|ه|و|ز|ح|ط|ی|[0-9۰-۹٠-٩]{1,2}|[a-eA-E])\s*[\)\.\-–:ـ](?![0-9۰-۹])|(الف)\s+(?=\S))/;
+const exOptLine=L=>{const io=inlineOpts(exNorm(L),0);return!!(io&&io.opts.length>=2&&!io.pre)};
+const exLab=L=>{if(exOptLine(L))return'o';const m=L.match(SUBL);return m?(m[1]?'s':/[0-9۰-۹٠-٩]/.test(m[2]||'')?'n':'l'):null};
+const exNorm=L=>{const n=(L.match(/(?:^|\s)(?:الف|ب|ج|د)\s*[:：]/g)||[]).length;if(n>=2)return L.replace(/(^|\s)(الف|ب|ج|د|ه)\s*[:：]\s*/g,'$1$2) ');const h=(L.match(/(?:^|\s)(?:[1-4۱-۴]|الف|ب|ج|د)\s*[-–:：]\s*\S/g)||[]).length;return h>=3?L.replace(/(^|\s)([1-6۱-۶]|الف|ب|ج|د|ه|و)\s*[-–:：]\s*(?=\S)/g,'$1$2) '):L};
+const EX_TF=/(?:درست|صحیح).{0,25}(?:نادرست|غلط)|درستی|نادرستی|ص\s*[\/\\]\s*غ|صحیح\s*یا\s*غلط/,EX_BL=/جا(?:ی|های)?\s*خالی|تکمیل|کامل\s*کنید|کلمه.{0,12}مناسب\s*بنویسید/;
+function exParseQ(lines){
+ lines=lines.flatMap(l=>{if(l.includes('\t'))return[l];if(exJunk(l)||EX_SKIP.test(l))return[];const m=l.match(/^(.{8,}?[:：؟?])\s*((?:الف|۱|1)\s*[\)\-].{3,})$/);return m?[m[1],m[2]]:[l]});
+ const txt=lines.filter(l=>!l.includes('\t')),lb=txt.map(exLab);let qT=lb.find(x=>x&&x!='s'&&x!='o')||null,oT=null;
+ if(qT){const i0=lb.indexOf(qT);for(let i=i0+1;i<lb.length;i++){if(lb[i]&&lb[i]!='s'&&lb[i]!='o'&&lb[i]!=qT){oT=lb[i];break}}}
+ const title=[],subs=[];let cur=null,sec='';
+ lines.forEach((L,li)=>{
+  if(L.includes('\t')){const c=L.split('\t').map(x=>x.trim());if(c.length>=2){if(cur)cur.tab.push(c);else title.push({tab:c})}return}
+  const t=exLab(L);
+  if(t=='s'){sec=L.replace(SUBL,'').trim();title.push(L.replace(SUBL,'').trim());cur=null;return}
+  const Ln=exNorm(L);
+  if(t=='o'){if(!cur){const st=title.length&&typeof title[title.length-1]=='string'?title.pop():'';cur={stem:[st],opts:[],tab:[],sec};subs.push(cur)}const io=inlineOpts(Ln,cur.opts.length)||inlineOpts(Ln,0);cur.opts.push(...io.opts);return}
+  if(cur&&oT&&t==oT){const io=inlineOpts(Ln,cur.opts.length);if(io){if(io.pre&&!cur.opts.length)cur.stem.push(io.pre);cur.opts.push(...io.opts)}else{const m=Ln.match(OPTRE);cur.opts.push(m?m[2].trim():L.trim())}return}
+  if(t&&t==qT){let st=L.replace(SUBL,'').trim(),opts=[];const io=inlineOpts(exNorm(st),0);if(io){st=io.pre;opts=io.opts}cur={stem:[st],opts,tab:[],sec};subs.push(cur);return}
+  if(cur&&!t&&cur.stem.join('').trim()&&!cur.opts.length){const nx=lines.slice(li+1).find(x=>!x.includes('\t')),nm=nx&&nx.match(SUBL);if(nm&&(nm[2]||nm[3])&&labOk(nm[2]||nm[3],0)&&/[:：.؟?]\s*$/.test(L)){sec=L.trim();title.push(L.trim());cur=null;return}}
+  if(!cur){const io=inlineOpts(Ln,0);if(io&&!qT){cur={stem:[io.pre],opts:io.opts,tab:[],sec};subs.push(cur)}else title.push(L.trim());return}
+  const io=cur.opts.length?inlineOpts(Ln,cur.opts.length):null;
+  if(io&&!io.pre){cur.opts.push(...io.opts);return}
+  if(cur.opts.length)cur.opts[cur.opts.length-1]+=' '+L.trim();else cur.stem.push(L.trim())});
+ const tt=title.filter(x=>typeof x=='string').join(' ').trim(),mainTab=title.filter(x=>x.tab).map(x=>x.tab);
+ if(!subs.length){const st=tt;return{title:'',subs:[{stem:[st],opts:[],tab:mainTab,sec:''}],hint:st}}
+ if(mainTab.length)subs[0].tab=mainTab.concat(subs[0].tab);
+ return{title:tt,subs,hint:tt}}
+function exType(s,hint){const h=s.sec||hint,t=s.stem.join(' ');
+ if(s.opts.length>=2)return'mc';
+ if(s.tab.length>=2&&EX_MT.test(h+' '+t+' '+hint))return'match';
+ if(EX_TF.test(h)&&!EX_BL.test(h))return'tf';
+ if((t.match(R_DOTS())||[]).length==1&&/[؟?]/.test(t.replace(/(?:\.{3,}|…+).*$/,''))&&/(?:\.{3,}|…+)\s*$/.test(t))return'desc';
+ if(R_DOTS().test(t)||/_{4,}/.test(t))return'blank';
+ if(hasParen(t))return'paren';
+ if(EX_BL.test(h)&&!/[؟?]\s*$/.test(t))return'blank';
+ return'desc'}
+function exPieces(t){return t.split(/(?:^|\s)(?:الف|ب|پ|ج|د|ه|و|ز|ح|ط|ی|ت)\s*[-–\)\.:]\s*/g).map(x=>x.trim()).filter(Boolean)}
+function exApplyKey(subs,types,kt){if(!kt)return;const pc=exPieces(kt);let ps;if(subs.length==1)ps=[pc.length==1?pc[0]:kt];else if(pc.length>=subs.length)ps=pc;else return;
+ subs.forEach((s,i)=>{const p=(ps[i]||'').replace(/\(\s*[\d\/.٫]+\s*\)/g,'').replace(/^[\s.…_]+|[\s.…_]+$/g,'').trim();if(!p)return;const ty=types[i];
+  if(ty=='tf')s.ans=/نادرست|غلط|^غ\b/.test(p)?'غلط':/درست|صحیح|^ص\b/.test(p)?'صحیح':'';
+  else if(ty=='mc'){const m=p.match(/[1-6۱-۶]/);if(m)s.ans=dg(m[0]);else{const l=p.match(/^(الف|ب|ج|د)\b/);if(l)s.ans=l[1]}}
+  else if(ty!='match')s.ans=p})}
+function parseExam(txt){const L=txt.replace(/\r/g,'').split('\n'),Q=[],K={};let cur=null,ck=null;
+ L.forEach(l=>{if(/^===\s*پایان\s*===$/.test(l.trim())){cur=null;ck=null;return}const km=l.trim().match(/^===\s*پاسخ\s*(\d+)\s*===$/);if(km){cur=null;ck=+km[1];K[ck]=K[ck]||'';return}if(ck!=null&&l.trim()){K[ck]+=' '+l.trim();return}const m=l.trim().match(EXMK);if(m){cur={n:+m[1],bar:+m[2],bl:m[3]?m[3].split(',').map(Number):null,lines:[]};Q.push(cur)}else if(cur&&l.trim())cur.lines.push(l.trim())});
+ const out=[];Q.forEach((q,qi)=>{const r=exParseQ(q.lines);{const tk=(r.title||'').match(/⟦img\d+⟧/g);if(tk&&r.subs.length){r.title=r.title.replace(/⟦img\d+⟧/g,'').replace(/\s+/g,' ').trim();r.subs[0].stem[0]=tk.join(' ')+' '+(r.subs[0].stem[0]||'')}}const isSingle=r.subs.length==1,st0=out.length;
+  r.subs.forEach(s=>{let type=exType(s,r.hint);if(s.tab.length>=2&&type!='match')s.stem=[...s.stem,...s.tab.map(c=>c.filter(Boolean).join(' | '))],s.tab=[];if(type=='tf')s.stem=[s.stem.join(' ').replace(/\s*(?:درست|صحیح)\s*\(\s*\)\s*(?:نادرست|غلط)\s*\(\s*\)\s*$/,'').replace(/\s*\(?\s*(?:صحیح|درست|ص)\s*[□☐☒]?\s*[\-–—\/]?\s*(?:غلط|نادرست|غ)\s*[□☐☒]?\s*\)?\s*$/,'').replace(/\(\s*\)\s*$/,'').trim()];
+   if(type=='desc')s.stem=[s.stem.join(' ').replace(/\s*(?:\.{3,}|…+)\s*$/,'').trim()];
+   let mA,mB;if(type=='match'){if(s.tab.length>2&&/^ستون/.test(s.tab[0][0]))s.tab=s.tab.slice(1);mA=s.tab.map(c=>c[0]).filter(Boolean);mB=s.tab.map(c=>c[c.length-1]).filter(Boolean)}
+   if(type=='match'&&!s.stem.join('').trim())s.stem=[r.title||''];
+   out.push({stem:s.stem,opts:s.opts,tab:s.tab,mA,mB,ans:'',type,on:true,g:qi,gn:q.n,gt:(type=='match'&&isSingle)?'':r.title,gs:q.bar})});const es=out.slice(st0);if(q.bl&&q.bl.length==es.length)es.forEach((e,i)=>e.score=q.bl[i]);exApplyKey(es,es.map(e=>e.type),K[q.n])});
+ return out}
 let PB=[],PRE='';
 const pinfo=b=>{const t=b.type;if(t=='mc'){const k=mcOk(b);return fa(b.opts.length)+' گزینه'+(k>=0?' · پاسخ: '+fa(k+1):' · پاسخ مشخص نشد')}if(t=='tf')return b.ans?'پاسخ: '+b.ans:'پاسخ مشخص نشد (پیش‌فرض: صحیح)';
  if(t=='blank'){const n=(b.stem.join(' ').match(R_DOTS())||[]).length;return fa(n)+' نقطه‌چین'+(b.ans?'':' · پاسخ مشخص نشد')}if(t=='paren')return b.ans?'پاسخ: '+b.ans:'پاسخ مشخص نشد';
  if(t=='match')return b.tab.length>=2?fa(b.tab.length)+' ردیف · پاسخ‌ها را بررسی کن':'ساختار وصل‌کردنی پیدا نشد';return''};
 function drawPB(){const el=$('#pv2');if(!el)return;el.innerHTML=PB.length?`<h3 style="margin-top:12px">${fa(PB.length)} سؤال تشخیص داده شد</h3><small>نوع هر سؤال را اگر لازم بود عوض کن و تیک سؤال‌های نخواسته را بردار.</small>`+
- PB.map((b,i)=>`<div class="it" style="display:block"><div class="r" style="margin:0;align-items:center"><label><input type="checkbox" data-pi="${i}" ${b.on?'checked':''}> <b>${fa(i+1)}</b></label><select data-pt="${i}">${Object.entries(TN).map(([k,v])=>`<option value="${k}" ${b.type==k?'selected':''}>${v}</option>`).join('')}</select><small>${pinfo(b)}</small></div><div style="color:var(--mu);margin-top:4px">${esc(b.stem.join(' ').replace(/⟦img\d+⟧/g,'🖼').slice(0,140))}${/⟦img\d+⟧/.test(b.stem.join(' ')+' '+(b.ans||''))?' <b>🖼 شکل دارد</b>':''}</div></div>`).join('')+
+ PB.map((b,i)=>`<div class="it" style="display:block"><div class="r" style="margin:0;align-items:center"><label><input type="checkbox" data-pi="${i}" ${b.on?'checked':''}> <b>${fa(i+1)}</b>${b.gn!=null?` <small>(سؤال ${fa(b.gn)}${b.gs?' · بارم کل '+sf(b.gs):''})</small>`:''}</label><select data-pt="${i}">${Object.entries(TN).map(([k,v])=>`<option value="${k}" ${b.type==k?'selected':''}>${v}</option>`).join('')}</select><small>${pinfo(b)}</small></div><div style="color:var(--mu);margin-top:4px">${esc(b.stem.join(' ').replace(/⟦img\d+⟧/g,'🖼').slice(0,140))}${/⟦img\d+⟧/.test(b.stem.join(' ')+' '+(b.ans||''))?' <b>🖼 شکل دارد</b>':''}</div></div>`).join('')+
  '<div class="ft"><button class="p" data-x="padd">＋ افزودن به آزمون</button><button data-x="pbk">📥 ذخیره در بانک</button></div>':'<div class="em">سؤالی پیدا نشد.</div>'}
 function openPaste(){PB=[];showM(`<h3>چسباندن چند سؤال</h3><small>سؤال‌ها را از Word یا هر جای دیگر کپی و اینجا بچسبان؛ اگر زیر سؤال خطی مثل «بارم: ۰٫۲۵» بنویسی، بارم هم ثبت می‌شود؛ شماره‌دار یا جدا شده با خط خالی. گزینه‌ها را با ۱) ۲) ۳) ۴) یا الف) ب) ج) د) بنویس. پاسخ را (اختیاری) در خطی مثل «پاسخ: ب» زیر سؤال بگذار. نوع هر سؤال خودکار تشخیص داده می‌شود.</small>
  <textarea id="pt" rows="8" style="width:100%;background:var(--bg);color:inherit;border:1px solid var(--ln);border-radius:10px;padding:8px;font:inherit" placeholder="۱. کدام یک میوه است؟&#10;۱) سیب ۲) کاهو ۳) هویج ۴) گوجه&#10;پاسخ: ۱&#10;۲. زمین به دور ....... می‌چرخد.&#10;پاسخ: خورشید"></textarea><div class="r"><button class="p" data-x="pdet">🔍 تشخیص سؤال‌ها</button><label class="b" style="border-color:var(--ac)">📄 وارد کردن از فایل (Word، PDF، پاورپوینت؛ شکل‌های Word هم وارد می‌شود)<input type="file" id="pt_file" accept=".docx,.pdf,.pptx,.txt" hidden></label><button data-x="cl">بستن</button></div><div id="pv2"></div>`)}
 $('#md').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const x=b.dataset.x;
  if(x=='ppst')openPaste();
- else if(x=='pdet'){const r=parseBlocks($('#pt').value);PRE=r.pre;PB=r.blocks.map(q=>({...q,type:ident(q),on:true}));drawPB()}
+ else if(x=='pdet'){const v=$('#pt').value;if(/^===\s*سؤال\s*\d+\s*\|/m.test(v)){PRE='';PB=parseExam(v);drawPB();return}const r=parseBlocks(v);PRE=r.pre;PB=r.blocks.map(q=>({...q,type:ident(q),on:true}));drawPB()}
  else if(x=='padd'){const sel=PB.filter(q=>q.on);if(!sel.length)return toast('سؤالی انتخاب نشده');const first=ex.rows.length;
-  sel.forEach((q,i)=>ex.rows.push({id:uid(),title:i==0?PRE:'',score:0,items:[mkItem(q)]}));persist();hideM();T='ex';render();flash('r_'+ex.rows[first].id);toast(fa(sel.length)+' سؤال به آزمون اضافه شد')}
+  const G=[];sel.forEach(q=>{const l=G[G.length-1];if(q.g!=null&&l&&l.g===q.g)l.q.push(q);else G.push({g:q.g,q:[q]})});G.forEach((g,i)=>{const items=g.q.map(mkItem),bar=g.q[0].gs||0;if(bar>0&&!items.some(it=>it.score)){const n=items.length,qq=+(bar/n).toFixed(2);items.forEach((it,k)=>it.score=k<n-1?qq:+(bar-qq*(n-1)).toFixed(2))}ex.rows.push({id:uid(),title:[i==0?PRE:'',g.q[0].gt||''].filter(Boolean).join(' '),score:0,items})});persist();hideM();T='ex';render();flash('r_'+ex.rows[first].id);toast(fa(sel.length)+' سؤال در '+fa(G.length)+' ردیف به آزمون اضافه شد')}
  else if(x=='pbk'){const sel=PB.filter(q=>q.on);if(!sel.length)return toast('سؤالی انتخاب نشده');chooseSubj(sj=>{sel.forEach(q=>{bank.push({id:uid(),t:Date.now(),subj:sj,item:mkItem(q)});put('bank',bank.at(-1))});syncSoon();toast(fa(sel.length)+' سؤال در بانک ذخیره شد');if(T=='bk'){bkChips();bkList()}})}});
 $('#md').addEventListener('change',e=>{const t=e.target;if(t.dataset&&t.dataset.pi!=null)PB[+t.dataset.pi].on=t.checked;else if(t.dataset&&t.dataset.pt!=null){PB[+t.dataset.pt].type=t.value;drawPB()}});
 $('#v').addEventListener('click',e=>{const b=e.target.closest('button');if(b&&b.dataset.a=='bpaste')openPaste()});
@@ -1790,7 +1848,26 @@ async function docxLines(file){const buf=new Uint8Array(await file.arrayBuffer()
  const ptext=p=>{let s='';const walk=n=>{[...n.childNodes].forEach(c=>{if(c.nodeType!=1)return;const t=c.localName;if(t=='t')s+=c.textContent;else if(t=='tab')s+='    ';else if(t=='br'||t=='cr')s+=' ';else if(t=='noBreakHyphen')s+='-';else if(t=='AlternateContent'){const ch=[...c.childNodes].find(x=>x.localName=='Choice');if(ch)walk(ch)}else if(t=='drawing'||t=='pict'){const bl=c.getElementsByTagNameNS('*','blip')[0];if(bl){const id=bl.getAttributeNS(RN,'embed')||bl.getAttribute('r:embed'),ex=c.getElementsByTagNameNS('*','extent')[0],k='img'+(pend.length+1);pend.push({k,id,w:ex?+ex.getAttribute('cx')/9525:300,h:ex?+ex.getAttribute('cy')/9525:200});s+=' ⟦'+k+'⟧ '}}else if(t=='delText'||t=='instrText'||t=='pPr'||t=='rPr')return;else walk(c)})};walk(p);return s.replace(/ /g,' ')};
  const out=[],body=gw(doc,'body')[0];
  const para=p=>{const t=ptext(p).replace(/\s+/g,' ').trim();if(!t){out.push('');return}out.push(prefix(p)+t)};
- const tbl=tb=>{[...tb.childNodes].forEach(tr=>{if(tr.localName!='tr')return;const cells=[...tr.childNodes].filter(c=>c.localName=='tc').map(tc=>[...tc.childNodes].filter(x=>x.localName=='p').map(p=>prefix(p)+ptext(p).replace(/\s+/g,' ').trim()).filter(Boolean).join(' '));out.push(cells.filter(Boolean).length>=2?cells.join('\t'):cells.filter(Boolean).join(' '))})};
+ const cellTxt=tc=>[...gw(tc,'p')].map(p=>ptext(p)).join(' ').replace(/\s+/g,' ').trim();
+ const cellLines=tcs=>{const o=[];tcs.forEach(tc=>[...tc.childNodes].forEach(x=>{if(x.localName=='p'){const t=prefix(x)+ptext(x).replace(/\s+/g,' ').trim();if(t.trim())o.push(t)}else if(x.localName=='tbl'){[...x.childNodes].forEach(tr=>{if(tr.localName!='tr')return;const cs=[...tr.childNodes].filter(c=>c.localName=='tc').map(cellTxt),ne=cs.filter(Boolean);if(cs.length>=2&&ne.length)o.push(cs.join('\t'));else if(ne.length)o.push(ne[0])})}}));return o};
+ const examTbl=tb=>{const R=[...tb.childNodes].filter(r=>r.localName=='tr').map(tr=>[...tr.childNodes].filter(c=>c.localName=='tc'));
+  const rowNum=c=>{if(c.length<2)return 0;const t=cellTxt(c[0]).replace(/ردیف|رديف/g,'').trim();if(EX_NUM.test(t))return+dg(t);if(!t){const p=[...gw(c[0],'p')].find(x=>gw(x,'numPr').length);if(p){const m=prefix(p).match(/\d+/);return m?+m[0]:0}}return 0};
+  const N=R.map(c=>rowNum(c));
+  if(R.filter((c,i)=>N[i]&&cellTxt(c[1]).length>3).length<3)return null;
+  if(R.slice(0,6).some(c=>c.some(x=>/^[«"\s]*(?:پاسخ\s*نامه|پاسخ‌نامه|پاسخ\s*برگ|کلید|راهنمای\s*تصحیح)/.test(cellTxt(x).replace(/ك/g,'ک').replace(/ي/g,'ی')))))return null;
+  const Q=[];let cur=null;
+  R.forEach((c,ri)=>{if(c.length<2)return;const a0=cellTxt(c[0]),a=a0.replace(/ردیف|رديف/g,'').trim(),hb=c.length>=3,last=hb?cellTxt(c[c.length-1]).replace(/بارم|نمره/g,'').trim():'',bl=hb?cellLines([c[c.length-1]]).map(x=>exBarem(x.replace(/بارم|نمره/g,'').trim())).filter(x=>x>0):[],bar=hb&&last&&EX_BAR.test(last)?(bl.length>1?+bl.reduce((a,b)=>a+b,0).toFixed(2):exBarem(last)):0,qc=c.slice(1,hb?c.length-1:c.length);
+   if(N[ri]&&(cellTxt(c[1]).length>0||qc.some(x=>gw(x,'tbl').length))){cur={n:N[ri],bar,bl:bl.length>1?bl:null,lines:cellLines(qc)};Q.push(cur);return}
+   if(!cur||/^(?:ردیف|رديف)$/.test(a0)||/^\*+$/.test(a)||a.length>6&&!/^ادامه/.test(a))return;
+   const ls=cellLines(qc);if(!ls.length)return;if(a&&a.length<=4)ls[0]=a+') '+ls[0];cur.lines.push(...ls);if(bar&&!cur.bar)cur.bar2=(cur.bar2||0)+bar});
+  const o=[];Q.forEach(q=>{o.push('=== سؤال '+q.n+' | بارم '+(q.bar||q.bar2||0)+(q.bl?' | '+q.bl.join(','):'')+' ===');o.push(...q.lines)});o.push('=== پایان ===');return o};
+ const keyTbl=tb=>{const R=[...tb.childNodes].filter(r=>r.localName=='tr').map(tr=>[...tr.childNodes].filter(c=>c.localName=='tc'));
+  const nz=x=>cellTxt(x).replace(/ك/g,'ک').replace(/ي/g,'ی');
+  if(!R.slice(0,6).some(c=>c.some(x=>/^[«"\s]*(?:پاسخ\s*نامه|پاسخ‌نامه|کلید|راهنمای\s*تصحیح)/.test(nz(x)))))return null;
+  let ci=0;R.slice(0,6).forEach(c=>c.forEach((x,i)=>{if(/^(?:ردیف|رديف)$/.test(nz(x)))ci=i}));
+  const o=[];R.forEach(c=>{if(c.length<2||!c[ci])return;const n=cellTxt(c[ci]);if(!EX_NUM.test(n))return;const cs=c.filter((x,i)=>i!=ci).sort((a,b)=>cellTxt(b).length-cellTxt(a).length);const ls=cellLines([cs[0]]);if(ls.length){o.push('=== پاسخ '+(+dg(n))+' ===');o.push(...ls)}});
+  if(o.length)o.push('=== پایان ===');return o.length?o:null};
+ const tbl=tb=>{const E=examTbl(tb)||keyTbl(tb);if(E){out.push(...E);return}[...tb.childNodes].forEach(tr=>{if(tr.localName!='tr')return;const cells=[...tr.childNodes].filter(c=>c.localName=='tc').map(tc=>[...tc.childNodes].filter(x=>x.localName=='p').map(p=>prefix(p)+ptext(p).replace(/\s+/g,' ').trim()).filter(Boolean).join(' '));out.push(cells.filter(Boolean).length>=2?cells.join('\t'):cells.filter(Boolean).join(' '))})};
  const top=n=>[...n.childNodes].forEach(c=>{const t=c.localName;if(t=='p')para(c);else if(t=='tbl')tbl(c);else if(t=='sdt'||t=='sdtContent'||t=='customXml')top(c)});top(body);
  for(const q of pend){try{const tg=rel[q.id],by=tg&&await zipBin(buf,'word/'+tg.replace(/^\//,'').replace(/^word\//,''));if(!by)continue;const url=URL.createObjectURL(new Blob([by])),img=await new Promise((ok,no)=>{const x=new Image();x.onload=()=>ok(x);x.onerror=no;x.src=url}),sc=Math.min(1,900/img.naturalWidth),cv=document.createElement('canvas');cv.width=Math.round(img.naturalWidth*sc);cv.height=Math.round(img.naturalHeight*sc);const g=cv.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,cv.width,cv.height);g.drawImage(img,0,0,cv.width,cv.height);URL.revokeObjectURL(url);
   const w=Math.round(Math.min(q.w||cv.width,450)),h=Math.round(w*(q.h||cv.height)/(q.w||cv.width));PIMG[q.k]={s:cv.toDataURL('image/jpeg',.85),w,h}}catch(e){console.error(e)}}
@@ -2322,5 +2399,118 @@ document.addEventListener('click',e=>{const t=e.target;if(bar.contains(t))return
 </script>
 <script>
 (function(){const f=()=>{const t=document.getElementById('top');if(t)document.documentElement.style.setProperty('--toph',t.offsetHeight+'px')};f();addEventListener('resize',f);new MutationObserver(f).observe(document.body,{childList:true,subtree:true});setInterval(f,1500)})();
+</script>
+<script id="v110bk">
+// ---- v110: کتاب‌ها و پیدا کردن پاسخ از روی کتاب
+(()=>{
+const STOP=new Set('و در به از که این آن را با برای است اند شد می های ها ی یک چه کدام زیر کنید بنویسید دهید مشخص نمایید کنند باشد بود شود شده نیز هر یا اگر تا بر هم دو سه چند چرا چگونه چیست کدامند هستند آیا بله خیر درست نادرست صحیح غلط جمله جملات عبارت عبارات زیر زیرا ولی اما پس بین مورد موارد نام ذکر کنید بیان توضیح دهید'.split(' '));
+const KEEP=/[ء-يٱ-ۓa-z0-9۰-۹٠-٩]/;
+const SKIP=new Set(['ء']);
+const DMAP={'ي':'ی','ى':'ی','ك':'ک','ة':'ه','ؤ':'و','ئ':'ی','آ':'ا','أ':'ا','إ':'ا','ٱ':'ا'};
+function fold(s,wantMap){s=(s||'').normalize('NFKC').toLowerCase();let f='',m=[];for(let i=0;i<s.length;i++){let c=s[i];if(!KEEP.test(c))continue;c=DMAP[c]||c;const d=c.charCodeAt(0);if(d>=0x6F0&&d<=0x6F9)c=String(d-0x6F0);else if(d>=0x660&&d<=0x669)c=String(d-0x660);if(SKIP.has(c))continue;f+=c;if(wantMap)m.push(i)}f=f.replace(/لا/g,'ال');return wantMap?{f,m}:f}
+const toks=s=>{const o=[],seen=new Set();(s||'').normalize('NFKC').split(/[^ء-يٱ-ۓa-zA-Z0-9۰-۹٠-٩]+/).forEach(w=>{if(!w||STOP.has(w))return;const f=fold(w);if(f.length<3&&!/^\d+$/.test(f)||seen.has(f))return;seen.add(f);o.push(f)});return o};
+// ---- ذخیره‌ی کتاب‌ها (IndexedDB)
+const DB=()=>new Promise((ok,no)=>{const r=indexedDB.open('ao_books',1);r.onupgradeneeded=()=>r.result.createObjectStore('b',{keyPath:'id'});r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)});
+const dbAll=async()=>{const d=await DB();return new Promise(ok=>{const q=d.transaction('b').objectStore('b').getAll();q.onsuccess=()=>ok(q.result||[]);q.onerror=()=>ok([])})};
+const dbPut=async o=>{const d=await DB();return new Promise((ok,no)=>{const t=d.transaction('b','readwrite');t.objectStore('b').put(o);t.oncomplete=ok;t.onerror=()=>no(t.error)})};
+const dbDel=async id=>{const d=await DB();return new Promise(ok=>{const t=d.transaction('b','readwrite');t.objectStore('b').delete(id);t.oncomplete=ok})};
+async function pdfPages(file,cb){const P=await loadPdfJs(),doc=await P.getDocument({data:await file.arrayBuffer()}).promise,out=[];
+ for(let pn=1;pn<=doc.numPages;pn++){const pg=await doc.getPage(pn),tc=await pg.getTextContent(),its=tc.items.filter(i=>i.str&&i.str.trim()).map(i=>({s:i.str.trim(),x:i.transform[4],y:i.transform[5],w:i.width||0,h:i.height||10}));its.sort((q,r)=>r.y-q.y||r.x-q.x);const lines=[];let cur=null;
+  for(const i of its){if(cur&&Math.abs(cur.y-i.y)<4)cur.a.push(i);else{cur={y:i.y,a:[i]};lines.push(cur)}}
+  out.push(lines.map(l=>{const q=l.a.sort((u,v)=>v.x-u.x);let o='';q.forEach((i,k)=>{if(k){const pv=q[k-1],gap=pv.x-(i.x+i.w);o+=gap<0.2*(pv.h||10)?'':' '}o+=i.s});return o.normalize('NFKC')}).filter(x=>x.trim()));if(cb&&pn%8==0)cb(pn,doc.numPages)}
+ return out}
+// ---- نمایه
+const IDX={};
+function build(book){if(IDX[book.id])return IDX[book.id];const C=[];book.pages.forEach((ls,pi)=>{for(let i=0;i<ls.length;i++){const t=ls.slice(i,i+3).join(' ');C.push({p:pi+1,t,f:fold(t)})}});return IDX[book.id]={C,df:new Map()}}
+function dfOf(I,tk){if(I.df.has(tk))return I.df.get(tk);let n=0;for(const c of I.C)if(c.f.includes(tk))n++;I.df.set(tk,n);return n}
+function search(I,q,k){const T=toks(q);if(!T.length)return[];const N=I.C.length,w=T.map(t=>Math.log(1+N/(1+dfOf(I,t))));const sc=[];
+ for(const c of I.C){let s=0,h=0;T.forEach((t,i)=>{if(c.f.includes(t)){s+=w[i];h++}});for(let i=0;i<T.length-1;i++)if(c.f.includes(T[i]+T[i+1]))s+=w[i]*0.6;if(s>0)sc.push({c,s,h,n:T.length})}
+ sc.sort((a,b)=>b.s-a.s);const out=[];for(const x of sc){if(out.some(o=>o.c.p==x.c.p&&(o.c.t.includes(x.c.t.slice(0,25))||x.c.t.includes(o.c.t.slice(0,25)))))continue;out.push(x);if(out.length>=k)break}return out}
+const snip=(t,n)=>{t=t.replace(/\s+/g,' ').trim();return t.length>n?t.slice(0,n)+'…':t};
+// ---- پاسخ‌یابی
+const NEG=/نیست|نمی|نه\s|غیر|بدون|هرگز|نباید|نمیشود/;
+function optScore(res,opts,neg){const top=res[0]?res[0].s:1;const sc=opts.map(o=>{const fo=fold(o);if(fo.length<2)return -1;let s=0;res.forEach((r,i)=>{if(r.c.f.includes(fo))s+=(r.s/top)*(i==0?1.3:1)});return s});
+ if(neg){const z=sc.map((s,i)=>s==0?i:-1).filter(i=>i>=0),pos=sc.filter(s=>s>0).length;if(z.length==1&&pos>=2)return{i:z[0],s:1,hi:false};return null}
+ let bi=-1,b=0,s2=0;sc.forEach((s,i)=>{if(s>b){s2=b;b=s;bi=i}else if(s>s2)s2=s});if(bi<0||b<=0)return null;if(s2>0&&b<s2*1.25)return null;return{i:bi,s:b,hi:b>=1.2}}
+const PU=/[.؟?!،,؛:]$/;
+const wordsOf=x=>x.replace(/‌/g,' ').split(/\s+/).filter(Boolean);
+const cleanW=w=>w.replace(/^[«»"“”()\[\]،,:؛.؟?!\-–]+|[«»"“”()\[\]،,:؛.؟?!\-–]+$/g,'');
+function findW(F,tg,from,to,last){let r=-1;for(let i=from;i<to;i++){const t=tg;if(F[i]&&(F[i]==t||(t.length>=4&&F[i].includes(t)))){r=i;if(!last)break}}return r}
+function fillBlank(res,stem){const parts=stem.split(/(?:\.{3,}|…+|_{3,})/);if(parts.length<2)return null;const qset=new Set(wordsOf(stem).map(w=>fold(cleanW(w))).filter(x=>x.length>=2));const qt=toks(stem);const ans=[];let cf=2;
+ for(let k=0;k<parts.length-1;k++){const L=wordsOf(parts[k]).map(cleanW).filter(Boolean),R=wordsOf(parts[k+1]).map(cleanW).filter(Boolean);const Lw=L.slice(-3).map(fold).filter(x=>x.length>=2),Rw=R.slice(0,3).map(fold).filter(x=>x.length>=2);let best=null;
+  for(const r of res.slice(0,3)){const sents=r.c.t.split(/(?<=[.؟?!])\s+/).slice(0,5);
+   for(const S of sents){const W=wordsOf(S),F=W.map(w=>fold(cleanW(w)));if(F.length<3)continue;const fs=fold(S);const ov=qt.length?qt.filter(t=>fs.includes(t)).length/qt.length:0;if(ov<0.34)continue;
+    let pL=-1;for(let j=Lw.length-1;j>=0&&pL<0;j--)pL=findW(F,Lw[j],0,F.length,true);
+    let pR=-1;if(Rw.length){for(let j=0;j<Rw.length&&pR<0;j++)pR=findW(F,Rw[j],pL>=0?pL+1:0,F.length,false)}
+    let cand=null,sc=0;const take=(a,b)=>W.slice(a,b).map(cleanW).filter(Boolean);const novel=a=>a.length&&a.length<=4&&a.some(w=>!qset.has(fold(w)));
+    if(pL>=0&&pR>pL+1){const c=take(pL+1,pR);if(novel(c)){cand=c;sc=3}}
+    else if(pL>=0&&!Rw.length){let e=pL+1,c=[];while(e<W.length&&c.length<3){c.push(W[e]);if(PU.test(W[e]))break;e++}c=c.map(cleanW).filter(Boolean);if(novel(c)){cand=c;sc=2.2}}
+    else if(pR>=0&&!Lw.length){let st=pR-1,c=[];while(st>=0&&c.length<3){if(c.length&&PU.test(W[st]))break;c.unshift(W[st]);st--}c=c.map(cleanW).filter(Boolean);if(novel(c)){cand=c;sc=1.6}}
+    if(!cand){const q=S.match(/«([^»]{2,40})»/);if(q&&!qset.has(fold(q[1]))){cand=[q[1].replace(/\s+/g,' ')];sc=1.5}}
+    if(!cand){const d=S.match(/^[^،.؟]{0,25}?([^،.؟\s]+(?:\s[^،.؟\s]+){0,2})\s+(?:عبارت\s*است\s*از|یعنی|عبارتست\s*از)/);if(d&&novel(wordsOf(d[1]).map(cleanW))){cand=wordsOf(d[1]).map(cleanW);sc=1.7}}
+    if(!cand){const p=S.match(/\(([^()]{2,30})\)/);if(p&&Lw.length&&pL>=0&&!qset.has(fold(p[1]))){cand=[p[1]];sc=1.2}}
+    if(cand){const tot=sc*(0.5+ov);if(!best||tot>best.tot)best={a:cand.join(' '),tot,sc,ov}}}}
+  if(!best||best.tot<1.2)return null;ans.push(best.a);cf=Math.min(cf,best.sc>=3&&best.ov>=0.6?3:best.tot>=2?2:1)}
+ return{ans:ans.join('، '),conf:cf>=3?'high':cf>=2?'mid':'low'}}
+function tfGuess(res,stem){if(!res.length)return null;const r=res[0],T=toks(stem);if(!T.length)return null;const cov=r.h/T.length;if(cov<0.8)return{ans:'',cov};const negQ=NEG.test(stem),negC=NEG.test(r.c.t);return{ans:negQ==negC?'صحیح':'غلط',cov}}
+function answer(I,b){const stem=b.stem.join(' ').replace(/(?:\.{3,}|…+)/g,' ');const res=search(I,stem,5);if(!res.length)return null;const top=res[0],src={p:top.c.p,t:snip(top.c.t,230)};
+ if(b.type=='mc'||b.type=='paren'){const opts=b.type=='mc'?b.opts:(()=>{const m=b.stem.join(' ').match(/\(([^()]*[-–—_،\/|][^()]*)\)/);return m?m[1].split(/\s*[-–—_،\/|]\s*|\s+یا\s+/).map(x=>x.trim()).filter(Boolean):[]})();if(opts.length<2)return{src,conf:'none'};
+  const r=optScore(res,opts,/نیست|نمی\s*باشد|نمی‌باشد|غیر\s*از|جز\s|نادرست\s*است|اشتباه/.test(b.stem.join(' ')));if(!r)return{src,conf:'none'};const cov=(()=>{const T=toks(stem);return T.length?top.h/T.length:0})();return{src,conf:r.hi&&cov>=0.75&&b.type=='paren'?'high':(r.hi&&cov>=0.75?'mid':'low'),ans:b.type=='mc'?String(r.i+1):opts[r.i],show:opts[r.i]}}
+ if(b.type=='blank'){const r=fillBlank(res,b.stem.join(' '));if(!r)return{src,conf:'none'};return{src,conf:r.conf,ans:r.ans,show:r.ans}}
+ if(b.type=='tf'){const g=tfGuess(res,stem);if(!g||!g.ans)return{src,conf:'none'};return{src,conf:'low',ans:g.ans,show:g.ans}}
+ if(b.type=='desc')return{src,conf:'low',ans:snip(top.c.t,200),show:'متن مرتبط کتاب'};
+ return{src,conf:'none'}}
+// ---- رابط
+let BKS=[],SEL=localStorage.ao_bksel||'';
+const esc2=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+async function fill(){BKS=await dbAll();const s=$('#bk_sel');if(!s)return;if(!BKS.find(b=>b.id==SEL))SEL=BKS[0]?BKS[0].id:'';s.innerHTML=BKS.length?BKS.map(b=>`<option value="${b.id}" ${b.id==SEL?'selected':''}>${esc2(b.name)} (${fa(b.pages.length)} صفحه)</option>`).join(''):'<option value="">هنوز کتابی اضافه نشده</option>'}
+const ui=()=>`<div class="card" id="bkbox" style="margin:8px 0;border:1px solid var(--ac)"><b>📚 پیدا کردن پاسخ از روی کتاب</b>
+ <div class="r" style="align-items:center;margin-top:6px"><select id="bk_sel" style="flex:1;min-width:140px"></select><label class="b" style="cursor:pointer">➕ افزودن کتاب (PDF)<input type="file" id="bk_f" accept=".pdf,application/pdf" hidden></label><button data-bk="rm" title="حذف کتاب انتخاب‌شده">🗑</button></div>
+ <div class="r"><button class="p" data-bk="find">🔎 پیدا کردن پاسخ از کتاب</button><button data-bk="apall">✔ ثبت همه‌ی پیشنهادها</button><button data-bk="prm">📋 متن برای چت</button></div>
+ <div class="r" style="align-items:center"><button class="p" data-bk="ai" style="background:#6d28d9">🤖 پاسخ دقیق با هوش مصنوعی (خودکار)</button><button data-bk="key" title="تنظیم کلید API">⚙ کلید</button></div><div id="bk_key"></div>
+ <div id="bk_out"></div><small style="color:var(--mu)">PDF باید متنی باشد (بتوانی متنش را انتخاب کنی). کتاب فقط روی همین دستگاه ذخیره می‌شود.</small></div>`;
+function lineFor(b,i){const k=b.bk;if(!k)return'';if(k.chat)return`<div class="bkl" style="font-size:12px;margin:4px 0 2px;padding:5px 8px;border-radius:8px;background:var(--bg);border:1px dashed var(--ln)"><b>🤖 از پاسخ هوش مصنوعی ثبت شد: ${esc2(snip(k.show||'',60))}</b></div>`;const ap=k.applied;const head=ap?'✅ از کتاب ثبت شد':(k.ans?'💡 پیشنهاد':'🔍 بدون پاسخ');
+ return`<div class="bkl" style="font-size:12px;margin:4px 0 2px;padding:5px 8px;border-radius:8px;background:var(--bg);border:1px dashed var(--ln)"><b>${head}${k.show&&ap?': '+esc2(snip(k.show,60)):''}</b> · ص${fa(k.src.p)}<br><span style="color:var(--mu)">«${esc2(k.src.t)}»</span>${!ap&&k.ans?` <button data-bk="ap" data-i="${i}" style="font-size:12px">✔ ثبت: ${esc2(snip(k.show||k.ans,40))}</button>`:''}</div>`}
+function after(){const el=$('#pv2');if(!el)return;if(!$('#bkbox')&&PB.length)el.insertAdjacentHTML('afterbegin',ui());fill();el.querySelectorAll('.it').forEach((d,i)=>{if(PB[i]&&PB[i].bk&&!d.querySelector('.bkl'))d.insertAdjacentHTML('beforeend',lineFor(PB[i],i))})}
+{const _d=drawPB;drawPB=function(){const o=$('#bk_out'),h=o?o.innerHTML:null,rv=$('#bk_rep')?$('#bk_rep').value:'';_d.apply(this,arguments);try{after();const o2=$('#bk_out');if(o2&&h){o2.innerHTML=h;const t=$('#bk_rep');if(t)t.value=rv}}catch(e){console.error(e)}}}
+function apply(b,k){if(b.type=='mc'||b.type=='paren'||b.type=='blank'||b.type=='tf'||b.type=='desc'){b.ans=k.ans;k.applied=true}}
+async function find(){const book=BKS.find(x=>x.id==SEL);if(!book)return toast('اول یک کتاب (PDF) اضافه کن');const I=build(book);toast('در حال جست‌وجو در کتاب…');await new Promise(r=>setTimeout(r,30));let n=0,s=0;
+ PB.forEach(b=>{if(!b.on||b.type=='match')return;const has=b.type=='mc'?mcOk(b)>=0:!!(b.ans&&b.ans.trim());if(has){return}const r=answer(I,b);if(!r){b.bk=null;return}b.bk=r;s++;if(r.ans&&r.conf=='high'){apply(b,r);n++}});
+ drawPB();toast(`${fa(n)} پاسخ مطمئن ثبت شد؛ ${fa(PB.filter(b=>b.bk&&!b.bk.applied&&b.bk.ans).length)} پیشنهاد برای بررسی است`)}
+function prompts(){const book=BKS.find(x=>x.id==SEL);const I=book?build(book):null;const L=PB.map((b,i)=>({b,i})).filter(({b})=>b.on&&b.type!='match'&&!(b.type=='mc'?mcOk(b)>=0:(b.ans&&b.ans.trim())));if(!L.length)return[];
+ const BATCH=10,out=[];for(let a=0;a<L.length;a+=BATCH){const g=L.slice(a,a+BATCH),ps=[],seen=new Set();
+  g.forEach(({b})=>{if(I)search(I,b.stem.join(' ').replace(/(?:\.{3,}|…+)/g,' '),3).forEach(r=>{const key=r.c.p+r.c.t.slice(0,30);if(!seen.has(key)){seen.add(key);ps.push(`[ص ${r.c.p}] ${snip(r.c.t,420)}`)}})});
+  const qs=g.map(({b,i})=>{const T={mc:'چهارگزینه‌ای',tf:'صحیح/غلط',blank:'جای‌خالی',paren:'پرانتزی',desc:'تشریحی'}[b.type]||b.type;let t=`${i+1}) [${T}] ${b.stem.join(' ')}`;if(b.type=='mc')t+='\n'+b.opts.map((o,k)=>`   ${k+1}. ${o}`).join('\n');return t}).join('\n');
+  out.push(`تو دبیر دقیق درس هستی. پاسخ درست هر سؤال را فقط براساس «متن کتاب» زیر بده. اگر پاسخ در متن نبود بنویس «؟».\n\nقالب پاسخ (هر سؤال یک خط، با همان شماره‌ی سؤال؛ هیچ توضیح اضافه نده):\nشماره: پاسخ\n- چهارگزینه‌ای: فقط شماره‌ی گزینه (۱ تا ۴)\n- صحیح/غلط: فقط «صحیح» یا «غلط»\n- جای‌خالی: کلمه یا کلمه‌ها (چند جای خالی را با «،» جدا کن)\n- پرانتزی: همان کلمه‌ی درست\n- تشریحی: پاسخ کوتاه (حداکثر دو جمله)\n\n=== متن کتاب ===\n${ps.join('\n')||'(متن کتاب انتخاب نشده؛ از دانش خودت پاسخ بده)'}\n\n=== سؤال‌ها ===\n${qs}`)}
+ return out}
+function parseReply(t){let n=0;t.replace(/\r/g,'').split('\n').forEach(l=>{const m=l.trim().match(/^[\(\[]?\s*([0-9۰-۹]+)\s*[\)\]:：\-–.]\s*(.+)$/);if(!m)return;const i=+dg(m[1])-1,b=PB[i];if(!b)return;let a=m[2].trim().replace(/^[«"“]|[»"”]$/g,'');if(!a||/^[؟?]$/.test(a))return;
+  if(b.type=='tf')a=/نادرست|غلط/.test(a)?'غلط':/درست|صحیح/.test(a)?'صحیح':'';else if(b.type=='mc'){const d=a.match(/[1-6۱-۶]/);a=d?dg(d[0]):a}
+  if(!a)return;b.ans=a;b.bk=b.bk||{src:{p:0,t:''}};b.bk.applied=true;b.bk.show=a;b.bk.chat=true;n++});return n}
+const copy=async t=>{try{await navigator.clipboard.writeText(t);return true}catch{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();let ok=false;try{ok=document.execCommand('copy')}catch{}a.remove();return ok}};
+const AICF=()=>{try{return JSON.parse(localStorage.ao_ai2||'{}')}catch{return{}}};
+const KP=()=>{const c=AICF(),pv=c.pv||'deepseek',D={deepseek:{u:'https://api.deepseek.com',m:'deepseek-chat'},claude:{u:'https://api.anthropic.com',m:'claude-sonnet-5-5'}},x=(c.cfg||{})[pv]||{},d=D[pv]||{u:'',m:''};return{pv,k:x.k||'',u:x.u||d.u,m:x.m||d.m}};
+async function ask(pr){const x=KP(),sys='You are a careful Persian teacher. Answer exactly in the requested line format, nothing else.';
+ if(x.pv=='claude'){const r=await fetch(x.u.replace(/\/+$/,'')+'/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':x.k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:x.m,max_tokens:2000,system:sys,messages:[{role:'user',content:pr}]})}),j=await r.json();if(!r.ok)throw new Error((j.error&&j.error.message)||('HTTP '+r.status));return(j.content||[]).map(y=>y.text||'').join('')}
+ const r=await fetch(x.u.replace(/\/+$/,'')+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+x.k},body:JSON.stringify({model:x.m,temperature:0,max_tokens:2000,messages:[{role:'system',content:sys},{role:'user',content:pr}]})}),j=await r.json();if(!r.ok)throw new Error((j.error&&j.error.message)||('HTTP '+r.status));return(j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content)||''}
+function keyUi(){const x=KP();$('#bk_key').innerHTML=`<div class="r" style="align-items:center;margin:6px 0"><select id="bk_pv"><option value="deepseek" ${x.pv!='claude'?'selected':''}>DeepSeek</option><option value="claude" ${x.pv=='claude'?'selected':''}>Claude</option></select><input id="bk_k" type="password" dir="ltr" placeholder="کلید API" value="${esc2(x.k)}" style="flex:1;min-width:150px"><button data-bk="ksave">ذخیره‌ی کلید</button></div><small style="color:var(--mu)">همان کلیدی است که در «ساخت سؤال با هوش مصنوعی» وارد می‌کنی؛ فقط روی همین دستگاه می‌ماند.</small>`}
+let PR=[];
+document.addEventListener('click',async e=>{const x=e.target.closest('[data-bk]');if(!x)return;const k=x.dataset.bk;
+ if(k=='find')find();
+ else if(k=='apall'){let n=0;PB.forEach(b=>{if(b.on&&b.bk&&!b.bk.applied&&b.bk.ans&&b.type!='desc'){apply(b,b.bk);n++}});drawPB();toast(n?fa(n)+' پیشنهاد ثبت شد؛ حتماً مرورشان کن':'پیشنهادی برای ثبت نیست')}
+ else if(k=='key'){const o=$('#bk_key');if(o.innerHTML)o.innerHTML='';else keyUi()}
+ else if(k=='ksave'){const c=AICF(),pv=$('#bk_pv').value,key=$('#bk_k').value.trim();c.pv=pv;c.cfg=c.cfg||{};c.cfg[pv]=Object.assign({},c.cfg[pv]||{},{k:key});try{localStorage.ao_ai2=JSON.stringify(c)}catch{}toast(key?'کلید ذخیره شد':'کلید پاک شد')}
+ else if(k=='ai'){if(!KP().k){keyUi();return toast('اول کلید API را وارد و ذخیره کن')}const P=prompts();if(!P.length)return toast('همه‌ی سؤال‌ها پاسخ دارند یا سؤالی انتخاب نشده');let tot=0;x.disabled=true;try{for(let i=0;i<P.length;i++){toast('هوش مصنوعی: بخش '+fa(i+1)+' از '+fa(P.length)+'…');const out=await ask(P[i]);tot+=parseReply(out);drawPB()}toast(fa(tot)+' پاسخ ثبت شد؛ مرورشان کن')}catch(err){console.error(err);toast('خطا: '+(err.message||'ارتباط برقرار نشد'))}x.disabled=false}
+ else if(k=='ap'){const i=+x.dataset.i,b=PB[i];if(b&&b.bk){apply(b,b.bk);drawPB()}}
+ else if(k=='rm'){const b=BKS.find(z=>z.id==SEL);if(b&&confirm('کتاب «'+b.name+'» حذف شود؟')){await dbDel(b.id);delete IDX[b.id];await fill();toast('کتاب حذف شد')}}
+ else if(k=='prm'){PR=prompts();const o=$('#bk_out');if(!o)return;if(!PR.length){o.innerHTML='<small>همه‌ی سؤال‌ها پاسخ دارند یا سؤالی انتخاب نشده.</small>';return}
+  o.innerHTML=`<div style="margin:6px 0"><small>${fa(PR.length)} بخش ساخته شد. هر بخش را کپی کن، در چت بچسبان و پاسخ را در کادر پایین بگذار:</small><div class="r">${PR.map((_,i)=>`<button class="p" data-bk="cp" data-i="${i}">📋 کپی بخش ${fa(i+1)}</button>`).join('')}<button data-bk="ds">↗ باز کردن چت</button></div><textarea id="bk_rep" rows="5" style="width:100%;background:var(--bg);color:inherit;border:1px solid var(--ln);border-radius:10px;padding:8px;font:inherit" placeholder="پاسخ چت را اینجا بچسبان (مثلاً:\n3: ب\n4: صحیح)"></textarea><button class="p" data-bk="rep">✔ ثبت پاسخ‌های چت</button></div>`}
+ else if(k=='cp'){const ok=await copy(PR[+x.dataset.i]||'');toast(ok?'کپی شد؛ در چت بچسبان':'کپی نشد؛ دوباره امتحان کن')}
+ else if(k=='ds')window.open('https://chat.deepseek.com','_blank');
+ else if(k=='rep'){const n=parseReply(($('#bk_rep')||{}).value||'');drawPB();toast(n?fa(n)+' پاسخ ثبت شد':'پاسخی پیدا نشد؛ قالب «شماره: پاسخ» را رعایت کن')}});
+document.addEventListener('change',async e=>{const t=e.target;if(t.id=='bk_sel'){SEL=t.value;try{localStorage.ao_bksel=SEL}catch{}}
+ else if(t.id=='bk_f'&&t.files[0]){const f=t.files[0];t.value='';try{toast('در حال خواندن کتاب…');const pages=await pdfPages(f,(p,n)=>toast('خواندن کتاب: صفحه '+fa(p)+' از '+fa(n)));const chars=pages.reduce((a,l)=>a+l.join('').length,0);if(chars<200*Math.max(1,pages.length/4))return toast('از این PDF متن درنیامد؛ احتمالاً اسکن (عکس) است');
+  const b={id:'b'+Date.now().toString(36),name:f.name.replace(/\.pdf$/i,'').slice(0,40),pages,t:Date.now()};await dbPut(b);SEL=b.id;try{localStorage.ao_bksel=SEL}catch{}await fill();toast('کتاب اضافه شد: '+fa(pages.length)+' صفحه')}catch(err){console.error(err);toast('کتاب خوانده نشد')}}});
+window.__bk={fold,toks,search,build,answer,fillBlank,optScore,dbPut,dbAll,pdfPages,IDX};
+})();
 </script>
 </body></html>
