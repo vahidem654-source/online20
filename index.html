@@ -127,7 +127,7 @@ body:not(.mtopen) #v:has(#ostk){padding-left:322px}
 </style></head><body>
 <div id="cr" class="ui">تهیه‌کننده: وحیده محجوب</div>
 <div class="ui" id="app">
-<div id="top"><header><button id="mnu">☰</button><input id="ttl" placeholder="عنوان آزمون"><button id="ub" style="display:none" title="برگردان آخرین حذف یا تغییر">↶</button><button id="rb" style="display:none" title="جلو (برگرداندن برگشت)">↷</button><button id="th">◐</button></header><div id="tabs"></div><div id="vrs">نسخه‌ی برنامه: ۱۱۱</div></div>
+<div id="top"><header><button id="mnu">☰</button><input id="ttl" placeholder="عنوان آزمون"><button id="ub" style="display:none" title="برگردان آخرین حذف یا تغییر">↶</button><button id="rb" style="display:none" title="جلو (برگرداندن برگشت)">↷</button><button id="th">◐</button></header><div id="tabs"></div><div id="vrs">نسخه‌ی برنامه: ۱۱۲</div></div>
 <main id="v"></main>
 <div id="jmp"><button id="up" title="اول صفحه">⤒</button><button id="dn" title="آخر صفحه">⤓</button></div>
 <button class="p fab" id="add">＋ سؤال</button>
@@ -333,7 +333,7 @@ $('#md').addEventListener('click',e=>{const t=e.target;if(t.tagName=='IMG'&&t.cl
  else if(x=='rB'&&ED.d.B.length>1){sync();ED.d.B.splice(+n,1);ED.d.map=ED.d.map.map(m=>m>+n?m-1:Math.min(m,ED.d.B.length-1));$('#e_m').innerHTML=matchRows(ED.d)}
  else if(x=='xo'){ex=exams.find(k=>k.id==n);localStorage.ao_cur=n;hideM();T='ex';render()}
  else if(x=='xd'){const c=clone(exams.find(k=>k.id==n));c.id=uid();c.title+=' (کپی)';exams.push(c);put('exams',c);syncSoon();mExams()}
- else if(x=='xx'){if(confirm('کل این آزمون حذف شود؟')){exams=exams.filter(k=>k.id!=n);del('exams',n);syDel(n);all('results').then(rs=>rs.filter(r=>r.exId==n).forEach(r=>del('results',r.id)));if(ex.id==n){ex=exams[0];if(!ex)return newExam(),hideM();localStorage.ao_cur=ex.id}hideM();render()}}
+ else if(x=='xx'){if(confirm('کل این آزمون حذف شود؟')){exams=exams.filter(k=>k.id!=n);del('exams',n);syDel(n);all('results').then(rs=>rs.filter(r=>r.exId==n).forEach(r=>del('results',r.id)));if(ex.id==n){ex=exams[0];if(!ex){newExam();return void mExams()}localStorage.ao_cur=ex.id}{const bx=document.querySelector('#md .box'),sc=bx?bx.scrollTop:0;render();mExams();const b2=document.querySelector('#md .box');if(b2)b2.scrollTop=sc;toast('آزمون حذف شد')}}}
  else if(x=='xn'){hideM();newExam()}
  else if(x=='xj')saveBlob(new Blob([JSON.stringify({app:'azmoon',v:1,exam:ex})]),ex.title+'.json');
  else if(x=='xb')doBackup()});
@@ -1707,7 +1707,7 @@ const AIC=()=>{try{return JSON.parse(localStorage.ao_ai2||'{}')}catch{return{}}}
 const aiBtn=()=>`<div class="card"><button class="p" data-ai="open">🤖 ساخت سؤال با هوش مصنوعی (از روی فایل یا متن)</button><small style="color:var(--mu)"> فایل درس را بده، DeepSeek سؤال طراحی می‌کند و همین‌جا در آزمون ثبت می‌شود.</small></div>`;
 {const _vEx=vEx;vEx=function(){return aiBtn()+_vEx()}}
 const AITY=[['mc','چهارگزینه‌ای',5],['tf','صحیح / غلط',3],['blank','جای‌خالی',3],['desc','تشریحی',2],['match','وصل‌کردنی',0],['paren','گزینه‌ی صحیح در پرانتز',0]];
-function mAI(){mAI0();$('#md .box').insertAdjacentHTML('beforeend','<div class="ft"><button class="p" data-ai="prompt">📋 ساخت و کپی پرامپت</button><button data-ai="ds">↗ باز کردن چت</button><button class="p" data-ai="parse">✔ تبدیل به سؤال</button></div>')}
+function mAI(){mAI0();$('#md .box').insertAdjacentHTML('beforeend','<div class="ft"><button class="p" data-ai="prompt">📋 ساخت و کپی پرامپت</button><button data-ai="ds" data-u="https://claude.ai/new">↗ Claude</button><button class="p" data-ai="parse">✔ تبدیل به سؤال</button></div>')}
 function mAI0(){$('#md').classList.add('ls');showM(`<div class="r" style="align-items:center"><h3 style="flex:1;margin:0">🤖 ساخت سؤال با هوش مصنوعی</h3><button data-ai="close">✕ بستن</button></div>
  <small style="color:var(--mu)">مراحل: ۱) فایل یا متن درس ← ۲) تعداد سؤال‌ها ← ۳) پرامپت را در DeepSeek بچسبان (رایگان) ← ۴) پاسخ را اینجا بچسبان ← ۵) ثبت در آزمون.</small>
  <label>۱) فایل درس (PDF، Word یا متنی)</label><input type="file" id="ai_f" accept=".pdf,.docx,.txt,.md,.csv,.html,application/pdf">
@@ -1715,8 +1715,8 @@ function mAI0(){$('#md').classList.add('ls');showM(`<div class="r" style="align-
  <label>یا متن درس را اینجا بچسبان / متن خوانده‌شده را اصلاح کن</label><textarea id="ai_src" rows="7" style="width:100%;background:var(--bg);color:inherit;border:1px solid var(--ln);border-radius:10px;padding:8px"></textarea><small id="ai_cnt" style="color:var(--mu)">۰ نویسه</small>
  <label>۲) تعداد سؤال از هر نوع</label><div class="r" style="align-items:center;flex-wrap:wrap">${AITY.map(([t,l,n])=>`<label style="display:flex;gap:4px;align-items:center">${l}<input type="number" min="0" max="30" id="ai_n_${t}" value="${n}" style="width:60px"></label>`).join('')}</div>
  <div class="r" style="align-items:center"><label>سطح:</label><select id="ai_lv"><option>آسان</option><option selected>متوسط</option><option>سخت</option></select><input id="ai_tp" placeholder="پایه / درس (اختیاری)" style="flex:1;min-width:140px"></div><div class="r"><input id="ai_sty" placeholder="سبک سؤال (اختیاری): مثلاً امتحان نهایی، کنکوری، مفهومی" style="flex:1"></div><label>بخش‌هایی که نباید از آن‌ها سؤال طرح شود (با ویرگول جدا کن)</label><input id="ai_ex" value="${esc(localStorage.ao_aiex!=null?localStorage.ao_aiex:AIEX)}" style="width:100%">
- <div class="r"><button class="p" data-ai="prompt">📋 ساخت و کپی پرامپت</button><button data-ai="ds">↗ باز کردن چت (DeepSeek یا Claude)</button></div>
- <textarea id="ai_prompt" rows="4" readonly placeholder="پرامپت اینجا ساخته می‌شود؛ کپی می‌شود و در DeepSeek می‌چسبانی." style="width:100%;background:var(--bg);color:inherit;border:1px solid var(--ln);border-radius:10px;padding:8px;display:none"></textarea>
+ <div class="r"><button class="p" data-ai="prompt">📋 ساخت و کپی پرامپت</button></div><div class="r" style="align-items:center"><small>باز کردن چت:</small><button data-ai="ds" data-u="https://claude.ai/new">↗ Claude</button><button data-ai="ds" data-u="https://chatgpt.com/">↗ ChatGPT</button><button data-ai="ds" data-u="https://gemini.google.com/app">↗ Gemini</button><button data-ai="ds" data-u="https://chat.deepseek.com/">↗ DeepSeek</button></div>
+ <textarea id="ai_prompt" rows="4" readonly placeholder="پرامپت اینجا ساخته می‌شود؛ کپی می‌شود و در چت دلخواهت می‌چسبانی." style="width:100%;background:var(--bg);color:inherit;border:1px solid var(--ln);border-radius:10px;padding:8px;display:none"></textarea>
  <label>۴) پاسخ هوش مصنوعی را اینجا بچسبان</label><textarea id="ai_out" rows="6" dir="ltr" placeholder='[ {"type":"mc", ...}, ... ]' style="width:100%;background:var(--bg);color:inherit;border:1px solid var(--ln);border-radius:10px;padding:8px"></textarea>
  <div class="r"><button class="p" data-ai="parse">✔ تبدیل به سؤال</button><button data-ai="review">🔍 پرامپت بازبینی (برای رفع ایرادها)</button></div><div id="ai_list"></div>
  <details style="margin-top:10px"><summary>⚙ ارسال خودکار (اختیاری؛ نیاز به کلید API)</summary><small style="color:var(--mu)">چت‌های DeepSeek و Claude را می‌شود با کپی و چسباندن استفاده کرد. ارسال خودکار به کلید API نیاز دارد که معمولاً پولی است. کلید فقط روی همین دستگاه ذخیره می‌شود. برای سؤال‌های دقیق‌تر، Claude را امتحان کن.</small>
@@ -1788,7 +1788,7 @@ function aiShow(items,warn){AIQ=items;const TNm=TN;$('#ai_list').innerHTML=(item
 document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.closest('button[data-ai]');if(!b)return;const k=b.dataset.ai;
  if(k=='open')mAI();else if(k=='close'){hideM()}
  else if(k=='prompt'){const pr=aiPrompt();if(!pr)return;const ta=$('#ai_prompt');ta.style.display='block';ta.value=pr;try{await navigator.clipboard.writeText(pr);toast('پرامپت کپی شد؛ در DeepSeek بچسبان')}catch{ta.select();toast('پرامپت ساخته شد؛ آن را کپی کن')}}
- else if(k=='ds'){const pv=($('#ai_pv')||{}).value;window.open(pv=='claude'?'https://claude.ai/new':'https://chat.deepseek.com','_blank')}
+ else if(k=='ds')window.open(b.dataset.u||'https://claude.ai/new','_blank')
  else if(k=='parse'){try{const r=aiConvert(aiParse($('#ai_out').value));aiShow(r.items,r.warn)}catch(err){$('#ai_list').innerHTML='<small style="color:#b91c1c">پاسخ قابل‌خواندن نیست ('+esc(err.message)+'). مطمئن شو فقط آرایه‌ی JSON را کپی کرده‌ای؛ اگر هوش مصنوعی توضیح اضافه نوشته، بگو «فقط JSON بده» و دوباره بچسبان.</small>'}}
  else if(k=='add'){const ch=$$('#ai_list input[data-aic]').filter(x=>x.checked).map(x=>AIQ[+x.dataset.aic]);if(!ch.length)return toast('سؤالی انتخاب نشده');ch.forEach(it=>ex.rows.push({id:uid(),title:'',items:[it]}));persist();hideM();T='ex';render();toast(fa(ch.length)+' سؤال به آزمون اضافه شد؛ بارم‌ها را با «بررسی» تنظیم کن')}
  else if(k=='review'){const pr=aiReviewPrompt();if(!pr)return;const ta=$('#ai_prompt');ta.style.display='block';ta.value=pr;try{await navigator.clipboard.writeText(pr);toast('پرامپت بازبینی کپی شد؛ در چت بچسبان و پاسخ را دوباره در کادر پاسخ بگذار')}catch{ta.select()}}
@@ -2375,7 +2375,7 @@ palApply();
 (function(){
 const st=document.createElement('style');st.textContent='#imgbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(62px + env(safe-area-inset-bottom));z-index:95;background:var(--cd);color:var(--tx,inherit);border:2px solid var(--ac2);border-radius:14px;padding:8px 10px;display:none;gap:8px;align-items:center;box-shadow:0 4px 18px #0005;max-width:96vw;font-size:15px}#imgbar.on{display:flex}#imgbar.ed{bottom:calc(80px + env(safe-area-inset-bottom))}#imgbar input[type=range]{width:min(34vw,220px)}#imgbar b{min-width:54px;text-align:center}#imgbar button{padding:6px 11px}#pv img.isel{outline:3px solid var(--ac2);outline-offset:2px}#pv img{cursor:pointer}';document.head.appendChild(st);
 const bar=document.createElement('div');bar.id='imgbar';bar.dir='rtl';
-bar.innerHTML='<span>🖼 اندازه:</span><button type="button" data-i="m">➖</button><input type="range" min="60" max="700" step="5"><button type="button" data-i="p">➕</button><b></b><button type="button" data-i="r" title="اندازه‌ی اولیه">↺</button><button type="button" data-i="x">✕</button>';
+bar.innerHTML='<span>🖼 اندازه:</span><button type="button" data-i="m">➖</button><input type="range" min="60" max="700" step="5"><button type="button" data-i="p">➕</button><b></b><button type="button" data-i="c" title="برش تصویر">✂ برش</button><button type="button" data-i="r" title="اندازه‌ی اولیه">↺</button><button type="button" data-i="x">✕</button>';
 document.body.appendChild(bar);
 let T=null,mode='',fpT=0;const rg=bar.querySelector('input'),lb=bar.querySelector('b');
 const cw=im=>Math.round(im.offsetWidth||+im.getAttribute('width')||+im.dataset.w||200);
@@ -2389,7 +2389,35 @@ const apply=w=>{if(!T)return;const src=T.getAttribute('src'),ar=(T.naturalHeight
  if(w==null){const dw=Math.min(T.naturalWidth||300,450),dh=Math.round(dw*ar);T.removeAttribute('width');T.style.height='';T.dataset.w=dw;T.dataset.h=dh;window.__ibW=0;if(mode=='out')outSave(src,dw,dh)}
  else{w=Math.max(40,Math.min(700,Math.round(w)));const h=Math.round(w*ar);T.setAttribute('width',w);T.dataset.w=w;T.dataset.h=h;T.style.height='auto';window.__ibW=w;if(mode=='out')outSave(src,w,h)}
  upd();if(mode=='ed')T.scrollIntoView({block:'nearest'})};
-bar.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!T)return;const k=b.dataset.i;if(k=='x')return ibHide();if(k=='r')return apply(null);apply(cw(T)*(k=='p'?1.15:1/1.15))});
+
+const cropOpen=img=>{const src=img.getAttribute('src');if(!src)return;const im=new Image();im.onload=()=>{
+ const NW=im.naturalWidth,NH=im.naturalHeight,mw=Math.min(innerWidth-24,900),mh=Math.max(160,innerHeight-170),k0=Math.min(mw/NW,mh/NH,1),W=Math.round(NW*k0),H=Math.round(NH*k0);
+ const ov=document.createElement('div');ov.id='cropov';ov.dir='rtl';ov.style.cssText='position:fixed;inset:0;z-index:300;background:#000c;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:10px;font-family:inherit';
+ ov.innerHTML='<div style="color:#fff;font-size:14px;text-align:center">✂ برش تصویر — کنار و گوشه‌های کادر را بکش یا روی تصویر بکش تا ناحیه‌ی دلخواه را انتخاب کنی</div><canvas></canvas><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><button type="button" id="cr_ok" class="p" style="padding:9px 18px">✂ برش بده</button><button type="button" id="cr_all" style="padding:9px 14px">↺ کل تصویر</button><button type="button" id="cr_no" style="padding:9px 14px">لغو</button></div>';
+ document.body.appendChild(ov);const cv=ov.querySelector('canvas');cv.width=W;cv.height=H;cv.style.cssText='touch-action:none;max-width:100%;background:#fff;border-radius:6px;cursor:crosshair';const g=cv.getContext('2d');
+ let sel={x:0,y:0,w:W,h:H},drag=null;const TOL=22,MIN=12;
+ const draw=()=>{g.clearRect(0,0,W,H);g.drawImage(im,0,0,W,H);g.fillStyle='rgba(0,0,0,.55)';g.fillRect(0,0,W,H);g.save();g.beginPath();g.rect(sel.x,sel.y,sel.w,sel.h);g.clip();g.drawImage(im,0,0,W,H);g.restore();g.strokeStyle='#22d3ee';g.lineWidth=2;g.strokeRect(sel.x+1,sel.y+1,sel.w-2,sel.h-2);g.fillStyle='#22d3ee';[[sel.x,sel.y],[sel.x+sel.w,sel.y],[sel.x,sel.y+sel.h],[sel.x+sel.w,sel.y+sel.h],[sel.x+sel.w/2,sel.y],[sel.x+sel.w/2,sel.y+sel.h],[sel.x,sel.y+sel.h/2],[sel.x+sel.w,sel.y+sel.h/2]].forEach(([a,b])=>g.fillRect(a-5,b-5,10,10))};
+ const pt=e=>{const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height}};
+ const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+ cv.addEventListener('pointerdown',e=>{e.preventDefault();cv.setPointerCapture(e.pointerId);const p=pt(e),L=Math.abs(p.x-sel.x)<TOL,R=Math.abs(p.x-sel.x-sel.w)<TOL,T2=Math.abs(p.y-sel.y)<TOL,B=Math.abs(p.y-sel.y-sel.h)<TOL,inX=p.x>sel.x-TOL&&p.x<sel.x+sel.w+TOL,inY=p.y>sel.y-TOL&&p.y<sel.y+sel.h+TOL;
+  if(inX&&inY&&(L||R||T2||B))drag={m:'rs',L,R,T:T2,B,s:{...sel}};else if(!(sel.w>=W-1&&sel.h>=H-1)&&p.x>sel.x&&p.x<sel.x+sel.w&&p.y>sel.y&&p.y<sel.y+sel.h)drag={m:'mv',p0:p,s:{...sel}};else drag={m:'new',p0:p}});
+ cv.addEventListener('pointermove',e=>{if(!drag)return;const p=pt(e);
+  if(drag.m=='new'){const x1=cl(drag.p0.x,0,W),y1=cl(drag.p0.y,0,H),x2=cl(p.x,0,W),y2=cl(p.y,0,H);sel={x:Math.min(x1,x2),y:Math.min(y1,y2),w:Math.abs(x2-x1),h:Math.abs(y2-y1)}}
+  else if(drag.m=='mv'){sel.x=cl(drag.s.x+p.x-drag.p0.x,0,W-sel.w);sel.y=cl(drag.s.y+p.y-drag.p0.y,0,H-sel.h)}
+  else{let{x,y,w,h}=drag.s,x2=x+w,y2=y+h;if(drag.L)x=cl(p.x,0,x2-MIN);if(drag.R)x2=cl(p.x,x+MIN,W);if(drag.T)y=cl(p.y,0,y2-MIN);if(drag.B)y2=cl(p.y,y+MIN,H);sel={x,y,w:x2-x,h:y2-y}}
+  draw()});
+ const up=()=>{drag=null;if(sel.w<MIN||sel.h<MIN){sel={x:0,y:0,w:W,h:H};draw()}};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+ const close=()=>ov.remove();ov.querySelector('#cr_no').onclick=close;ov.querySelector('#cr_all').onclick=()=>{sel={x:0,y:0,w:W,h:H};draw()};
+ ov.querySelector('#cr_ok').onclick=()=>{const k=NW/W,sx=Math.round(sel.x*k),sy=Math.round(sel.y*k),sw=Math.max(1,Math.round(sel.w*k)),sh=Math.max(1,Math.round(sel.h*k));
+  if(sw>=NW-1&&sh>=NH-1){close();return toast('کل تصویر انتخاب شده؛ ناحیه را کوچک‌تر کن')}
+  const c2=document.createElement('canvas');c2.width=sw;c2.height=sh;const x2=c2.getContext('2d');const png=/^data:image\/png/.test(src);if(!png){x2.fillStyle='#fff';x2.fillRect(0,0,sw,sh)}x2.drawImage(im,sx,sy,sw,sh,0,0,sw,sh);
+  let nd;try{nd=c2.toDataURL(png?'image/png':'image/jpeg',0.9)}catch(err){close();return toast('برش انجام نشد')}
+  const oldW=cw(img),nw=Math.max(40,Math.round(oldW*sw/NW)),nh=Math.round(nw*sh/sw);close();
+  if(mode=='ed'){img.src=nd;img.setAttribute('width',nw);img.dataset.w=nw;img.dataset.h=nh;img.style.height='auto';const ed=img.closest('.ed');if(ed)ed.dispatchEvent(new Event('input',{bubbles:true}));ibHide();toast('تصویر برش خورد')}
+  else{const swap=o=>{let i=0,p,out=o;while((p=out.indexOf(src,i))>=0){const a=out.lastIndexOf('<img',p),b=out.indexOf('>',p+src.length);if(a<0||b<0)break;const tag=`<img src="${nd}" data-w="${nw}" data-h="${nh}" width="${nw}">`;out=out.slice(0,a)+tag+out.slice(b+1);i=a+tag.length}return out};
+   const walk=o=>{for(const kk in o){const v=o[kk];if(typeof v=='string'){if(v.includes(src)&&v.includes('<img'))o[kk]=swap(v)}else if(v&&typeof v=='object')walk(v)}};walk(ex);persist();ibHide();render();toast('تصویر برش خورد')}};
+ draw()};im.onerror=()=>toast('تصویر باز نشد');im.src=src};
+bar.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!T)return;const k=b.dataset.i;if(k=='x')return ibHide();if(k=='c')return cropOpen(T);if(k=='r')return apply(null);apply(cw(T)*(k=='p'?1.15:1/1.15))});
 rg.addEventListener('input',()=>apply(+rg.value));
 document.addEventListener('click',e=>{const t=e.target;if(bar.contains(t))return;
  if(t.tagName=='IMG'){if(t.closest('#md .ed')&&!t.closest('#md.ls')){setTimeout(()=>{t.classList.contains('sel')?show(t,'ed'):ibHide()},0);return}
@@ -2466,9 +2494,10 @@ const esc2=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 async function fill(){BKS=await dbAll();const s=$('#bk_sel');if(!s)return;if(!BKS.find(b=>b.id==SEL))SEL=BKS[0]?BKS[0].id:'';s.innerHTML=BKS.length?BKS.map(b=>`<option value="${b.id}" ${b.id==SEL?'selected':''}>${esc2(b.name)} (${fa(b.pages.length)} صفحه)</option>`).join(''):'<option value="">هنوز کتابی اضافه نشده</option>'}
 const ui=()=>`<div class="card" id="bkbox" style="margin:8px 0;border:1px solid var(--ac)"><b>📚 پیدا کردن پاسخ از روی کتاب</b>
  <div class="r" style="align-items:center;margin-top:6px"><select id="bk_sel" style="flex:1;min-width:140px"></select><label class="b" style="cursor:pointer">➕ افزودن کتاب (PDF)<input type="file" id="bk_f" accept=".pdf,application/pdf" hidden></label><button data-bk="rm" title="حذف کتاب انتخاب‌شده">🗑</button></div>
- <div class="r"><button class="p" data-bk="find">🔎 پیدا کردن پاسخ از کتاب</button><button data-bk="apall">✔ ثبت همه‌ی پیشنهادها</button><button data-bk="prm">📋 متن برای چت</button></div>
- <div class="r" style="align-items:center"><button class="p" data-bk="ai" style="background:#6d28d9">🤖 پاسخ دقیق با هوش مصنوعی (خودکار)</button><button data-bk="key" title="تنظیم کلید API">⚙ کلید</button></div><div id="bk_key"></div>
- <div id="bk_out"></div><small style="color:var(--mu)">PDF باید متنی باشد (بتوانی متنش را انتخاب کنی). کتاب فقط روی همین دستگاه ذخیره می‌شود.</small></div>`;
+ <div style="margin:8px 0;padding:8px 10px;border-radius:10px;border:2px solid #6d28d9;background:var(--bg)"><b>🤖 ثبت پاسخ با هوش مصنوعی (بدون کلید)</b>
+  <ol style="margin:6px 0;padding-inline-start:20px;font-size:13px;line-height:1.9"><li>دکمه‌ی «ساخت و کپی پرامپت» را بزن (متن خودکار کپی می‌شود).</li><li>در ChatGPT / DeepSeek / Claude / Gemini بچسبان و بفرست.</li><li>جواب را کپی کن، در کادر زیر بچسبان و «ثبت پاسخ‌ها» را بزن.</li></ol>
+  <div class="r"><button class="p" data-bk="prm" style="background:#6d28d9">📋 ساخت و کپی پرامپت</button></div><div id="bk_out"></div></div>
+ <div class="r"><button data-bk="find">🔎 پیشنهاد از روی کتاب</button><button data-bk="apall">✔ ثبت همه‌ی پیشنهادها</button><button data-bk="ai" title="فقط اگر کلید API داری">🔑 خودکار با کلید</button><button data-bk="key" title="تنظیم کلید API">⚙</button></div><div id="bk_key"></div><small style="color:var(--mu)">PDF باید متنی باشد (بتوانی متنش را انتخاب کنی). کتاب فقط روی همین دستگاه ذخیره می‌شود.</small></div>`;
 function lineFor(b,i){const k=b.bk;if(!k)return'';if(k.chat)return`<div class="bkl" style="font-size:12px;margin:4px 0 2px;padding:5px 8px;border-radius:8px;background:var(--bg);border:1px dashed var(--ln)"><b>🤖 از پاسخ هوش مصنوعی ثبت شد: ${esc2(snip(k.show||'',60))}</b></div>`;const ap=k.applied;const head=ap?'✅ از کتاب ثبت شد':(k.ans?'💡 پیشنهاد':'🔍 بدون پاسخ');
  return`<div class="bkl" style="font-size:12px;margin:4px 0 2px;padding:5px 8px;border-radius:8px;background:var(--bg);border:1px dashed var(--ln)"><b>${head}${k.show&&ap?': '+esc2(snip(k.show,60)):''}</b> · ص${fa(k.src.p)}<br><span style="color:var(--mu)">«${esc2(k.src.t)}»</span>${!ap&&k.ans?` <button data-bk="ap" data-i="${i}" style="font-size:12px">✔ ثبت: ${esc2(snip(k.show||k.ans,40))}</button>`:''}</div>`}
 function after(){const el=$('#pv2');if(!el)return;if(!$('#bkbox')&&PB.length)el.insertAdjacentHTML('afterbegin',ui());fill();el.querySelectorAll('.it').forEach((d,i)=>{if(PB[i]&&PB[i].bk&&!d.querySelector('.bkl'))d.insertAdjacentHTML('beforeend',lineFor(PB[i],i))})}
@@ -2503,9 +2532,9 @@ document.addEventListener('click',async e=>{const x=e.target.closest('[data-bk]'
  else if(k=='ap'){const i=+x.dataset.i,b=PB[i];if(b&&b.bk){apply(b,b.bk);drawPB()}}
  else if(k=='rm'){const b=BKS.find(z=>z.id==SEL);if(b&&confirm('کتاب «'+b.name+'» حذف شود؟')){await dbDel(b.id);delete IDX[b.id];await fill();toast('کتاب حذف شد')}}
  else if(k=='prm'){PR=prompts();const o=$('#bk_out');if(!o)return;if(!PR.length){o.innerHTML='<small>همه‌ی سؤال‌ها پاسخ دارند یا سؤالی انتخاب نشده.</small>';return}
-  o.innerHTML=`<div style="margin:6px 0"><small>${fa(PR.length)} بخش ساخته شد. هر بخش را کپی کن، در چت بچسبان و پاسخ را در کادر پایین بگذار:</small><div class="r">${PR.map((_,i)=>`<button class="p" data-bk="cp" data-i="${i}">📋 کپی بخش ${fa(i+1)}</button>`).join('')}<button data-bk="ds">↗ باز کردن چت</button></div><textarea id="bk_rep" rows="5" style="width:100%;background:var(--bg);color:inherit;border:1px solid var(--ln);border-radius:10px;padding:8px;font:inherit" placeholder="پاسخ چت را اینجا بچسبان (مثلاً:\n3: ب\n4: صحیح)"></textarea><button class="p" data-bk="rep">✔ ثبت پاسخ‌های چت</button></div>`}
+  copy(PR[0]).then(ok=>toast(ok?'پرامپت بخش ۱ کپی شد؛ در چت بچسبان':'کپی خودکار نشد؛ دکمه‌ی کپی را بزن'));o.innerHTML=`<div style="margin:6px 0"><small>${fa(PR.length)} بخش ساخته شد${PR.length>1?' (هر بخش را جداگانه بفرست و جواب‌ها را پشت هم در کادر بچسبان)':''}:</small><div class="r">${PR.map((_,i)=>`<button class="p" data-bk="cp" data-i="${i}">📋 کپی بخش ${fa(i+1)}</button>`).join('')}</div><div class="r" style="align-items:center"><small>باز کردن چت:</small><button data-bk="ds" data-u="https://claude.ai/new">↗ Claude</button><button data-bk="ds" data-u="https://chatgpt.com/">↗ ChatGPT</button><button data-bk="ds" data-u="https://gemini.google.com/app">↗ Gemini</button><button data-bk="ds" data-u="https://chat.deepseek.com/">↗ DeepSeek</button></div><textarea id="bk_rep" rows="5" style="width:100%;background:var(--bg);color:inherit;border:1px solid var(--ln);border-radius:10px;padding:8px;font:inherit" placeholder="پاسخ چت را اینجا بچسبان (مثلاً:\n3: ب\n4: صحیح)"></textarea><button class="p" data-bk="rep">✔ ثبت پاسخ‌ها</button></div>`}
  else if(k=='cp'){const ok=await copy(PR[+x.dataset.i]||'');toast(ok?'کپی شد؛ در چت بچسبان':'کپی نشد؛ دوباره امتحان کن')}
- else if(k=='ds')window.open('https://chat.deepseek.com','_blank');
+ else if(k=='ds')window.open(x.dataset.u||'https://claude.ai/new','_blank');
  else if(k=='rep'){const n=parseReply(($('#bk_rep')||{}).value||'');drawPB();toast(n?fa(n)+' پاسخ ثبت شد':'پاسخی پیدا نشد؛ قالب «شماره: پاسخ» را رعایت کن')}});
 document.addEventListener('change',async e=>{const t=e.target;if(t.id=='bk_sel'){SEL=t.value;try{localStorage.ao_bksel=SEL}catch{}}
  else if(t.id=='bk_f'&&t.files[0]){const f=t.files[0];t.value='';try{toast('در حال خواندن کتاب…');const pages=await pdfPages(f,(p,n)=>toast('خواندن کتاب: صفحه '+fa(p)+' از '+fa(n)));const chars=pages.reduce((a,l)=>a+l.join('').length,0);if(chars<200*Math.max(1,pages.length/4))return toast('از این PDF متن درنیامد؛ احتمالاً اسکن (عکس) است');
